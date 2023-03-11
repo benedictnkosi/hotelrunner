@@ -177,9 +177,10 @@ class CommandsController extends AbstractController
                 'result_code' => 0
             );
 
-            if(str_contains(SERVER_NAME,"staging")){
+            $server = $_SERVER['PHP_SELF'];
+            if(str_contains($server,"staging")){
                 $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging --force';
-            }elseif (str_contains(SERVER_NAME,"ete")){
+            }elseif (str_contains($server,"ete")){
                 $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git ete --force';
             }else{
                 $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git main --force';
