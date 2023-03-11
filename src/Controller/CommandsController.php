@@ -155,10 +155,12 @@ class CommandsController extends AbstractController
                 'result_code' => 0
             );
 
-            if(str_contains(SERVER_NAME,"qa")){
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/aluveapp.git main --force';
+            if(str_contains(SERVER_NAME,"staging")){
+                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging --force';
+            }elseif (str_contains(SERVER_NAME,"ete")){
+                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git ete --force';
             }else{
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/aluveapp.git main --force';
+                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git main --force';
             }
 
             $result = $this->execute($command);
