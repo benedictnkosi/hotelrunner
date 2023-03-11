@@ -89,6 +89,28 @@ class CommandsController extends AbstractController
     }
 
     /**
+     * @Route("public/runcommand/downlaod/dependencies")
+     */
+    public function downloadDependencies(LoggerInterface $logger): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if(function_exists('exec')) {
+            echo "exec is enabled";
+        }else{
+            echo "exec is not enabled";
+        }
+
+        $command = 'php composer.phar install';
+        $result = $this->execute($command);
+        $responseArray[] = array(
+            'command' =>  $command,
+            'result_message' => print_r($result, true),
+            'result_code' => 0
+        );
+        return new JsonResponse( $responseArray, 200, array());
+    }
+
+    /**
      * @Route("public/runcommand/phpmemory")
      */
     public function checkPHPMemory(LoggerInterface $logger): Response
