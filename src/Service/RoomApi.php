@@ -13,6 +13,7 @@ use App\Entity\RoomTv;
 use App\Helpers\FormatHtml\ConfigIcalLinksHTML;
 use App\Helpers\FormatHtml\ConfigIcalLinksLogsHTML;
 use App\Helpers\FormatHtml\RoomImagesHTML;
+use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -439,8 +440,12 @@ class RoomApi
             $roomBedSizes = $this->em->getRepository(RoomBedSize::class)->findAll();
             $this->logger->debug("Ending Method before the return: " . __METHOD__);
             $json = [];
+            $i = 1;
             foreach ($roomBedSizes as $roomBedSize) {
-                $json[] = $roomBedSize->getName();
+                $i++;
+                if(sizeof($roomBedSizes) > $i){
+                    $json[] = $roomBedSize->getName();
+                }
             }
             return $json;
         } catch (Exception $ex) {
@@ -506,7 +511,25 @@ class RoomApi
                 $successMessage = "Successfully created room";
             } else {
                 $successMessage = "Successfully updated room";
+                $responseArray[] = array(
+                    'result_message' => $successMessage,
+                    'result_code' => 0,
+                    'room_id' => $room->getId(),
+                    'room_name' => $room->getName()
+                );
+                return $responseArray;
             }
+
+            /*if(intval($sleeps) < 1){
+                $responseArray[] = array(
+                    'result_message' => "Number of occupants can not be less than 1",
+                    'result_code' => 1,
+                    'room_id' => $room->getId(),
+                    'room_name' => $room->getName()
+                );
+                return $responseArray;
+            }*/
+
             $beds = urldecode($beds);
             $beds = trim($beds);
             $bedsNameArray = explode(",", $beds);
@@ -527,14 +550,18 @@ class RoomApi
             $room->setStatus($roomStatus);
             $room->setLinkedRoom($linkedRoom);
             $room->setSize($size);
+            $stairs = 1;
             $room->setStairs($stairs);
-            $room->setDescription($description);
+            $room->setDescription(substr(urldecode($description), 0, 200));
             $room->setProperty($property);
             $room->setTv($tvType);
 
+            $now = new DateTime();
+            $room->setBdcLastExport($now);
+            $room->setAirbnbLastExport($now);
+
             $this->em->persist($room);
             $this->em->flush($room);
-
 
             //remove current beds
             $this->logger->debug("getting current beds");

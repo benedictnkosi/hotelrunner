@@ -136,31 +136,27 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-            <li><a href="javascript:void(0)" onclick="updateView('calendar');"
+            <!--<li><a href="javascript:void(0)" onclick="updateView('calendar');"
                    class="active menuICons mobileMenuIcon" title="calendar">
                 <i style="display: inline;" class="desktopOnlyMenu">Calendar</i>
 
             </a></li>
-            <!--<li><a href="javascript:void(0)" onclick="updateView('notifications');"
-                   class="active menuICons mobileMenuIcon notification" title="Notifications">
-                <i style="display: inline;" class="desktopOnlyMenu">Notifications</i>
-                <span class="badge" id="notification_count"></span>
-            </a></li>-->
             <li><a href="javascript:void(0)"
                    onclick="updateView('upcoming-reservations');"
                    class="active menuICons mobileMenuIcon" title="Bookings">
                 <i style="display: inline;" class="desktopOnlyMenu">Reservations</i>
-            </a></li>
+            </a></li>-->
             <li><a href="javascript:void(0)"
                    onclick="updateView('configuration');"
                    class="active menuICons mobileMenuIcon" title="Configuration">
                 <i style="display: inline;" class="desktopOnlyMenu">Configuration</i>
             </a></li>
-            <li><a href="javascript:void(0)" onclick="updateView('other-tabs');"
+            <!--<li><a href="javascript:void(0)" onclick="updateView('other-tabs');"
                    class="active menuICons mobileMenuIcon" title="Other">
                 <i style="display: inline;" class="desktopOnlyMenu">More...</i>
-            </a></li>
-            <li><a href="javascript:void(0)" onclick="logout();"
+            </a></li>-->
+<!--            <li><a href="javascript:void(0)" onclick="logout();"-->
+            <li><a href="javascript:void(0)"
                    class="active menuICons mobileMenuIcon" title="signout">
                 <i style="display: inline;" class="desktopOnlyMenu">Sign Out</i>
             </a></li>
@@ -327,7 +323,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                     <img class="menu_icon_image" src="/admin/images/menu_rooms.png" title="Rooms"></img>
                     <i class="desktopOnlyMenu">Rooms</i>
                 </div>
-                <div class="profile-ser-grids-15 filter-configuration clickable"
+                <!--<div class="profile-ser-grids-15 filter-configuration clickable"
                      id="configuration_add_ons">
                     <img class="menu_icon_image" src="/admin/images/menu_add_ons.png" title="Add-Ons"></img><i
                         class="desktopOnlyMenu">Add
@@ -362,8 +358,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                         id="configuration_synch_logs">
                     <img class="menu_icon_image" src="/admin/images/logs.jpg" title="Channel Logs"></img><i
                         class="desktopOnlyMenu">Channel Logs</i>
-                </div>
+                </div>-->
                 <div class="clearfix"></div>
+            </div>
             </div>
 
             <div class="flexible">
@@ -397,7 +394,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
                         <label>Description (use {} around the words you want bold e.g {WIFI}</label>
                         <div>
-                        <textarea type="text" name="room_description" id="room_description" rows="20" maxlength="5000"
+                        <textarea type="text" name="room_description" id="room_description" rows="20" minlength="50" maxlength="500"
                                   required></textarea>
                         </div>
 
@@ -410,7 +407,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
                         <label>Sleeps</label>
                         <div>
-                            <input type="number" value="2" id="room_sleeps">
+                            <input type="number" value="2" id="room_sleeps" maxlength="3">
                         </div>
 
                         <label>Status</label>
@@ -428,9 +425,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                             </select>
                         </div>
 
-                        <label>Room Size</label>
+                        <label>Room Size (sqm)</label>
                         <div>
-                            <input type="text" name="room_size" id="room_size" maxlength="5"
+                            <input type="text" name="room_size" id="room_size" maxlength="3"
                                    required/>
                         </div>
 
@@ -458,7 +455,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                         </div>
                     </form>
 
-                    <div id="icalDiv" class="display-none">
+                    <!--<div id="icalDiv" class="display-none">
                         <h5>Manage Calendar Sync</h5>
                         <a href="javascript:void(0)" class="refresh_items_link" id="refresh_ical_button"
                         ><img class="menu_icon_image-5em"
@@ -482,14 +479,14 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                                              class="button-50"></span>
                             </div>
                         </form>
-                    </div>
+                    </div>-->
 
-                    <div id="imageUploaderDiv" class="display-none">
+                    <!--<div id="imageUploaderDiv" class="display-none">
                         <h5>Upload New Images (5mb max)</h5>
                         <p>*Landscape images recommended</p>
                         <p>*Click on image to mark it as the default image</p>
 
-                    </div>
+                    </div>-->
                 </div>
             </div>
             <div id="configuration-add_on-list" class='configuration_tabs display-none reservations_div'>

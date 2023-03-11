@@ -446,13 +446,13 @@ function populateFormWithRoom(event) {
         $("#select_bed").val($("#select_bed option:first").val());
         $("#select_tv").val($("#select_tv option:first").val());
         $("#select_Stairs").val($("#select_Stairs option:first").val());
-
+        $("#config_room_submit").removeClass("display-none");
     } else {
 
         let url = "/public/rooms/" + roomId;
         $("body").addClass("loading");
         $.getJSON(url + "?callback=?", null, function (response) {
-            initialiseImageUpload(roomId);
+            //initialiseImageUpload(roomId);
             $("body").removeClass("loading");
             if (response[0].result_code === 0) {
                 $('#manage_room_h3').html("Update " + response[0].name + " Details");
@@ -496,6 +496,8 @@ function populateFormWithRoom(event) {
                         scrollTop: $("#manage_room_h3").offset().top
                     }, 2000);
                 }
+
+                $("#config_room_submit").addClass("display-none");
             } else {
                 showResErrorMessage("reservation", response[0].result_message);
             }

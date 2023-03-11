@@ -41,8 +41,12 @@ class ConfigurationRoomsHTML
             $htmlString .='<option value="0" >Please Select</option>';
         }
 
+        $i = 0;
         foreach ($items as $item) {
-            $htmlString .='<option value="'.$item->getId().'" >'.$item->getName().'</option>';
+            $i++;
+            if(sizeof($items) > $i){
+                $htmlString .='<option value="'.$item->getId().'" >'.$item->getName().'</option>';
+            }
         }
 
         return $htmlString;
