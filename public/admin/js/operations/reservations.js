@@ -981,7 +981,7 @@ function addNote(event) {
 }
 
 function getRooms(id) {
-    let url = "/public/rooms/all" + "/";
+    let url = "/no_auth/rooms/all" + "/";
     $.ajax({
         type: "get",
         url: url,

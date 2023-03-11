@@ -23,7 +23,7 @@ function getBirdView() {
     let bathrooms = $('#bathrooms').val();
     let erf = $('#erf').val();
     $("body").addClass("loading");
-    let url = "/public/birdview/"+searchType+"/" + percentage+"/" + bedrooms+"/" + bathrooms+"/" + erf;
+    let url = "/no_auth/birdview/"+searchType+"/" + percentage+"/" + bedrooms+"/" + bathrooms+"/" + erf;
 
     $.get( url, function( response ) {
         $('#bird_view_summary_table').html(response[0].html);
@@ -40,7 +40,7 @@ function getProperties() {
     localStorage.setItem("exclude_location",excludeLocation );
     let erf = $('#erf').val();
     $("body").addClass("loading");
-    let url = "/public/properties/"+searchType+"/" + percentage+"/" + bedrooms+"/" + bathrooms+"/" + erf + "/" + excludeLocation;
+    let url = "/no_auth/properties/"+searchType+"/" + percentage+"/" + bedrooms+"/" + bathrooms+"/" + erf + "/" + excludeLocation;
 
     $.get( url, function( response ) {
         $('#property_table').html(response[0].html);
@@ -59,7 +59,7 @@ function getProperties() {
         $(".delete_property").click(function(event) {
             event.preventDefault();
             let propertyId = event.target.getAttribute("data-property-id");
-            let url = "/public/properties/delete/" + propertyId;
+            let url = "/no_auth/properties/delete/" + propertyId;
             $(this).closest('tr').remove();
             $.get( url, function( ) {
             });
@@ -69,7 +69,7 @@ function getProperties() {
             event.stopImmediatePropagation();
             let propertyId = event.target.getAttribute("data-property-id");
             let optionSelected = $(this).children("option:selected").val();
-            let url = "/public/properties/state/" + propertyId + "/" + optionSelected;
+            let url = "/no_auth/properties/state/" + propertyId + "/" + optionSelected;
             $.get( url, function( ) {
 
             });

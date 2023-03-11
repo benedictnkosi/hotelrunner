@@ -147,7 +147,7 @@ class GuestController extends AbstractController
 
 
     /**
-     * @Route("public/json/guest/{id}")
+     * @Route("no_auth/json/guest/{id}")
      */
     public function getGuestJson( $id, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, GuestApi $guestApi): Response
     {

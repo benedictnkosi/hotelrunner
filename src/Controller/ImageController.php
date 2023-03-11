@@ -56,11 +56,11 @@ class ImageController extends AbstractController
     }
 
     /**
-     * @Route("public/room/image/{fileName}", name="signup")
+     * @Route("no_auth/room/image/{fileName}", name="signup")
      */
     public function getFile($fileName): Response
     {
-        $uploadDir = __DIR__ . '/../../public/room/image/';
+        $uploadDir = __DIR__ . '/../..no_auth/room/image/';
         return new BinaryFileResponse($uploadDir . $fileName);
     }
 
@@ -78,7 +78,7 @@ class ImageController extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY, ['content-type' => 'text/plain']);
         }
 
-        $uploadDir = __DIR__ . '/../../public/room/image/';
+        $uploadDir = __DIR__ . '/../..no_auth/room/image/';
         $uploader   =   new FileUploaderApi($logger);
         $uploader->setDir($uploadDir);
         $uploader->setExtensions(array('jpg','jpeg','png','gif'));  //allowed extensions list//

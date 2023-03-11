@@ -5,7 +5,7 @@ $(document).ready(function () {
 });
 
 function getInvoice() {
-    let url = "/public/invoice/" + getUrlParameter("id");
+    let url = "/no_auth/invoice/" + getUrlParameter("id");
     $.ajax({
         type: "get",
         url: url,

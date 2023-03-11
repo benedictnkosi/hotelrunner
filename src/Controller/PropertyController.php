@@ -54,7 +54,7 @@ class PropertyController extends AbstractController
     }
 
     /**
-     * @Route("public/property_details/{uid}")
+     * @Route("no_auth/property_details/{uid}")
      */
     public function getPropertyDetails($uid,  LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi, RoomApi $roomApi): Response
     {

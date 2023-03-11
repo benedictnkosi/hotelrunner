@@ -449,7 +449,7 @@ function populateFormWithRoom(event) {
 
     } else {
 
-        let url = "/public/rooms/" + roomId;
+        let url = "/no_auth/rooms/" + roomId;
         $("body").addClass("loading");
         $.getJSON(url + "?callback=?", null, function (response) {
             initialiseImageUpload(roomId);
@@ -969,7 +969,7 @@ function getMessageVariables() {
 }
 
 function getRoomsForMessages() {
-    let url = "/public/rooms/all" + "/";
+    let url = "/no_auth/rooms/all" + "/";
     $('#checkbox_rooms').html("");
     $.ajax({
         type: "get",
@@ -1144,7 +1144,7 @@ function getTemplateMessage() {
 
 
 function getTerms() {
-    let url = "/public/property/terms";
+    let url = "/no_auth/property/terms";
     $.ajax({
         type: "get",
         url: url,
@@ -1303,7 +1303,7 @@ function initialiseImageUpload(roomId) {
                         thisDropzone.options.addedfile
                             .call(thisDropzone, mockFile);
                         thisDropzone.options.thumbnail
-                            .call(thisDropzone, mockFile, "/public/room/image/" + value.name);
+                            .call(thisDropzone, mockFile, "/no_auth/room/image/" + value.name);
                         $(".dz-details")
                             .remove();
                         $(".dz-progress")

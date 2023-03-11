@@ -47,7 +47,7 @@ class ReservationController extends AbstractController
 
 
     /**
-     * @Route("public/reservations/checkout/json/{propertyId}")
+     * @Route("no_auth/reservations/checkout/json/{propertyId}")
      */
     public function getJsonCheckOutReservations($propertyId,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
@@ -118,7 +118,7 @@ class ReservationController extends AbstractController
 
 
     /**
-     * @Route("public/reservation/{reservationId}")
+     * @Route("no_auth/reservation/{reservationId}")
      */
     public function getReservationById($reservationId, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
@@ -301,7 +301,7 @@ class ReservationController extends AbstractController
     }
 
     /**
-     * @Route("public/reservations/create")
+     * @Route("no_auth/reservations/create")
      * @throws \Exception
      */
     public function creatReservation( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, RoomApi $roomApi): Response
@@ -346,7 +346,7 @@ class ReservationController extends AbstractController
     }
 
     /**
-     * @Route("public/invoice/{reservationId}")
+     * @Route("no_auth/invoice/{reservationId}")
      * @throws \Exception
      */
     public function getInvoiceDetails($reservationId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, RoomApi $roomApi): Response
@@ -365,7 +365,7 @@ class ReservationController extends AbstractController
     }
 
     /**
-     * @Route("public/reviews/send/{propertyId}")
+     * @Route("no_auth/reviews/send/{propertyId}")
      * @throws \Exception
      */
     public function sendReviewRequest($propertyId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response

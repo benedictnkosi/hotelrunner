@@ -129,7 +129,7 @@ function displayTotal() {
 
 function getAvailableRooms(checkInDate, checkOutDate) {
     $("body").addClass("loading");
-    let url = "/public/availablerooms/" + checkInDate + "/" + checkOutDate + "/" + sessionStorage.getItem("property_uid");
+    let url = "/no_auth/availablerooms/" + checkInDate + "/" + checkOutDate + "/" + sessionStorage.getItem("property_uid");
     $.getJSON(url + "?callback=?", null, function (data) {
         let roomIndex;
         $("#availableRoomsDropdown").html(data.html);
@@ -261,7 +261,7 @@ function createReservation() {
     $("body").addClass("loading");
 
 
-    let url = "/public/reservations/create";
+    let url = "/no_auth/reservations/create";
 
     const data = {
         room_ids: sessionStorage.getItem("selected_rooms_array"),
@@ -301,7 +301,7 @@ function createReservation() {
 }
 
 function getPropertyName() {
-    let url = "public/property_details/" + getUrlParameter("uid");
+    let url = "no_auth/property_details/" + getUrlParameter("uid");
     $.ajax({
         type: "get",
         url: url,

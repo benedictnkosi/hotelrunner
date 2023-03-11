@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ScheduledMessagesController extends AbstractController
 {
     /**
-     * @Route("/public/schedulemessages/checkin")
+     * @Route("no_auth/schedulemessages/checkin")
      */
     public function sendScheduleMessagesDayOfCheckIn( LoggerInterface $logger, Request $request,ScheduleMessageApi $scheduleMessageApi): Response
     {
@@ -28,7 +28,7 @@ class ScheduledMessagesController extends AbstractController
     }
 
     /**
-     * @Route("/public/schedulemessages/daybefore")
+     * @Route("no_auth/schedulemessages/daybefore")
      */
     public function sendScheduleMessagesDayBeforeCheckIn(LoggerInterface $logger, Request $request,ScheduleMessageApi $scheduleMessageApi): Response
     {
@@ -42,7 +42,7 @@ class ScheduledMessagesController extends AbstractController
 
 
     /**
-     * @Route("/public/schedulemessages/weekbefore")
+     * @Route("no_auth/schedulemessages/weekbefore")
      */
     public function sendScheduleMessagesWeekBeforeCheckIn( LoggerInterface $logger, Request $request,ScheduleMessageApi $scheduleMessageApi): Response
     {
@@ -55,7 +55,7 @@ class ScheduledMessagesController extends AbstractController
     }
 
     /**
-     * @Route("/public/schedulemessages/dayaftercheckout")
+     * @Route("no_auth/schedulemessages/dayaftercheckout")
      */
     public function sendScheduleMessagesDayAfterCheckOut( LoggerInterface $logger, Request $request,ScheduleMessageApi $scheduleMessageApi): Response
     {
@@ -68,7 +68,7 @@ class ScheduledMessagesController extends AbstractController
     }
 
     /**
-     * @Route("/public/schedulemessages/weekaftercheckout")
+     * @Route("no_auth/schedulemessages/weekaftercheckout")
      */
     public function sendScheduleMessagesWeekAfterCheckOut( LoggerInterface $logger, Request $request,ScheduleMessageApi $scheduleMessageApi): Response
     {

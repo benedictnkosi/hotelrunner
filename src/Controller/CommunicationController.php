@@ -16,7 +16,7 @@ require_once(__DIR__ . '/../app/application.php');
 class CommunicationController extends AbstractController
 {
     /**
-     * @Route("public/property/contact/{guestName}/{email}/{phoneNumber}/{message}")
+     * @Route("no_auth/property/contact/{guestName}/{email}/{phoneNumber}/{message}")
      */
     public function contactProperty($guestName, $email, $phoneNumber, $message, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi): Response
     {
@@ -29,7 +29,7 @@ class CommunicationController extends AbstractController
     }
 
     /**
-     * @Route("public/sales/contact/{customerName}/{email}/{phoneNumber}/{message}")
+     * @Route("no_auth/sales/contact/{customerName}/{email}/{phoneNumber}/{message}")
      */
     public function contactSales($customerName, $email, $phoneNumber, $message, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, CommunicationApi $communicationApi): Response
     {
@@ -56,7 +56,7 @@ class CommunicationController extends AbstractController
     }
 
     /**
-     * @Route("public/sales/trial/{customerName}/{email}/{phoneNumber}/{hotelName}")
+     * @Route("no_auth/sales/trial/{customerName}/{email}/{phoneNumber}/{hotelName}")
      */
     public function newTrial($customerName, $email, $phoneNumber, $hotelName, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, CommunicationApi $communicationApi): Response
     {

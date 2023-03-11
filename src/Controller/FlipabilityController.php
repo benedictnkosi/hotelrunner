@@ -36,7 +36,7 @@ class FlipabilityController extends AbstractController
     }
 
     /**
-     * @Route("/public/birdview/{type}/{value}/{bedrooms}/{bathrooms}/{erf}")
+     * @Route("no_auth/birdview/{type}/{value}/{bedrooms}/{bathrooms}/{erf}")
      */
     public function birdview($type, $value, $bedrooms, $bathrooms, $erf, LoggerInterface $logger, FlipabilityApi $birdViewApi): Response
     {
@@ -46,7 +46,7 @@ class FlipabilityController extends AbstractController
     }
 
     /**
-     * @Route("/public/properties/{type}/{value}/{bedrooms}/{bathrooms}/{erf}/{excludeLocation}",  defaults={"excludeLocation" = "NONE"})
+     * @Route("no_auth/properties/{type}/{value}/{bedrooms}/{bathrooms}/{erf}/{excludeLocation}",  defaults={"excludeLocation" = "NONE"})
      */
     public function propertiesView($type, $value, $bedrooms, $bathrooms, $erf, $excludeLocation, LoggerInterface $logger, FlipabilityApi $birdViewApi): Response
     {
@@ -56,7 +56,7 @@ class FlipabilityController extends AbstractController
     }
 
     /**
-     * @Route("/public/property/{price}/{location}/{erf}/{bedrooms}/{bathrooms}/{numberOfProperties}/{avgPrice}/{avgErf}")
+     * @Route("no_auth/property/{price}/{location}/{erf}/{bedrooms}/{bathrooms}/{numberOfProperties}/{avgPrice}/{avgErf}")
      */
     public function propertyView($price, $location, $erf, $bedrooms, $bathrooms, $numberOfProperties, $avgPrice, $avgErf , LoggerInterface $logger, FlipabilityApi $birdViewApi): Response
     {
@@ -111,7 +111,7 @@ class FlipabilityController extends AbstractController
     }
 
     /**
-     * @Route("/public/scrap")
+     * @Route("no_auth/scrap")
      */
     public function scrap(LoggerInterface $logger, WebScrapperApi $webScrapperApi): Response
     {
@@ -121,7 +121,7 @@ class FlipabilityController extends AbstractController
     }
 
     /**
-     * @Route("/public/properties/delete/{propertyId}")
+     * @Route("no_auth/properties/delete/{propertyId}")
      */
     public function deleteProperty($propertyId, LoggerInterface $logger, FlipabilityApi $flipabilityApi): Response
     {
@@ -131,7 +131,7 @@ class FlipabilityController extends AbstractController
     }
 
     /**
-     * @Route("/public/properties/state/{propertyId}/{state}")
+     * @Route("no_auth/properties/state/{propertyId}/{state}")
      */
     public function changePropertyState($propertyId, $state, LoggerInterface $logger, FlipabilityApi $flipabilityApi): Response
     {

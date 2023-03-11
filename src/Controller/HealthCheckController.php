@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class HealthCheckController extends AbstractController
 {
     /**
-     * @Route("public/healthcheck")
+     * @Route("no_auth/healthcheck")
      */
     public function checkSymfonyHealth(LoggerInterface $logger): Response
     {
@@ -26,7 +26,7 @@ class HealthCheckController extends AbstractController
     }
 
     /**
-     * @Route("public/servertime")
+     * @Route("no_auth/servertime")
      */
     public function serverTime(LoggerInterface $logger): Response
     {

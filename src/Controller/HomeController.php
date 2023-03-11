@@ -118,7 +118,7 @@ class HomeController extends AbstractController
     }
 
     /**
-     * @Route("/public/userloggedin")
+     * @Route("no_auth/userloggedin")
      */
     public function isUserLoggedIn(LoggerInterface $logger, Request $request, GuestApi $guestApi): Response
     {
