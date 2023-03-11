@@ -177,7 +177,7 @@ class CommandsController extends AbstractController
                 'result_code' => 0
             );
 
-            $server = $_SERVER['PHP_SELF'];
+            $server = $_SERVER['SERVER_NAME'];
 
             if(str_contains($server,"staging")){
                 $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging-environment --force';
