@@ -178,6 +178,7 @@ class CommandsController extends AbstractController
             );
 
             $server = $_SERVER['PHP_SELF'];
+
             if(str_contains($server,"staging")){
                 $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging-environment --force';
             }elseif (str_contains($server,"ete")){
@@ -190,7 +191,8 @@ class CommandsController extends AbstractController
             $responseArray[] = array(
                 'command' =>  $command,
                 'result_message_auto' => print_r($result, true),
-                'result_code' => 0
+                'result_code' => 0,
+                'server' => $server
             );
             return new JsonResponse( $responseArray, 200, array());
         }catch(Exception $ex){
