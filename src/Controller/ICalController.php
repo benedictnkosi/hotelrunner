@@ -34,7 +34,7 @@ class ICalController extends AbstractController
     }
 
     /**
-     * @Route("public/ical/importall")
+     * @Route("no_auth/ical/importall")
      */
     public function importAllRoomsIcalReservations(LoggerInterface $logger, Request $request, ICalApi $iCalApi): Response
     {
@@ -47,7 +47,7 @@ class ICalController extends AbstractController
     }
 
     /**
-     * @Route("public/ical/export/{roomId}")
+     * @Route("no_auth/ical/export/{roomId}")
      */
     public function exportIcalReservations($roomId, LoggerInterface $logger, Request $request, ICalApi $iCalApi): Response
     {
@@ -102,7 +102,7 @@ class ICalController extends AbstractController
     }
 
     /**
-     * @Route("/public/updateairbnbguest")
+     * @Route("no_auth/updateairbnbguest")
      * @throws \Google\Exception
      */
     public function updateAirbnbGuest(ICalApi $ICalApi, GuestApi $guestApi, EmailReaderApi $emailReaderApi, LoggerInterface $logger): JsonResponse

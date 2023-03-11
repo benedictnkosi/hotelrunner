@@ -18,7 +18,7 @@ class CommandsController extends AbstractController
 {
 
     /**
-     * @Route("public/soap/client")
+     * @Route("no_auth/soap/client")
      */
     public function mySoapClient(LoggerInterface $logger)
     {
@@ -32,7 +32,7 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/soap")
+     * @Route("no_auth/soap")
      */
     public function mySoapServer(LoggerInterface $logger)
     {
@@ -51,7 +51,7 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/runcommand/clear")
+     * @Route("no_auth/runcommand/clear")
      */
     public function clearSymfony(LoggerInterface $logger): Response
     {
@@ -89,7 +89,29 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/runcommand/phpmemory")
+     * @Route("no_auth/runcommand/downlaod/dependencies")
+     */
+    public function downloadDependencies(LoggerInterface $logger): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if(function_exists('exec')) {
+            echo "exec is enabled";
+        }else{
+            echo "exec is not enabled";
+        }
+
+        $command = 'php composer.phar install';
+        $result = $this->execute($command);
+        $responseArray[] = array(
+            'command' =>  $command,
+            'result_message' => print_r($result, true),
+            'result_code' => 0
+        );
+        return new JsonResponse( $responseArray, 200, array());
+    }
+
+    /**
+     * @Route("no_auth/runcommand/phpmemory")
      */
     public function checkPHPMemory(LoggerInterface $logger): Response
     {
@@ -106,7 +128,7 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/runcommand/gitversion")
+     * @Route("no_auth/runcommand/gitversion")
      */
     public function gitVersion(LoggerInterface $logger): Response
     {
@@ -124,7 +146,7 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/runcommand/gitpull")
+     * @Route("no_auth/runcommand/gitpull")
      */
     public function gitPull(LoggerInterface $logger): Response
     {
@@ -155,10 +177,13 @@ class CommandsController extends AbstractController
                 'result_code' => 0
             );
 
-            if(str_contains(SERVER_NAME,"qa")){
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/aluveapp.git main --force';
+            $server = $_SERVER['PHP_SELF'];
+            if(str_contains($server,"staging")){
+                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging --force';
+            }elseif (str_contains($server,"ete")){
+                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git ete --force';
             }else{
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/aluveapp.git main --force';
+                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git main --force';
             }
 
             $result = $this->execute($command);
@@ -175,7 +200,7 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/runcommand/gitstash")
+     * @Route("no_auth/runcommand/gitstash")
      */
     public function gitStash(LoggerInterface $logger): Response
     {
@@ -194,7 +219,7 @@ class CommandsController extends AbstractController
 
 
     /**
-     * @Route("public/runcommand/phpinfo")
+     * @Route("no_auth/runcommand/phpinfo")
      */
     public function phpinfo(LoggerInterface $logger): Response
     {
@@ -210,7 +235,7 @@ class CommandsController extends AbstractController
     }
 
     /**
-     * @Route("public/runcommand/mysqldump")
+     * @Route("no_auth/runcommand/mysqldump")
      */
     public function mysql(LoggerInterface $logger): Response
     {

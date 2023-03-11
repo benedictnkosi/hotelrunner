@@ -15,7 +15,7 @@ function getUrlParameter(sParam) {
 }
 
 function showBackToReservationsLink() {
-    let url =  "/public/me";
+    let url =  "/no_auth/me";
     $.get(url, function(data){
         isLoggedin = data[0].authenticated;
         sessionStorage.setItem('authenticated',isLoggedin )

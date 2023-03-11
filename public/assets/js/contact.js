@@ -45,7 +45,7 @@ function sendMessage() {
     const email = $('#email').val();
     const phoneNumber = $('#phoneNumber').val();
     const message = $('#message').val();
-    let url = "/public/sales/contact/" + customerName + "/" + email + "/" + phoneNumber+ "/" + encodeURIComponent(message);
+    let url = "/no_auth/sales/contact/" + customerName + "/" + email + "/" + phoneNumber+ "/" + encodeURIComponent(message);
     $("#success_message_div").addClass("display-none");
     $("#error_message_div").addClass("display-none");
     $.get(url, function(data){
@@ -67,7 +67,7 @@ function newTrialMessage() {
     const phoneNumber = $('#phoneNumber').val();
     const hotel_name = $('#hotel_name').val();
 
-    let url = "/public/sales/trial/" + customerName + "/" + email + "/" + phoneNumber + "/" + hotel_name;
+    let url = "/no_auth/sales/trial/" + customerName + "/" + email + "/" + phoneNumber + "/" + hotel_name;
     $("#success_message_div").addClass("display-none");
     $("#error_message_div").addClass("display-none");
 

@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class PropertyController extends AbstractController
 {
     /**
-     * @Route("public/property/terms")
+     * @Route("no_auth/property/terms")
      */
     public function getPropertyTerms( LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi, RoomApi $roomApi): Response
     {
@@ -54,7 +54,7 @@ class PropertyController extends AbstractController
     }
 
     /**
-     * @Route("public/property_details/{uid}")
+     * @Route("no_auth/property_details/{uid}")
      */
     public function getPropertyDetails($uid,  LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi, RoomApi $roomApi): Response
     {

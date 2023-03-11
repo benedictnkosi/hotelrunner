@@ -67,7 +67,7 @@ class PaymentController extends AbstractController
         return $response;
     }
     /**
-     * @Route("public/payfast_notify")
+     * @Route("no_auth/payfast_notify")
      * @throws \Exception
      */
     public function payfast_notify(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi): Response

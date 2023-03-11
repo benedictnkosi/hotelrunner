@@ -31,7 +31,7 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @Route("/public/rooms/{roomId}", defaults={"roomId": "all", "propertyUid": "none"})
+     * @Route("no_auth/rooms/{roomId}", defaults={"roomId": "all", "propertyUid": "none"})
      */
     public function getRooms($roomId, LoggerInterface $logger, Request $request,RoomApi $roomApi): Response
     {
@@ -45,7 +45,7 @@ class RoomController extends AbstractController
 
 
     /**
-     * @Route("/public/allroomsjson")
+     * @Route("no_auth/allroomsjson")
      */
     public function getAllRooms( LoggerInterface $logger, Request $request,RoomApi $roomApi): Response
     {
@@ -58,7 +58,7 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @Route("/public/availablerooms/{checkInDate}/{checkOutDate}/{propertyUid}", defaults={"propertyUid": 0})
+     * @Route("no_auth/availablerooms/{checkInDate}/{checkOutDate}/{propertyUid}", defaults={"propertyUid": 0})
      */
     public function getAvailableRooms($checkInDate, $checkOutDate,$propertyUid, Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
@@ -76,7 +76,7 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @Route("/public/allrooms/")
+     * @Route("no_auth/allrooms/")
      */
     public function getRoomsHtml(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
@@ -192,7 +192,7 @@ class RoomController extends AbstractController
         return $response;
     }
     /**
-     * @Route("/public/roomspage/{checkin}/{checkout}")
+     * @Route("no_auth/roomspage/{checkin}/{checkout}")
      */
     public function getFilteredRoomsHtml($checkin, $checkout, LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
@@ -230,7 +230,7 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @Route("/public/roomslide/{roomId}")
+     * @Route("no_auth/roomslide/{roomId}")
      */
     public function getRoomSlide($roomId,Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {

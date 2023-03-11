@@ -8,7 +8,7 @@ $(document).ready(function () {
 });
 
 function getRoomDetails() {
-    let url = "/public/rooms/" + getUrlParameter("id");
+    let url = "/no_auth/rooms/" + getUrlParameter("id");
     $.ajax({
         type: "get",
         url: url,
@@ -47,7 +47,7 @@ function getRoomDetails() {
 }
 
 function getRoomSlide() {
-    let url = "/public/roomslide/" + getUrlParameter("id");
+    let url = "/no_auth/roomslide/" + getUrlParameter("id");
     $.ajax({
         type: "get",
         url: url,
