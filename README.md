@@ -88,7 +88,7 @@ migrating to server
 2. back up backend/public/room/image
 3. delete the /backend folder
 4. clone the repo 
-5. restore .env and /backend/src/app folder
+5. restore .env and  \config\packages\doctrine.yaml and monolog.yaml and  /backend/src/app folder
 6. restore backend/public/room/image
 7. change the permissions for the folder backend to 777
 8. update the /home/aluvejsl/backend/public/php.ini session.save_path to /tmp
