@@ -446,7 +446,7 @@ function populateFormWithRoom(event) {
         $("#select_bed").val($("#select_bed option:first").val());
         $("#select_tv").val($("#select_tv option:first").val());
         $("#select_Stairs").val($("#select_Stairs option:first").val());
-        $("#config_room_submit").removeClass("display-none");
+        //$("#config_room_submit").removeClass("display-none");
     } else {
 
         let url = "/no_auth/rooms/" + roomId;
@@ -497,7 +497,7 @@ function populateFormWithRoom(event) {
                     }, 2000);
                 }
 
-                $("#config_room_submit").addClass("display-none");
+                //$("#config_room_submit").addClass("display-none");
             } else {
                 showResErrorMessage("reservation", response[0].result_message);
             }
