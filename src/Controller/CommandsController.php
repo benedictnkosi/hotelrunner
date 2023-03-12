@@ -177,15 +177,25 @@ class CommandsController extends AbstractController
                 'result_code' => 0
             );
 
+            $command = 'git fetch --all';
+            $result = $this->execute($command);
+            $responseArray[] = array(
+                'command' =>  $command,
+                'result_message_auto' => print_r($result, true),
+                'result_code' => 0
+            );
+
+
             $server = $_SERVER['SERVER_NAME'];
 
             if(str_contains($server,"staging")){
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging-environment --force';
+                $command = 'git reset --hard origin/staging-environment';
             }elseif (str_contains($server,"ete")){
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git ete-environment --force';
+                $command = 'git reset --hard origin/ete-environment';
             }else{
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git main --force';
+                $command = 'git reset --hard origin/main';
             }
+
 
             $result = $this->execute($command);
             $responseArray[] = array(
