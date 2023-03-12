@@ -209,6 +209,7 @@ class RoomApi
         }
 
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
+
         return $responseArray;
     }
 
@@ -582,6 +583,13 @@ class RoomApi
 
             foreach ($bedsNameArray as $bedName){
                 $bed = $this->em->getRepository(RoomBedSize::class)->findOneBy(array('name' => trim($bedName)));
+                if($bed == null){
+                    $responseArray[] = array(
+                        'result_message' => "Failed to find bed with name " . $bedName,
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
                 $this->logger->debug("creating new Bed " .$bed->getName() );
                 $roomBeds = new RoomBeds();
                 $roomBeds->setRoom($room);
