@@ -12,10 +12,12 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class LoginController extends AbstractController
 {
     #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils, LoggerInterface $logger): Response
+    public function login(AuthenticationUtils $authenticationUtils, LoggerInterface $logger, Request $request): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         // get the login error if there is one
+        $logger->info("username: " . $request->get("_username"));
+        $logger->info("password: " . $request->get("_password"));
         $error = $authenticationUtils->getLastAuthenticationError();
 
         // last username entered by the user
