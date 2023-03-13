@@ -58,12 +58,12 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @Route("no_auth/availablerooms/{checkInDate}/{checkOutDate}/{propertyUid}", defaults={"propertyUid": 0})
+     * @Route("no_auth/availablerooms/{checkInDate}/{checkOutDate}/{propertyUid}/{kids}", defaults={"propertyUid": 0})
      */
-    public function getAvailableRooms($checkInDate, $checkOutDate,$propertyUid, Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
+    public function getAvailableRooms($checkInDate, $checkOutDate,$propertyUid, $kids, Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        $rooms = $roomApi->getAvailableRooms($checkInDate, $checkOutDate, $request, $propertyUid);
+        $rooms = $roomApi->getAvailableRooms($checkInDate, $checkOutDate, $request, $kids, $propertyUid);
         $availableRoomsDropDownHTML = new BookingPageAvailableRoomsHTML($entityManager, $logger);
         $html = $availableRoomsDropDownHTML->formatHtml($rooms);
         $response = array(
@@ -219,9 +219,10 @@ class RoomController extends AbstractController
         if (!$request->isMethod('post')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
+
         $response = $roomApi->updateCreateRoom($request->get('room_id'), $request->get('room_name'), $request->get('room_price'), $request->get('room_sleeps'),
             $request->get('room_status'), $request->get('linked_room'), $request->get('room_size'), $request->get('bed'), $request->get('stairs'),$request->get('tv')
-            , str_replace("###", "/", $request->get('description')));
+            , str_replace("###", "/", $request->get('description')), $request->get('kids_policy'));
 
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());

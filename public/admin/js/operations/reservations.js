@@ -22,7 +22,6 @@ $(document).ready(function () {
         }
 
     });
-
 });
 
 function loadReservationsPageData() {
@@ -268,87 +267,64 @@ function changeBookingStatus(event) {
         data["reservation_id"] = event.target.id.replace("cancelBooking_", "");
     }
 
-    if (className.includes("glyphicon-triangle-top")) {
-        let inputResId = prompt("Please enter reservation id to open room", "");
-        if (inputResId != null) {
-            if (inputResId.localeCompare(data["reservation_id"]) === 0) {
-                data["new_value"] = "opened";
-                $('#' + event.target.id).toggleClass("glyphicon-triangle-top");
-                $('#' + event.target.id).toggleClass("glyphicon-triangle-bottom");
-            } else {
-                return;
+    let cancelAction = true;
+
+    $("#dialog-confirm").removeClass("display-none");
+    $("#dialog-confirm").dialog({
+        resizable: false,
+        height: "auto",
+        width: 400,
+        modal: true,
+        buttons: {
+            "I'm Sure": function () {
+                $(this).dialog("close");
+                if (className.includes("glyphicon-triangle-top")) {
+                        data["new_value"] = "opened";
+                        $('#' + event.target.id).toggleClass("glyphicon-triangle-top");
+                        $('#' + event.target.id).toggleClass("glyphicon-triangle-bottom");
+                } else if (className.includes("glyphicon-triangle-bottom")) {
+                    data["new_value"] = "confirmed";
+                    $('#' + event.target.id).toggleClass("glyphicon-triangle-top");
+                    $('#' + event.target.id).toggleClass("glyphicon-triangle-bottom");
+                } else if (className.includes("glyphicon-remove")) {
+                    data["new_value"] = "cancelled";
+                    $('#' + event.target.id).toggleClass("glyphicon-remove");
+                    $('#' + event.target.id).toggleClass("glyphicon-ok");
+                } else if (className.includes("glyphicon-ok")) {
+                    data["new_value"] = "confirmed";
+                    $('#' + event.target.id).toggleClass("glyphicon-remove");
+                    $('#' + event.target.id).toggleClass("glyphicon-ok");
+                }
+
+                $("body").addClass("loading");
+                isUserLoggedIn();
+                let url = "/api/reservations/" + data["reservation_id"] + "/update/status/" + data["new_value"];
+
+                $.ajax({
+                    url: url,
+                    type: "PUT",
+                    data: "",
+                    success: function (response) {
+                        $("body").removeClass("loading");
+                        if (response[0].result_code === 0) {
+                            $("#" + event.target.id).val(newButtonText);
+                            getCalendar("future");
+                            refreshReservations();
+                            showResSuccessMessage("reservation", response[0].result_message);
+                        } else {
+
+                            showResErrorMessage("reservation", response[0].result_message);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $("body").removeClass("loading");
+                        showResErrorMessage("reservation", errorThrown);
+                    }
+                });
+            },
+            Cancel: function () {
+                $(this).dialog("close");
             }
-        } else {
-            return;
-        }
-
-    } else if (className.includes("glyphicon-triangle-bottom")) {
-        let inputResId = prompt("Please enter reservation id to close room", "");
-        if (inputResId != null) {
-            if (inputResId.localeCompare(data["reservation_id"]) === 0) {
-                data["new_value"] = "confirmed";
-                $('#' + event.target.id).toggleClass("glyphicon-triangle-top");
-                $('#' + event.target.id).toggleClass("glyphicon-triangle-bottom");
-            } else {
-                return;
-            }
-        } else {
-            return;
-        }
-
-    } else if (className.includes("glyphicon-remove")) {
-        let inputResId = prompt("Please enter reservation id to delete", "");
-        if (inputResId != null) {
-            if (inputResId.localeCompare(data["reservation_id"]) === 0) {
-                data["new_value"] = "cancelled";
-                $('#' + event.target.id).toggleClass("glyphicon-remove");
-                $('#' + event.target.id).toggleClass("glyphicon-ok");
-            } else {
-                return;
-            }
-        } else {
-            return;
-        }
-
-    } else if (className.includes("glyphicon-ok")) {
-        let inputResId = prompt("Please enter reservation id confirm the reservation", "");
-        if (inputResId != null) {
-            if (inputResId.localeCompare(data["reservation_id"]) === 0) {
-                data["new_value"] = "confirmed";
-                $('#' + event.target.id).toggleClass("glyphicon-remove");
-                $('#' + event.target.id).toggleClass("glyphicon-ok");
-            } else {
-                return;
-            }
-        } else {
-            return;
-        }
-
-    }
-
-    $("body").addClass("loading");
-    isUserLoggedIn();
-    let url = "/api/reservations/" + data["reservation_id"] + "/update/status/" + data["new_value"];
-
-    $.ajax({
-        url: url,
-        type: "PUT",
-        data: "",
-        success: function (response) {
-            $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                $("#" + event.target.id).val(newButtonText);
-                getCalendar("future");
-                refreshReservations();
-                showResSuccessMessage("reservation", response[0].result_message);
-            } else {
-
-                showResErrorMessage("reservation", response[0].result_message);
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            $("body").removeClass("loading");
-            showResErrorMessage("reservation", errorThrown);
         }
     });
 

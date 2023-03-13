@@ -120,6 +120,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
           type="text/css"/>
 </head>
 <body>
+<div id="dialog-confirm" title="Are you sure you want to perform this action" class="display-none">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure sure sure?</p>
+</div>
 <div id="notifications-div"></div>
 
 <nav class="navbar">
@@ -136,7 +139,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-            <!--<li><a href="javascript:void(0)" onclick="updateView('calendar');"
+            <li><a href="javascript:void(0)" onclick="updateView('calendar');"
                    class="active menuICons mobileMenuIcon" title="calendar">
                 <i style="display: inline;" class="desktopOnlyMenu">Calendar</i>
 
@@ -403,6 +406,14 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                         <div>
                             <input type="text" name="room_price" id="room_price" maxlength="5"
                                    required/>
+                        </div>
+
+                        <label>Kids Policy</label>
+                        <div>
+                            <input type="radio" id="yes_kids_radio" name="kids_allowed" value="1">
+                            <label for="yes_kids_radio">Kids Allowed</label><br>
+                            <input type="radio" id="no_kids" name="kids_allowed" value="0">
+                            <label for="no_kids">Kids Not Allowed</label><br>
                         </div>
 
                         <label>Sleeps</label>

@@ -85,24 +85,21 @@ class Rooms
     private $bdcLastExport = 'CURRENT_TIMESTAMP';
 
     /**
-     * @var RoomStatus
+     * @var bool
      *
-     * @ORM\ManyToOne(targetEntity="RoomStatus")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="status", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="kids", type="boolean", nullable=false)
      */
-    private $status;
+    private $kids = '0';
 
     /**
-     * @var Property
+     * @var RoomTv
      *
-     * @ORM\ManyToOne(targetEntity="Property")
+     * @ORM\ManyToOne(targetEntity="RoomTv")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="property", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="tv", referencedColumnName="id")
      * })
      */
-    private $property;
+    private $tv;
 
     /**
      * @var RoomBedSize
@@ -115,14 +112,24 @@ class Rooms
     private $bed;
 
     /**
-     * @var RoomTv
+     * @var Property
      *
-     * @ORM\ManyToOne(targetEntity="RoomTv")
+     * @ORM\ManyToOne(targetEntity="Property")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tv", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="property", referencedColumnName="id")
      * })
      */
-    private $tv;
+    private $property;
+
+    /**
+     * @var RoomStatus
+     *
+     * @ORM\ManyToOne(targetEntity="RoomStatus")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="status", referencedColumnName="id")
+     * })
+     */
+    private $status;
 
     /**
      * @return int
@@ -285,35 +292,35 @@ class Rooms
     }
 
     /**
-     * @return RoomStatus
+     * @return bool
      */
-    public function getStatus(): RoomStatus
+    public function isKids(): bool|string
     {
-        return $this->status;
+        return $this->kids;
     }
 
     /**
-     * @param RoomStatus $status
+     * @param bool $kids
      */
-    public function setStatus(RoomStatus $status): void
+    public function setKids(bool|string $kids): void
     {
-        $this->status = $status;
+        $this->kids = $kids;
     }
 
     /**
-     * @return Property
+     * @return RoomTv
      */
-    public function getProperty(): Property
+    public function getTv(): RoomTv
     {
-        return $this->property;
+        return $this->tv;
     }
 
     /**
-     * @param Property $property
+     * @param RoomTv $tv
      */
-    public function setProperty(Property $property): void
+    public function setTv(RoomTv $tv): void
     {
-        $this->property = $property;
+        $this->tv = $tv;
     }
 
     /**
@@ -333,19 +340,35 @@ class Rooms
     }
 
     /**
-     * @return RoomTv
+     * @return Property
      */
-    public function getTv(): RoomTv
+    public function getProperty(): Property
     {
-        return $this->tv;
+        return $this->property;
     }
 
     /**
-     * @param RoomTv $tv
+     * @param Property $property
      */
-    public function setTv(RoomTv $tv): void
+    public function setProperty(Property $property): void
     {
-        $this->tv = $tv;
+        $this->property = $property;
+    }
+
+    /**
+     * @return RoomStatus
+     */
+    public function getStatus(): RoomStatus
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param RoomStatus $status
+     */
+    public function setStatus(RoomStatus $status): void
+    {
+        $this->status = $status;
     }
 
 

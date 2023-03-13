@@ -45,6 +45,10 @@ $(document).ready(function () {
         getAvailableRooms(sessionStorage.getItem('checkInDate'), sessionStorage.getItem('checkOutDate'));
     }
 
+    $("#children").change(function () {
+        getAvailableRooms(sessionStorage.getItem('checkInDate'), sessionStorage.getItem('checkOutDate'));
+    });
+
     //date picker
     $.getScript("https://cdn.jsdelivr.net/momentjs/latest/moment.min.js", function () {
         $.getScript("https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js", function () {
@@ -96,16 +100,25 @@ $(document).ready(function () {
 function displayTotal() {
     let numberOfNights = parseInt(sessionStorage.getItem('numberOfNights'));
     let total = 0;
+    let totalSleeps = 0;
     let nightsMessage = "";
     let roomIdArray = [];
     //find all rooms added
     var buttons = document.getElementsByTagName("button");
+    let roomSleeps;
+    let roomPrice;
+    let roomName;
+    let roomId;
     for (var i = 0; i < buttons.length; i++) {
         if (buttons[i].textContent === "Remove") {
             roomId = buttons[i].getAttribute("data-roomId");
             roomName = buttons[i].getAttribute("data-roomName");
             roomPrice = buttons[i].getAttribute("data-roomPrice");
+            roomSleeps = buttons[i].getAttribute("data-sleeps");
             total += (numberOfNights * parseInt(roomPrice));
+
+            totalSleeps += (parseInt(roomSleeps));
+            sessionStorage.setItem("rooms_sleep", totalSleeps);
             nightsMessage += roomName + " - " + numberOfNights + " x nights @ R" + roomPrice + ".00" + "<br>";
             roomIdArray.push(roomId);
         }
@@ -129,7 +142,8 @@ function displayTotal() {
 
 function getAvailableRooms(checkInDate, checkOutDate) {
     $("body").addClass("loading");
-    let url = "/no_auth/availablerooms/" + checkInDate + "/" + checkOutDate + "/" + sessionStorage.getItem("property_uid");
+    let kids = $('#children').val();
+    let url = "/no_auth/availablerooms/" + checkInDate + "/" + checkOutDate + "/" + sessionStorage.getItem("property_uid") + "/" + kids;
     $.getJSON(url + "?callback=?", null, function (data) {
         let roomIndex;
         $("#availableRoomsDropdown").html(data.html);
@@ -158,14 +172,14 @@ function getAvailableRooms(checkInDate, checkOutDate) {
                 if (bedshtml.length > 1) {
                     var item = '<li>' +
                         '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
-                        '<img src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div><button class="btn btn-style btn-secondary book mt-3 add-room-button" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
+                        '<img src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div><button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
                         '</a></li>';
                 } else {
                     var item = '<li>' +
                         '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
                         '<img class="no_beds_image" src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div>' +
-                        '<button class="btn btn-style btn-secondary book mt-3 add-room-button" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
+                        '<button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
                         '</a></li>';
                 }
@@ -217,13 +231,6 @@ function getAvailableRooms(checkInDate, checkOutDate) {
             displayTotal();
         });
 
-        $(".view-room-button").click(function (event) {
-            event.preventDefault();
-            window.open(
-                "/room?id=" + event.target.getAttribute("data-roomId"),
-                '_blank' // <- This is what makes it open in a new window.
-            );
-        });
 
         $("body").removeClass("loading");
     });
@@ -248,6 +255,12 @@ function createReservation() {
     const checkOutDate = sessionStorage.getItem('checkOutDate');
 
     isRoomSelected = sessionStorage.getItem("isRoomSelected");
+
+    let guests = parseInt($('#adults').val()) + parseInt($('#children').val());
+    if(guests > sessionStorage.getItem('rooms_sleep')){
+        showResErrorMessage("reservation", "The selected rooms can not accommodate the number of guests");
+        return;
+    }
     if (isRoomSelected === null) {
         showResErrorMessage("reservation", "Please select a room");
         return;

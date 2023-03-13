@@ -38,7 +38,7 @@ class RoomApi
         }
     }
 
-    public function getAvailableRooms($checkInDate, $checkOutDate, $request, $propertyUid = 0): ?array
+    public function getAvailableRooms($checkInDate, $checkOutDate, $request, $kids, $propertyUid = 0): ?array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
@@ -60,7 +60,12 @@ class RoomApi
             $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId, 'status'=>1));
             foreach ($rooms as $room) {
                 if ($this->isRoomAvailable($room->getId(), $checkInDate, $checkOutDate)) {
-                    $responseArray[] = $room;
+                    if(!$room->isKids() && intval($kids) > 0){
+                        $this->logger->info("This room does not allow kids");
+                    }else{
+                        $responseArray[] = $room;
+                    }
+
                 }
             }
         } catch (Exception $ex) {
@@ -501,22 +506,27 @@ class RoomApi
         return $responseArray;
     }
 
-    public function updateCreateRoom($id, $name, $price, $sleeps, $status, $linkedRoom, $size, $beds, $stairs, $tv, $description): array
+    public function updateCreateRoom($id, $name, $price, $sleeps, $status, $linkedRoom, $size, $beds, $stairs, $tv, $description, $kidsPolicy): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
             $room = $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $id));
-            if ($room == null) {
+            if ($room == null && strcmp($id, "0") ==0) {
                 $room = new Rooms();
                 $successMessage = "Successfully created room";
+            }elseif ($room == null && strcmp($id, "0") !==0) {
+                $errorMessage = "Room with ID not found";
+                $responseArray[] = array(
+                    'result_message' => $errorMessage,
+                    'result_code' => 1
+                );
+                return $responseArray;
             } else {
                 $successMessage = "Successfully updated room";
                 $responseArray[] = array(
                     'result_message' => $successMessage,
-                    'result_code' => 0,
-                    'room_id' => $room->getId(),
-                    'room_name' => $room->getName()
+                    'result_code' => 0
                 );
                 return $responseArray;
             }
@@ -547,6 +557,7 @@ class RoomApi
 
             $room->setName($name);
             $room->setPrice($price);
+            $room->setKids($kidsPolicy);
             $room->setSleeps($sleeps);
             $room->setStatus($roomStatus);
             $room->setLinkedRoom($linkedRoom);

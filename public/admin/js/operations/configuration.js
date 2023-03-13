@@ -184,6 +184,7 @@ function createUpdateRoom() {
     const room_name = $("#room_name").val().trim();
     const room_description = $("#room_description").val().trim();
     const room_price = $("#room_price").val().trim();
+    const kids_policy = $('input[name=kids_allowed]:checked', '#config_room_form').val();
     const room_sleeps = $("#room_sleeps").val().trim();
     const room_size = $('#room_size').val().trim();
     const select_room_status = $('#select_room_status').find(":selected").val();
@@ -194,6 +195,11 @@ function createUpdateRoom() {
 
     if (input_bed.length < 1) {
         $('#beds_tokenfield').form();
+    }
+
+    if(kids_policy === undefined){
+        showResErrorMessage("configuration", "kids policy is required");
+        return;
     }
 
     $("body").addClass("loading");
@@ -210,6 +216,7 @@ function createUpdateRoom() {
         bed: input_bed,
         stairs: select_Stairs,
         tv: select_tv,
+        kids_policy: kids_policy,
         description: encodeURIComponent(room_description.replaceAll("/", "###"))
     };
 
