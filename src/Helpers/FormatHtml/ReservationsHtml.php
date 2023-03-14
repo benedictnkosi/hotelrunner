@@ -58,7 +58,7 @@ class ReservationsHtml
 									</div>
 									
 									<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
-<a href="/'.$period . '_reservations.txt" target="_blank">| Download Flat File</a>
+<a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>
 									';
 
         if (strcmp($period, 'past') === 0) {
@@ -151,14 +151,27 @@ class ReservationsHtml
             $cfile = fopen($fileName . '_reservations.csv', 'w');
 
 //Inserting the table headers
-            $header_data = array('id', 'room_name', 'check_in', 'check_out', 'guest_name', 'phone_number');
+            $header_data = array('id', 'room_name', 'check_in', 'check_out', 'guest_name', 'phone_number', 'amount');
             fputcsv($cfile, $header_data);
 
 //Data to be inserted
             $allReservations = array();
 
             foreach ($reservations as $reservation) {
-                $row = array($reservation->GetId(), $reservation->getRoom()->getName(), $reservation->getCheckIn()->format('Y-m-d'), $reservation->getCheckOut()->format('Y-m-d'), $reservation->getGuest()->getName(), $reservation->getGuest()->getPhoneNumber());
+
+                $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
+                $totalPrice = intval($reservation->getRoom()->getPrice()) * $totalDays;
+
+                $gl = $totalPrice / 1.15;
+                $vat = $totalPrice - $gl;
+                $gl = round($gl, 2);
+                $vat = round($vat, 2);
+
+                $row = array($reservation->GetId(), $reservation->getRoom()->getName(), $reservation->getCheckIn()->format('Y-m-d'), $reservation->getCheckOut()->format('Y-m-d'), $reservation->getGuest()->getName(), $reservation->getGuest()->getPhoneNumber(), $totalPrice);
+                $allReservations[] = $row;
+                $row = array($reservation->GetId(), $reservation->getRoom()->getName(), $reservation->getCheckIn()->format('Y-m-d'), $reservation->getCheckOut()->format('Y-m-d'), $reservation->getGuest()->getName(), $reservation->getGuest()->getPhoneNumber(), $gl);
+                $allReservations[] = $row;
+                $row = array($reservation->GetId(), $reservation->getRoom()->getName(), $reservation->getCheckIn()->format('Y-m-d'), $reservation->getCheckOut()->format('Y-m-d'), $reservation->getGuest()->getName(), $reservation->getGuest()->getPhoneNumber(), $vat);
                 $allReservations[] = $row;
             }
 
@@ -179,7 +192,7 @@ class ReservationsHtml
     function createFlatFile($reservations, $fileName): void
     {
         try {
-            $cfile = fopen($fileName . '_reservations.txt', 'w');
+            $cfile = fopen($fileName . '_reservations.dat', 'w');
 
 //Data to be inserted
             $allReservations = array();
@@ -198,8 +211,21 @@ class ReservationsHtml
                 $additionalInformation = str_pad($reservation->getAdditionalInfo(), 108);
                 $receivedOn = str_pad($reservation->getReceivedOn()->format('Y-m-d'), 10);
                 $roomId = str_pad($reservation->getRoom()->getId(), 4, "0", STR_PAD_LEFT);
-                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId .  "\n";
+                $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
+                $totalPrice = intval($reservation->getRoom()->getPrice()) * $totalDays;
 
+                $gl = $totalPrice / 1.15;
+                $vat = $totalPrice - $gl;
+                $gl = round($gl, 2);
+                $vat = round($vat, 2);
+                $gl = str_pad($gl, 9,"0", STR_PAD_LEFT);
+                $vat = str_pad($vat, 9,"0", STR_PAD_LEFT);
+                $totalPrice = str_pad($totalPrice, 9,"0", STR_PAD_LEFT);
+                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId . "TP" .$totalPrice .  "\n";
+                fwrite($cfile, $row);
+                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId . "GL" .$gl .  "\n";
+                fwrite($cfile, $row);
+                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId . "VT" .$vat .  "\n";
                 fwrite($cfile, $row);
             }
 
@@ -209,5 +235,4 @@ class ReservationsHtml
             $this->logger->debug($exception->getMessage());
         }
     }
-
 }
