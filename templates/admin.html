@@ -273,7 +273,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                 <div class="flex-bottom">
                     <div id="reservation_success_message_div"
                          class="flex1 display-none">
-                        <h5 id="reservation_success_message"></h5>
+                        <h5 id="reservation_success_message"  style="white-space: pre-wrap;"></h5>
                     </div>
                     <div id="reservation_error_message_div" class="flex2 display-none" >
                         <h5 id="reservation_error_message" style="white-space: pre-wrap;"></h5>
@@ -286,7 +286,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             <div id="pending-list" class='reservations_tabs reservations_div display-none'></div>
             <div id="upload-div" class='reservations_tabs reservations_div display-none'>
                 <form class="contact-form" id="upload_res_form" action="#">
-                    <textarea id="upload_textarea"  rows="10" wrap="off" placeholder="Paste the upload string here"></textarea>
+
+                    <input type="file" id="reservations-fileUploader" name="reservations-file" accept=".dat">
+
                     <div>
                         <span><input type="submit" value="Submit" id="upload_res_submit" class="button-50"></span>
                     </div>

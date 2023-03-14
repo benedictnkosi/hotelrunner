@@ -338,7 +338,17 @@ class ReservationController extends AbstractController
             return new JsonResponse("Internal server errors" , 500, array());
         }
 
-        $response = $reservationApi->uploadReservations($request->get('reservations'), $request);
+        $file = $request->files->get('file');
+        if (empty($file))
+        {
+            $logger->info("No file specified");
+            return new Response("No file specified",
+                Response::HTTP_UNPROCESSABLE_ENTITY, ['content-type' => 'text/plain']);
+        }
+
+        $logger->info("File : " . file_get_contents($file));
+
+        $response = $reservationApi->uploadReservations(file_get_contents($file), $request);
         $callback = $request->get('callback');
         $response = new JsonResponse($response, 200, array());
         $response->setCallback($callback);

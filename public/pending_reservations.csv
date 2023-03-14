@@ -1,33 +1,115 @@
-id,room_name,check_in,check_out,guest_name,phone_number
-731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434
-732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434
-733,Upstairs+King+Room,2023-03-22,2023-03-23,aasas,34343433434
-734,"Queen Suite",2023-03-22,2023-03-23,aasas,34343433434
-735,"Budget Suite",2023-03-22,2023-03-23,asasasas,23232323
-736,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323
-737,"Queen Suite",2023-03-22,2023-03-23,asasasas,23232323
-738,"New Soap Room",2023-03-22,2023-03-23,asasasas,23232323
-739,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323
-740,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323
-741,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323
-742,"One Bedroom Loft",2023-03-22,2023-03-23,ben,09023909323
-743,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344
-744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344
-657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361
-659,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361
-661,Upstairs+King+Room,2023-03-31,2023-04-02,Zinhle,0605439169
-726,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430
-727,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430
-728,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430
-729,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430
-557,"Budget Suite",2023-06-06,2023-06-08,"Mluleki Mxolisi Nkosi",0834889077
-584,"Budget Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743
-585,Upstairs+King+Room,2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743
-586,"King Studio",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743
-587,"One Bedroom Loft",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743
-588,"King Studio With Stove",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743
-589,"One Bedroom Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743
-558,"Budget Suite",2023-12-19,2023-12-20,"Mluleki Mxolisi Nkosi",0834889077
-554,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193
-555,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193
-556,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193
+id,room_name,check_in,check_out,guest_name,phone_number,amount
+745,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+745,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+745,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+746,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+746,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+746,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+747,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+747,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+747,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+748,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+748,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+748,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+749,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+749,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+749,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+750,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+750,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+750,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434,500
+731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434,434.78
+731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434,65.22
+732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,400
+732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,347.83
+732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,52.17
+733,Upstairs+King+Room,2023-03-22,2023-03-23,aasas,34343433434,500
+733,Upstairs+King+Room,2023-03-22,2023-03-23,aasas,34343433434,434.78
+733,Upstairs+King+Room,2023-03-22,2023-03-23,aasas,34343433434,65.22
+734,"Queen Suite",2023-03-22,2023-03-23,aasas,34343433434,500
+734,"Queen Suite",2023-03-22,2023-03-23,aasas,34343433434,434.78
+734,"Queen Suite",2023-03-22,2023-03-23,aasas,34343433434,65.22
+735,"Budget Suite",2023-03-22,2023-03-23,asasasas,23232323,400
+735,"Budget Suite",2023-03-22,2023-03-23,asasasas,23232323,347.83
+735,"Budget Suite",2023-03-22,2023-03-23,asasasas,23232323,52.17
+736,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323,500
+736,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323,434.78
+736,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323,65.22
+737,"Queen Suite",2023-03-22,2023-03-23,asasasas,23232323,500
+737,"Queen Suite",2023-03-22,2023-03-23,asasasas,23232323,434.78
+737,"Queen Suite",2023-03-22,2023-03-23,asasasas,23232323,65.22
+738,"New Soap Room",2023-03-22,2023-03-23,asasasas,23232323,500
+738,"New Soap Room",2023-03-22,2023-03-23,asasasas,23232323,434.78
+738,"New Soap Room",2023-03-22,2023-03-23,asasasas,23232323,65.22
+739,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323,500
+739,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323,434.78
+739,Upstairs+King+Room,2023-03-22,2023-03-23,asasasas,23232323,65.22
+740,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323,500
+740,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323,434.78
+740,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323,65.22
+741,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323,500
+741,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323,434.78
+741,Upstairs+King+Room,2023-03-22,2023-03-23,test,12122323,65.22
+742,"One Bedroom Loft",2023-03-22,2023-03-23,ben,09023909323,500
+742,"One Bedroom Loft",2023-03-22,2023-03-23,ben,09023909323,434.78
+742,"One Bedroom Loft",2023-03-22,2023-03-23,ben,09023909323,65.22
+743,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,500
+743,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,434.78
+743,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,65.22
+744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,500
+744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,434.78
+744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,65.22
+657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,800
+657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,695.65
+657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,104.35
+659,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,800
+659,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,695.65
+659,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,104.35
+661,Upstairs+King+Room,2023-03-31,2023-04-02,Zinhle,0605439169,1000
+661,Upstairs+King+Room,2023-03-31,2023-04-02,Zinhle,0605439169,869.57
+661,Upstairs+King+Room,2023-03-31,2023-04-02,Zinhle,0605439169,130.43
+726,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,3000
+726,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,2608.7
+726,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,391.3
+727,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,3000
+727,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,2608.7
+727,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,391.3
+728,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,3000
+728,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,2608.7
+728,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,391.3
+729,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,3000
+729,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,2608.7
+729,Upstairs+King+Room,2023-04-14,2023-04-20,"Benedict Nkosi",0837917430,391.3
+557,"Budget Suite",2023-06-06,2023-06-08,"Mluleki Mxolisi Nkosi",0834889077,800
+557,"Budget Suite",2023-06-06,2023-06-08,"Mluleki Mxolisi Nkosi",0834889077,695.65
+557,"Budget Suite",2023-06-06,2023-06-08,"Mluleki Mxolisi Nkosi",0834889077,104.35
+584,"Budget Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,800
+584,"Budget Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,695.65
+584,"Budget Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,104.35
+585,Upstairs+King+Room,2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,1000
+585,Upstairs+King+Room,2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,869.57
+585,Upstairs+King+Room,2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,130.43
+586,"King Studio",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,1000
+586,"King Studio",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,869.57
+586,"King Studio",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,130.43
+587,"One Bedroom Loft",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,1000
+587,"One Bedroom Loft",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,869.57
+587,"One Bedroom Loft",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,130.43
+588,"King Studio With Stove",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,1000
+588,"King Studio With Stove",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,869.57
+588,"King Studio With Stove",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,130.43
+589,"One Bedroom Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,1000
+589,"One Bedroom Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,869.57
+589,"One Bedroom Suite",2023-09-15,2023-09-17,"Nosipho Jiyane ",0663053743,130.43
+558,"Budget Suite",2023-12-19,2023-12-20,"Mluleki Mxolisi Nkosi",0834889077,400
+558,"Budget Suite",2023-12-19,2023-12-20,"Mluleki Mxolisi Nkosi",0834889077,347.83
+558,"Budget Suite",2023-12-19,2023-12-20,"Mluleki Mxolisi Nkosi",0834889077,52.17
+554,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,2800
+554,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,2434.78
+554,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,365.22
+555,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,2800
+555,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,2434.78
+555,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,365.22
+556,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,2800
+556,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,2434.78
+556,"Budget Suite",2023-12-26,2024-01-02,"Thandeka Maragelo",0685932193,365.22

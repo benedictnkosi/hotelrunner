@@ -13,6 +13,7 @@ $(document).ready(function () {
     $("#upload_res_form").submit(function (event) {
         event.preventDefault();
     });
+
     $("#upload_res_form").validate({
         // Specify validation rules
         rules: {
@@ -635,31 +636,42 @@ function uploadReservations() {
     $("body").addClass("loading");
     isUserLoggedIn();
     let url = "/api/reservations/upload/";
+    const file_data = $("#reservations-fileUploader").prop("files")[0];
+    const form_data = new FormData();
+    form_data.append("file", file_data);
 
-    const data = {
-        reservations: $('#upload_textarea').val(),
-    };
-
+    if ( file_data === undefined ) {
+        showResErrorMessage("reservation","Please upload file");
+        return;
+    }
 
     $.ajax({
         url: url,
         type: "POST",
-        data: data,
+        data:form_data ,
+        dataType: 'script',
+        cache: false,
+        contentType: false,
+        processData: false,
         success: function (response) {
             $("body").removeClass("loading");
-            let $message;
-            if (response[0].result_code === 0) {
+            const arr = JSON.parse(response);
+            let message = "";
+            let isErrors = false;
+            for (let i = 0; i < arr.length; i++){
+                let z = i +1;
+                message += "Row " + z + " : " + arr[i]["result_message"] + "\n";
+                if(arr[i]["result_code"] === 1){
+                    isErrors = true;
+                }
+            }
+
+            if (!isErrors) {
                 refreshReservations();
                 getCalendar();
-                showResSuccessMessage("reservation", response[0].result_message);
+                showResSuccessMessage("reservation",message);
             } else {
-                $message = "";
-                let z = 0;
-                for (let i in response) {
-                    z++;
-                    $message += "Row " + (z) + " - " + response[i] + "\r\n";
-                }
-                showResErrorMessage("reservation", $message);
+                showResErrorMessage("reservation",message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {

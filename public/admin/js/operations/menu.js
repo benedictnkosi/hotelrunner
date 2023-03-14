@@ -100,7 +100,7 @@ function isRetry(functionName){
 }
 
 function isUserLoggedIn() {
-    let url =  "/no_auth/me/";
+    let url =  "/no_auth/me";
 
     $.get(url, function(data){
         console.log(data[0].authenticated);

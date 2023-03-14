@@ -581,7 +581,7 @@ class ReservationApi
             $origin = trim(substr($reservation,124,46));
             $originURL = trim(substr($reservation,170,46));
             $uid = trim(substr($reservation,216,44));
-            $roomId = intval(trim(substr($reservation,379,4)));
+            $roomId = intval(trim(substr($reservation,407,4)));
 
             $this->logger->info("checkIn field: " . $checkIn);
             $this->logger->info("checkOut field: " . $checkOut);
@@ -593,7 +593,11 @@ class ReservationApi
             $this->logger->info("roomId field: " . $roomId);
 
             $response = $this->createReservation($roomId, $guestName, $phoneNumber, "", $checkIn, $checkOut, $request, null, null, $uid, false, $origin, $originURL);
-            $responseArray[] = $response[0]['result_message'];
+            $responseArray[] = array(
+                'result_code' => $response[0]['result_code'],
+                'result_message' => $response[0]['result_message'],
+            );
+
         }
 
         return $responseArray;
