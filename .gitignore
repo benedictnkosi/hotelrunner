@@ -10,6 +10,9 @@
 /src/app/application.php
 /config/packages/monolog.yaml
 /config/packages/doctrine.yaml
+*.dat
+*.txt
+*.csv
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
