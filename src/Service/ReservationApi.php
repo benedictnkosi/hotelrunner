@@ -600,7 +600,7 @@ class ReservationApi
     }
 
 
-    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website"): array
+    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "0"): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $this->logger->debug("child" . $childGuests);
@@ -709,6 +709,7 @@ class ReservationApi
                     }
                 }
 
+
                 $reservation = new Reservations();
                 $reservation->setRoom($room);
                 $reservation->setOriginalRoom($room);
@@ -742,6 +743,11 @@ class ReservationApi
                 $this->em->persist($reservation);
                 $this->em->flush($reservation);
 
+                //add smoking note
+                if(strcmp($smoker, "yes") == 0 ){
+                    $notesApi = new NotesApi($this->em, $this->logger);
+                    $notesApi->addNote($reservation->getId(), "The guest is a smoker");
+                }
 
                 //block connected Room
                 if ($isImport) {

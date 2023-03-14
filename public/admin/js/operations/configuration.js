@@ -202,6 +202,12 @@ function createUpdateRoom() {
         return;
     }
 
+    //amenities selected
+    if($('#config_room_form input[type=checkbox]:checked').length < 1) {
+        showResErrorMessage("configuration", "At least one Amenity must be selected");
+        return;
+    }
+
     $("body").addClass("loading");
     isUserLoggedIn();
     let url = "/admin_api/createroom";
@@ -799,10 +805,16 @@ function updateGuest(event) {
 
 function createEmployee() {
     const employee_name = $("#employee_name").val().trim();
+    const gender = $('input[name=gender]:checked', '#config_room_form').val();
+
     $("body").addClass("loading");
     isUserLoggedIn();
     let url = "/admin_api/createemployee";
 
+    if(gender === undefined){
+        showResErrorMessage("configuration", "Please select gender");
+        return;
+    }
 
     const data = {
         name: employee_name

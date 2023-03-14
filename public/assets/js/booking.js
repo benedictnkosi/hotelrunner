@@ -100,6 +100,7 @@ $(document).ready(function () {
 function displayTotal() {
     let numberOfNights = parseInt(sessionStorage.getItem('numberOfNights'));
     let total = 0;
+    let totalRooms = 0;
     let totalSleeps = 0;
     let nightsMessage = "";
     let roomIdArray = [];
@@ -116,9 +117,10 @@ function displayTotal() {
             roomPrice = buttons[i].getAttribute("data-roomPrice");
             roomSleeps = buttons[i].getAttribute("data-sleeps");
             total += (numberOfNights * parseInt(roomPrice));
-
+            totalRooms++;
             totalSleeps += (parseInt(roomSleeps));
             sessionStorage.setItem("rooms_sleep", totalSleeps);
+            sessionStorage.setItem("total_rooms_selected", totalRooms);
             nightsMessage += roomName + " - " + numberOfNights + " x nights @ R" + roomPrice + ".00" + "<br>";
             roomIdArray.push(roomId);
         }
@@ -251,6 +253,7 @@ function createReservation() {
     const email = $('#email').val();
     const adultGuests = $('#adults').val();
     const childGuests = $('#children').val();
+    const smoker = $('#select_smoker').find(":selected").val();
     const checkInDate = sessionStorage.getItem('checkInDate');
     const checkOutDate = sessionStorage.getItem('checkOutDate');
 
@@ -261,6 +264,13 @@ function createReservation() {
         showResErrorMessage("reservation", "The selected rooms can not accommodate the number of guests");
         return;
     }
+
+    if(guests < parseInt(sessionStorage.getItem("total_rooms_selected"))){
+        showResErrorMessage("reservation", "The number of guests can not be less than the number of rooms booked");
+        return;
+    }
+
+
     if (isRoomSelected === null) {
         showResErrorMessage("reservation", "Please select a room");
         return;
@@ -285,7 +295,8 @@ function createReservation() {
         check_in_date: checkInDate,
         check_out_date: checkOutDate,
         email: email,
-        date: today
+        date: today,
+        smoking: smoker
     };
 
     $.ajax({
