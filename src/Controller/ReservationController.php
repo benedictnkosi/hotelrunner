@@ -365,8 +365,8 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
 
-        $entityBody = file_get_contents('php://input');
-        $logger->info("post body: " . $entityBody);
+        $entityBody = $request->get("properties");
+        $logger->info("properties: " . $entityBody);
 
         $response = new JsonResponse("test", 200, array());
         return $response;
