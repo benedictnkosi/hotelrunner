@@ -556,6 +556,9 @@ class RoomApi
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $propertyId));
 
             $room->setName($name);
+            if(intval($price)>999){
+                $price = "999";
+            }
             $room->setPrice($price);
             $room->setKids($kidsPolicy);
             $room->setSleeps($sleeps);

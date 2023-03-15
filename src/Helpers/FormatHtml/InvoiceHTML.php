@@ -27,8 +27,8 @@ class InvoiceHTML
         $addOnsApi = new AddOnsApi($this->em, $this->logger);
         $totalPayment = $paymentApi->getReservationPaymentsTotal($reservation->getId());
         $invoiceTitle = 'INVOICE';
-        if ($totalPayment > 0) {
-            $invoiceTitle = 'RECIEPT';
+        if ($totalPayment < 1) {
+            $invoiceTitle = 'RECEIPT';
         }
         $totalDue = $paymentApi->getTotalDue($reservation->getId());
         $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
@@ -49,7 +49,7 @@ class InvoiceHTML
 								<td>
 									<h1>' . $invoiceTitle . '</h1>
 									<h2>' . $propertyDetails[0]['name'] . '</h2>
-									#' . $reservation->getId() . '<br />
+									#' . $reservation->getId() . '1<br />
 									Created: ' . $reservation->getReceivedOn()->format('Y-m-d') . '<br />
 									<b>Balance Due: R' . $totalDue . '.00</b>
 								</td>
@@ -89,10 +89,10 @@ class InvoiceHTML
 				<tr class="item">
 					<td>' . $reservation->getRoom()->getName() . '<br>
 					Check-in: ' . $reservation->getCheckIn()->format('Y-m-d') . '<br>
-						Check-out: ' . $reservation->getCheckOut()->format('Y-m-d') . '<br></td>
+						Check-out: ' . $reservation->getCheckOut()->modify('+1 day')->format('Y-m-d') . '<br></td>
 					<td>' . $totalDays . '</td>
 					<td>R' . $reservation->getRoom()->getPrice() . '.00</td>
-					<td>' . $totalPriceForAccommodation . '</td>
+					<td>R' . $totalPriceForAccommodation . '.00</td>
 				</tr>
 
 				<tr class="heading">

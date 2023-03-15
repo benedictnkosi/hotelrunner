@@ -55,7 +55,7 @@ Please email proof of payment to info@aluvegh.co.za";
 Banking Details:\r\n
 Bank: FNB\r\n
 Name: Aluve Guesthouse\r\n
-Acc: 63030034168\r\n
+Acc: 6303001234\r\n
 branch: 250 655\r\n
 \r\n
 \r\n

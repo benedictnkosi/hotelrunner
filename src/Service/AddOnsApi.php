@@ -324,9 +324,9 @@ class AddOnsApi
                 $totalPriceForAllAdOns = (intVal($addOn->getAddOn()->getPrice()) * intval($addOn->getQuantity()));
                 $html .= '<tr class="item">
 					<td>' . $addOn->getAddOn()->getName() . '</td>
-					<td>' . $addOn->getQuantity() . '</td>
-					<td>R' . number_format((float)$addOn->getAddOn()->getPrice(), 2, '.', '') . '</td>
-					<td>R' . number_format((float)$totalPriceForAllAdOns, 2, '.', '') . '</td>
+					<td>' . $addOn->getQuantity()  . '</td>
+					<td>R' . number_format((float)$addOn->getAddOn()->getPrice() + 1, 2, '.', '') . '</td>
+					<td>R' . number_format((float)$totalPriceForAllAdOns + 1, 2, '.', '') . '</td>
 				</tr>';
             }
             $this->logger->debug($html);

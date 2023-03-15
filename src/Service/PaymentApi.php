@@ -246,12 +246,36 @@ class PaymentApi
         $responseArray = array();
         try {
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+            $guest = $reservation->getGuest();
             $roomPrice = 0;
             if (strcasecmp($reservation->getOrigin(), "website") == 0) {
                 $roomPrice = $reservation->getRoom()->getPrice();
             }
 
             $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
+
+            //discount based on number of days booked
+            if($totalDays > 6 && $totalDays < 28 ){
+                $roomPrice = $roomPrice * 0.9;
+            }elseif($totalDays > 27){
+                $roomPrice = $roomPrice * 0.7;
+            }
+
+            //apply discount based on loyalty rewards
+            $guestApi = new GuestApi($this->em, $this->logger);
+            $stayCount = $guestApi->getGuestStaysCount($guest->getId());
+            if($guest->isRewards()){
+                //apply discount based on number of stays
+                if($stayCount < 10){
+                    $roomPrice = $roomPrice * 0.9;
+                }elseif($stayCount < 20){
+                    $roomPrice = $roomPrice * 0.8;
+                }else{
+                    $roomPrice = $roomPrice * 0.7;
+                }
+            }
+
+
 
             $addOnsApi = new AddOnsApi($this->em, $this->logger);
             $addOns = $addOnsApi->getReservationAddOns($resId);
@@ -273,8 +297,12 @@ class PaymentApi
             }
 
             $due = $totalPrice - $totalPayment;
-
+            $this->logger->debug("total price is " . $totalPrice);
+            $this->logger->debug("total payments is " . $totalPayment);
             $this->logger->debug("Due amount is $due");
+            $this->logger->debug("room price is $roomPrice");
+            $this->logger->debug("days is $totalDays");
+            $this->logger->debug("adons is $totalPriceForAllAdOns");
             return $due;
         } catch (Exception $ex) {
             $responseArray[] = array(

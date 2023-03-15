@@ -17,9 +17,12 @@ id,room_name,check_in,check_out,guest_name,phone_number,amount
 750,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
 750,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
 750,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
-731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434,500
-731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434,434.78
-731,Upstairs+King+Room,2023-03-22,2023-03-23,asasas,34343434,65.22
+752,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+752,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+752,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
+753,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,500
+753,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,434.78
+753,Upstairs+King+Room,2023-03-20,2023-03-21,"Benedict Nkosi",0837917430,65.22
 732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,400
 732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,347.83
 732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,52.17
@@ -59,6 +62,9 @@ id,room_name,check_in,check_out,guest_name,phone_number,amount
 744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,500
 744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,434.78
 744,Upstairs+King+Room,2023-03-22,2023-03-23,ben,83433490344,65.22
+751,Upstairs+King+Room,2023-03-22,2023-03-23,aasass,083791083,500
+751,Upstairs+King+Room,2023-03-22,2023-03-23,aasass,083791083,434.78
+751,Upstairs+King+Room,2023-03-22,2023-03-23,aasass,083791083,65.22
 657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,800
 657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,695.65
 657,"Budget Suite",2023-03-31,2023-04-02,"kelebogile Monamodi",0823134361,104.35

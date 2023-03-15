@@ -355,6 +355,23 @@ class ReservationController extends AbstractController
         return $response;
     }
 
+
+    /**
+     * @Route("/no_auth/reservations/import/ftp")
+     * @throws \Exception
+     */
+    public function importFTPReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server errors" , 500, array());
+        }
+
+        $response = $reservationApi->importFTPReservations($request);
+
+        return new JsonResponse($response, 200, array());
+    }
+
     /**
      * @Route("no_auth/invoice/{reservationId}")
      * @throws \Exception

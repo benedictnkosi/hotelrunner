@@ -12,6 +12,9 @@ use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../app/application.php');
 
@@ -604,6 +607,78 @@ class ReservationApi
     }
 
 
+    public function importFTPReservations($request): array|Response
+    {
+        $this->logger->info("Starting Method: " . __METHOD__);
+
+        $ftpConnection = ftp_connect('ftp.hotelrunner.co.za');
+
+        ftp_login($ftpConnection, 'reservations@hotelrunner.co.za', '-DDij,n&zk(p');
+
+        ftp_pasv($ftpConnection, true);
+
+        $h = fopen('php://temp', 'r+');
+
+        try{
+            ftp_fget($ftpConnection, $h, '/reservations.dat', FTP_BINARY, 0);
+        }catch (\Exception $ex){
+            $this->logger->info($ex->getMessage());
+            return new Response($ex->getMessage());
+        }
+
+        $fstats = fstat($h);
+        fseek($h, 0);
+        if($fstats['size']<1){
+            $this->logger->info("File is empty");
+            return new Response("File is empty");
+        }
+        $contents = fread($h, $fstats['size']);
+
+        fclose($h);
+
+        if (strlen($contents)<1)
+        {
+            $this->logger->info("No file found");
+            return new Response("No file found");
+        }
+
+        $this->logger->info("File : " . $contents);
+
+        $response = $this->uploadReservations($contents, $request);
+
+        //rename the input file for backup
+
+        if (ftp_rename($ftpConnection, '/reservations.dat', '/reservations_'.date("YmdGis").'.dat')) {
+            $this->logger->info("successfully backed up file");
+        } else {
+            $this->logger->info("There was a problem backing up up file");
+        }
+
+        //write results to result.log
+        try{
+            $wfile = fopen('result.log', 'w');
+            $this->logger->info(json_encode(($response)));
+            fwrite($wfile, json_encode(($response)));
+            fclose($wfile);
+
+            $cfile = fopen('result.log', 'r');
+            // try to upload $file
+            if (ftp_fput($ftpConnection, 'result.log', $cfile, FTP_ASCII)) {
+                $this->logger->info("Successfully uploaded 'result.log'\n");
+            } else {
+                $this->logger->info("There was a problem while uploading 'result.log'\n");
+            }
+            fclose($cfile);
+            ftp_close($ftpConnection);
+        } catch (\Exception $exception) {
+            ftp_close($ftpConnection);
+            $this->logger->info("Failed to write to the result log. " . $exception->getMessage());
+            return new Response("Failed to write to the result log. " . $exception->getMessage());
+        }
+
+        return $response;
+    }
+
     public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "0"): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -628,6 +703,13 @@ class ReservationApi
                 //get room
 
                 $room = $roomApi->getRoom($roomId);
+                if($room == null){
+                    $responseArray[] = array(
+                        'result_code' => 1,
+                        'result_message' => 'Room not found, id: ' . $roomId
+                    );
+                    return $responseArray;
+                }
 
                 if (strcmp($origin, "airbnb.com") === 0) {
                     $guest = $guestApi->getGuestByName("Airbnb Guest");
