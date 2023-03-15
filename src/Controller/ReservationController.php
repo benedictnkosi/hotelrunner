@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\QueueMessages;
 use App\Entity\Reservations;
 use App\Entity\ReservationStatus;
 use App\Helpers\FormatHtml\CalendarHTML;
@@ -365,8 +366,12 @@ class ReservationController extends AbstractController
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("queue message" . $request->get("message"));
         $response = $reservationApi->uploadReservations($request->get("message"), $request);
-        $response = new JsonResponse($response, 200, array());
-        return $response;
+        $queueMessage = new QueueMessages();
+        $queueMessage->setMessage($request->get("message"));
+        $queueMessage->setResponse(json_encode($response));
+        $entityManager->persist($queueMessage);
+        $entityManager->flush($queueMessage);
+        return new JsonResponse($response, 200, array());
     }
 
     /**
