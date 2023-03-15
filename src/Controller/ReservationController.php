@@ -363,8 +363,10 @@ class ReservationController extends AbstractController
     public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Methods: " . __METHOD__);
-        $logger->info("after the getza " . $request->get("message"));
-        return new JsonResponse("test", 200, array());
+        $logger->info("queue message" . $request->get("message"));
+        $response = $reservationApi->uploadReservations($request->get("message"), $request);
+        $response = new JsonResponse($response, 200, array());
+        return $response;
     }
 
     /**
