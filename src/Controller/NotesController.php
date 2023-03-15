@@ -24,7 +24,6 @@ class NotesController extends AbstractController
         }
 
         $response = $notesApi->addNote($request->get('id'), str_replace("+", "", $request->get('note')));
-        $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
         return $response;
     }

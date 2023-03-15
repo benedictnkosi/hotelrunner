@@ -359,12 +359,14 @@ class ReservationController extends AbstractController
 
     /**
      * @Route("/no_auth/reservations/mq")
-     * @Method({"POST"})
      * @throws \Exception
      */
     public function createMQReservation( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+
+        $entityBody = file_get_contents('php://input');
+        $logger->info("post body: " . $entityBody);
 
         $response = new JsonResponse("test", 200, array());
         return $response;
