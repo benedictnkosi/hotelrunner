@@ -364,8 +364,8 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("before the get");
-        $post_data = json_decode($request->getContent(), true);
-        $logger->info("after the getasss " . $request->query->get('payload'));
+        $post_data = file_get_contents('php://input');
+        $logger->info("after the getz " . $post_data);
         return new JsonResponse("test", 200, array());
     }
 
