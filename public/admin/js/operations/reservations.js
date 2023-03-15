@@ -17,7 +17,7 @@ $(document).ready(function () {
     $("#upload_res_form").validate({
         // Specify validation rules
         rules: {
-            upload_textarea: "required",
+
         }, submitHandler: function () {
             uploadReservations();
         }

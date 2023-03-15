@@ -5,6 +5,9 @@ id,room_name,check_in,check_out,guest_name,phone_number,amount
 731,Upstairs+King+Room,2023-03-22,2023-03-24,asasas,34343434,1000
 731,Upstairs+King+Room,2023-03-22,2023-03-24,asasas,34343434,869.57
 731,Upstairs+King+Room,2023-03-22,2023-03-24,asasas,34343434,130.43
+732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,400
+732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,347.83
+732,"Budget Suite",2023-03-22,2023-03-23,aasas,34343433434,52.17
 668,"Budget Suite",2023-04-07,2023-04-10,Koketso,,1200
 668,"Budget Suite",2023-04-07,2023-04-10,Koketso,,1043.48
 668,"Budget Suite",2023-04-07,2023-04-10,Koketso,,156.52

@@ -141,6 +141,7 @@ class ReservationController extends AbstractController
             return new JsonResponse("Internal server error" , 500, array());
         }
 
+
         $reservation = $reservationApi->getReservation($reservationId);
         $responseArray = array();
         $now = new DateTime();
@@ -357,6 +358,18 @@ class ReservationController extends AbstractController
 
 
     /**
+     * @Route("/no_auth/reservations/upload/")
+     * @throws \Exception
+     */
+    public function createMQReservation( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+
+        $response = new JsonResponse("test", 200, array());
+        return $response;
+    }
+
+    /**
      * @Route("/no_auth/reservations/import/ftp")
      * @throws \Exception
      */
@@ -379,6 +392,7 @@ class ReservationController extends AbstractController
     public function getInvoiceDetails($reservationId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+
         $reservation = $reservationApi->getReservation($reservationId);
         $invoiceHtml = new InvoiceHTML($entityManager, $logger);
         $html = $invoiceHtml->formatHtml($reservation);
