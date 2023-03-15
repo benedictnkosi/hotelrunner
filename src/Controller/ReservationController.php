@@ -356,24 +356,6 @@ class ReservationController extends AbstractController
         return $response;
     }
 
-
-    /**
-     * @Route("/no_auth/reservations/mq")
-     * @throws \Exception
-     */
-    public function createMQReservation( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
-    {
-        $logger->info("Starting Method: " . __METHOD__);
-
-        $logger->info("before the get");
-        $entityBody = $request->get("properties");
-        $logger->info("after the get");
-        $logger->info("properties: " . $entityBody);
-
-        $response = new JsonResponse("test", 200, array());
-        return $response;
-    }
-
     /**
      * @Route("/no_auth/reservations/import/queue")
      * @throws \Exception
@@ -382,8 +364,8 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("before the get");
-        $entityBody = $request->get("properties");
-        $logger->info("after the get" . $entityBody);
+        $post_data = json_decode($request->getContent(), true);
+        $logger->info("after the getas" . $post_data);
         return new JsonResponse("test", 200, array());
     }
 
