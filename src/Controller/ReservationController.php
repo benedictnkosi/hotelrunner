@@ -374,7 +374,7 @@ class ReservationController extends AbstractController
      * @Route("/no_auth/reservations/import/queue")
      * @throws \Exception
      */
-    public function importFTPReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
+    public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         return new JsonResponse("test", 200, array());
