@@ -383,7 +383,7 @@ class ReservationController extends AbstractController
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("before the get");
         $entityBody = $request->get("properties");
-        $logger->info("after the get");
+        $logger->info("after the get" . $entityBody);
         return new JsonResponse("test", 200, array());
     }
 
