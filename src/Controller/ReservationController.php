@@ -358,7 +358,8 @@ class ReservationController extends AbstractController
 
 
     /**
-     * @Route("/no_auth/reservations/mq/")
+     * @Route("/no_auth/reservations/mq")
+     * @Method({"POST"})
      * @throws \Exception
      */
     public function createMQReservation( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
