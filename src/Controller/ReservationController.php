@@ -371,6 +371,19 @@ class ReservationController extends AbstractController
         $queueMessage->setResponse(json_encode($response));
         $entityManager->persist($queueMessage);
         $entityManager->flush($queueMessage);
+
+        //place response on the queue
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL,"https://vugtjfyp:589v1Hlivd3Eqp7qKaaUJLjSlWJCDwmd@campbell.lmq.cloudamqp.com/api/exchanges/vugtjfyp/hotelrunner-response/publish");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,
+            '{"properties":{},"routing_key":"response_key","payload":"'.json_encode($response).'","payload_encoding":"string"}');
+
+        // Receive server response ...
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        curl_exec($ch);
         return new JsonResponse($response, 200, array());
     }
 
