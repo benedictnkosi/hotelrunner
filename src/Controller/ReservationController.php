@@ -373,6 +373,7 @@ class ReservationController extends AbstractController
         $message = substr($payload, $underscoreIndex + 1);
         $logger->info("message is " . $message);
         $logger->info("guid is  " . $guid);
+        $response = array();
         //create reservation
         if(strlen($guid) !== 36){
             $response[] = array(
@@ -385,11 +386,14 @@ class ReservationController extends AbstractController
             }else if(strlen($message) == 36){
                 $response = $paymentApi->uploadPayment($message);
             }else if(strlen($message) == 58){
-                $rooms = $roomApi->getAvailableRoomsFromString($message, $request);
-                $response[] = array(
-                    'result_code' => 0,
-                    'result_message' => json_encode($rooms),
-                );
+                $availableRooms = $roomApi->getAvailableRoomsFromString($message, $request);
+                foreach ($availableRooms as $availableRoom) {
+                    $response[] = array(
+                        'room_id' => $availableRoom->getId(),
+                        'room_name' => $availableRoom->getName(),
+                        'result_message' => "Found Rooms",
+                    );
+                }
             }else{
                 $response[] = array(
                     'result_code' => 1,
