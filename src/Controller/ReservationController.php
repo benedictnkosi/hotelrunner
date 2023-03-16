@@ -371,7 +371,7 @@ class ReservationController extends AbstractController
         $queueMessage->setResponse(json_encode($response));
         $entityManager->persist($queueMessage);
         $entityManager->flush($queueMessage);
-
+        $queueMessage->setMessage("done ");
         //place response on the queue
         $ch = curl_init();
 
@@ -384,7 +384,7 @@ class ReservationController extends AbstractController
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $server_output = curl_exec($ch);
-        $queueMessage->setMessage("curl response is $server_output");
+        $logger->info("curl output is " . $server_output);
         return new JsonResponse($response, 200, array());
     }
 
