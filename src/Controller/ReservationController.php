@@ -378,7 +378,7 @@ class ReservationController extends AbstractController
         curl_setopt($ch, CURLOPT_URL,"https://vugtjfyp:589v1Hlivd3Eqp7qKaaUJLjSlWJCDwmd@campbell.lmq.cloudamqp.com/api/exchanges/vugtjfyp/hotelrunner-response/publish");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
-            '{"properties":{},"routing_key":"response_key","payload":"'.json_encode($response).'","payload_encoding":"string"}');
+            '{"properties":{},"routing_key":"response_key","payload":"'.$response[0]['result_message'] .'","payload_encoding":"string"}');
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
 
         // Receive server response ...
