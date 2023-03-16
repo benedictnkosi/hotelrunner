@@ -387,13 +387,14 @@ class ReservationController extends AbstractController
                 $response = $paymentApi->uploadPayment($message);
             }else if(strlen($message) == 58){
                 $availableRooms = $roomApi->getAvailableRoomsFromString($message, $request);
+                $availableRoomsMessage = "";
                 foreach ($availableRooms as $availableRoom) {
-                    $response[] = array(
-                        'room_id' => $availableRoom->getId(),
-                        'room_name' => $availableRoom->getName(),
-                        'result_message' => "Found Rooms",
-                    );
+                    $availableRoomsMessage .= $availableRoom->getName() . ",";
                 }
+                $response[] = array(
+                    'result_code' => 0,
+                    'result_message' => substr($availableRoomsMessage,0, strlen($availableRoomsMessage) - 1 )
+                );
             }else{
                 $response[] = array(
                     'result_code' => 1,
