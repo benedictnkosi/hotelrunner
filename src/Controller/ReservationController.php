@@ -387,7 +387,7 @@ class ReservationController extends AbstractController
             }else{
                 $response[] = array(
                     'result_code' => 1,
-                    'result_message' => "message length incorrect",
+                    'result_message' => "message length incorrect : " .strlen($message),
                 );
             }
         }
