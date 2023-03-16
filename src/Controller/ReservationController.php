@@ -368,11 +368,12 @@ class ReservationController extends AbstractController
 
         //get uuid from the message
         $payload = $request->get("message");
-        $firstIndex = strpos($payload, "_");
-        $guid = substr($payload, 0,$firstIndex );
-        $message = substr($payload, $firstIndex);
+        $underscoreIndex = strpos($payload, "_");
+        $guid = substr($payload, 0,$underscoreIndex );
+        $message = substr($payload, $underscoreIndex + 1);
         $logger->info("message is " . $message);
         $logger->info("guid is  " . $guid);
+        //create reservation
         $response = $reservationApi->uploadReservations($message, $request);
         $queueMessage = new QueueMessages();
         $queueMessage->setMessage($message);
