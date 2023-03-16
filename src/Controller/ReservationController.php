@@ -361,7 +361,7 @@ class ReservationController extends AbstractController
      * @Route("/no_auth/reservations/import/queue")
      * @throws \Exception
      */
-    public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
+    public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi): Response
     {
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("queue message" . $request->get("message"));
@@ -374,7 +374,26 @@ class ReservationController extends AbstractController
         $logger->info("message is " . $message);
         $logger->info("guid is  " . $guid);
         //create reservation
-        $response = $reservationApi->uploadReservations($message, $request);
+        if(strlen($guid) !== 36){
+            $response[] = array(
+                'result_code' => 1,
+                'result_message' => "guid length is not 36",
+            );
+        }else{
+            if(strlen($message) == 36){
+                $response = $reservationApi->uploadReservations($message, $request);
+            }else if(strlen($message) == 459){
+                $response = $paymentApi->uploadPayment($message);
+            }else{
+                $response[] = array(
+                    'result_code' => 1,
+                    'result_message' => "message length incorrect",
+                );
+            }
+        }
+
+        $logger->info("response message is " . $response[0]['result_message']);
+
         $queueMessage = new QueueMessages();
         $queueMessage->setMessage($message);
         $queueMessage->setResponse(json_encode($response));

@@ -205,6 +205,34 @@ class PaymentApi
         return $responseArray;
     }
 
+
+    public function uploadPayment($paymentString)
+    {
+        $this->logger->info("Starting Method: " . __METHOD__);
+        $payments = explode("\n", trim($paymentString));
+        $this->logger->info("array lines: " . sizeof($payments));
+        $responseArray = array();
+        foreach($payments as $payment) {
+            $resId = trim(substr($payment,0,4));
+            $amount = trim(substr($payment,4,4));
+            $reference = trim(substr($payment,8,36));
+            $channel = "payfast";
+
+            $this->logger->info("res id field: " . $resId);
+            $this->logger->info("amount field: " . $amount);
+            $this->logger->info("reference field: " . $reference);
+            $this->logger->info("channel field: " . $channel);
+
+            $response = $this->addPayment($resId, $amount, $reference, $channel);
+            $responseArray[] = array(
+                'result_code' => $response[0]['result_code'],
+                'result_message' => $response[0]['result_message'],
+            );
+        }
+        return $responseArray;
+    }
+
+
     public function addDiscount($resId, $amount, $channel = null): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
