@@ -380,9 +380,9 @@ class ReservationController extends AbstractController
                 'result_message' => "guid length is not 36",
             );
         }else{
-            if(strlen($message) == 36){
+            if(strlen($message) == 421){
                 $response = $reservationApi->uploadReservations($message, $request);
-            }else if(strlen($message) == 459){
+            }else if(strlen($message) == 36){
                 $response = $paymentApi->uploadPayment($message);
             }else{
                 $response[] = array(
