@@ -365,9 +365,17 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("queue message" . $request->get("message"));
-        $response = $reservationApi->uploadReservations($request->get("message"), $request);
+
+        //get uuid from the message
+        $payload = $request->get("message");
+        $firstIndex = strpos($payload, "_");
+        $guid = substr($payload, 0,$firstIndex );
+        $message = substr($payload, $firstIndex);
+        $logger->info("message is " . $message);
+        $logger->info("guid is  " . $guid);
+        $response = $reservationApi->uploadReservations($message, $request);
         $queueMessage = new QueueMessages();
-        $queueMessage->setMessage($request->get("message"));
+        $queueMessage->setMessage($message);
         $queueMessage->setResponse(json_encode($response));
         $entityManager->persist($queueMessage);
         $entityManager->flush($queueMessage);
@@ -378,7 +386,7 @@ class ReservationController extends AbstractController
         curl_setopt($ch, CURLOPT_URL,"https://vugtjfyp:589v1Hlivd3Eqp7qKaaUJLjSlWJCDwmd@campbell.lmq.cloudamqp.com/api/exchanges/vugtjfyp/hotelrunner-response/publish");
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
-            '{"properties":{},"routing_key":"response_key","payload":"'.$response[0]['result_message'] .'","payload_encoding":"string"}');
+            '{"properties":{},"routing_key":"response_key","payload":"'.$guid . "_". $response[0]['result_message'] .'","payload_encoding":"string"}');
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
 
         // Receive server response ...
