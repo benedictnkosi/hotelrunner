@@ -371,7 +371,7 @@ class ReservationController extends AbstractController
         $queueMessage->setResponse(json_encode($response));
         $entityManager->persist($queueMessage);
         $entityManager->flush($queueMessage);
-        $queueMessage->setMessage("done ");
+
         //place response on the queue
         $ch = curl_init();
 
@@ -379,6 +379,7 @@ class ReservationController extends AbstractController
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS,
             '{"properties":{},"routing_key":"response_key","payload":"'.json_encode($response).'","payload_encoding":"string"}');
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
 
         // Receive server response ...
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
