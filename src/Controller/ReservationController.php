@@ -383,7 +383,8 @@ class ReservationController extends AbstractController
         // Receive server response ...
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        curl_exec($ch);
+        $server_output = curl_exec($ch);
+        $queueMessage->setMessage("curl response is $server_output");
         return new JsonResponse($response, 200, array());
     }
 
