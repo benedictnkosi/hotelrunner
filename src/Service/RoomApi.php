@@ -38,6 +38,23 @@ class RoomApi
         }
     }
 
+    public function getAvailableRoomsFromString($availableRoomsString, $request): array
+    {
+        $this->logger->info("Starting Method: " . __METHOD__);
+        $responseArray = array();
+        $checkIn = trim(substr($availableRoomsString,0,10));
+        $checkOut = trim(substr($availableRoomsString,10,10));
+        $propertyUid = trim(substr($availableRoomsString,20,36));
+        $kids = trim(substr($availableRoomsString,56,2));
+
+        $this->logger->info("checkIn field: " . $checkIn);
+        $this->logger->info("checkOut field: " . $checkOut);
+        $this->logger->info("propertyUid field: " . $propertyUid);
+        $this->logger->info("kids field: " . $kids);
+
+        return $this->getAvailableRooms($checkIn, $checkOut, $request, $kids, $propertyUid);
+    }
+
     public function getAvailableRooms($checkInDate, $checkOutDate, $request, $kids, $propertyUid = 0): ?array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);

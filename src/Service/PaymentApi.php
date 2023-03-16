@@ -215,7 +215,7 @@ class PaymentApi
         foreach($payments as $payment) {
             $resId = trim(substr($payment,0,4));
             $amount = trim(substr($payment,4,4));
-            $reference = trim(substr($payment,8,36));
+            $reference = trim(substr($payment,8,28));
             $channel = "payfast";
 
             $this->logger->info("res id field: " . $resId);

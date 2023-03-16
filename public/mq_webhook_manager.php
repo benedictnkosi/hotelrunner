@@ -1,10 +1,10 @@
 <?php
 
-echo "test";
+echo "test2";
 $body = file_get_contents('php://input');
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL,"https://ete.hotelrunner.co.za/no_auth/reservations/import/queue");
+curl_setopt($ch, CURLOPT_URL,"https://ete.hotelrunner.co.za/no_auth/import/queue");
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS,
     "message=$body");

@@ -358,10 +358,10 @@ class ReservationController extends AbstractController
     }
 
     /**
-     * @Route("/no_auth/reservations/import/queue")
+     * @Route("/no_auth/import/queue")
      * @throws \Exception
      */
-    public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi): Response
+    public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Methods: " . __METHOD__);
         $logger->info("queue message" . $request->get("message"));
@@ -384,6 +384,12 @@ class ReservationController extends AbstractController
                 $response = $reservationApi->uploadReservations($message, $request);
             }else if(strlen($message) == 36){
                 $response = $paymentApi->uploadPayment($message);
+            }else if(strlen($message) == 58){
+                $rooms = $roomApi->getAvailableRoomsFromString($message, $request);
+                $response[] = array(
+                    'result_code' => 0,
+                    'result_message' => json_encode($rooms),
+                );
             }else{
                 $response[] = array(
                     'result_code' => 1,
