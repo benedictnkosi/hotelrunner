@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\HttpFoundation\Request;
 
 class LoginController extends AbstractController
 {
@@ -38,8 +39,11 @@ class LoginController extends AbstractController
     /**
      * @Route("no_auth/me")
      */
-    public function meAction(): JsonResponse
+    public function meAction(Request $request): JsonResponse
     {
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $responseArray[] = array(
             'authenticated' => $this->getUser() !== null,
             'result_code' => 0

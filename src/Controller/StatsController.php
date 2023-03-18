@@ -18,6 +18,9 @@ class StatsController extends AbstractController
     public function getReservationCount($type, $day, Request $request,LoggerInterface $logger, StatsApi $statsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $statsApi->getReservationCount($type, $day);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -31,6 +34,9 @@ class StatsController extends AbstractController
     public function getStayOverCount($day,  Request $request, LoggerInterface $logger, StatsApi $statsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $statsApi->getStayOverCount($day);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());

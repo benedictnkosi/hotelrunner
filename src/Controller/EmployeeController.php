@@ -24,6 +24,9 @@ class EmployeeController extends AbstractController
     public function getConfigEmployees( LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, EmployeeApi $employeeApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $employees = $employeeApi->getEmployees();
         $configEmployeesHTML = new ConfigEmployeesHTML( $entityManager, $logger);
         $html = $configEmployeesHTML->formatHtml($employees);
@@ -89,9 +92,12 @@ class EmployeeController extends AbstractController
     /**
      * @Route("api/json/employee/{id}")
      */
-    public function getPaymentJson( $id, LoggerInterface $logger, EmployeeApi $employeeApi): Response
+    public function getPaymentJson( $id, LoggerInterface $logger, Request $request,EmployeeApi $employeeApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $employee = $employeeApi->getEmployee($id);
 
         $serializer = SerializerBuilder::create()->build();

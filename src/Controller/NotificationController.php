@@ -21,6 +21,9 @@ class NotificationController  extends AbstractController
     public function getNotifications( LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, NotificationApi $notificationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $notifications = $notificationApi->getNotificationsToAction();
         $callback = $request->get('callback');
         $response = new JsonResponse($notifications , 200, array());
@@ -34,6 +37,9 @@ class NotificationController  extends AbstractController
     public function updateAdsNotification($propertyId, LoggerInterface $logger, Request $request, NotificationApi $notificationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $notificationApi->updateAdsNotificationAction("Pause Google Ads", true);
         $html = $notificationApi->updateAdsNotification($propertyId);
         $response = array(
@@ -52,6 +58,9 @@ class NotificationController  extends AbstractController
     public function updateNotificationAsActioned($name, LoggerInterface $logger, Request $request, NotificationApi $notificationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $html = $notificationApi->updateAdsNotificationAction($name, true);
         $response = array(
             'html' => $html,

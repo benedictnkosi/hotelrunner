@@ -22,6 +22,9 @@ class CleaningController extends AbstractController
     public function getCleanings($roomId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, CleaningApi $cleaningApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $html = $cleaningApi->getCleaningsByRoom($roomId);
         $response = array(
             'html' => $html,
@@ -39,6 +42,9 @@ class CleaningController extends AbstractController
     public function getOutstandingCleaningsForToday(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, CleaningApi $cleaningApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $html = $cleaningApi->getOutstandingCleaningsForToday();
         $response = array(
             'html' => $html,
@@ -70,9 +76,12 @@ class CleaningController extends AbstractController
     /**
      * @Route("api/json/cleaning/{id}")
      */
-    public function getCleaningJson( $id, LoggerInterface $logger, CleaningApi $api): Response
+    public function getCleaningJson( $id, LoggerInterface $logger, Request $request, CleaningApi $api): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $cleaning = $api->getCleaningById($id);
 
         $serializer = SerializerBuilder::create()->build();

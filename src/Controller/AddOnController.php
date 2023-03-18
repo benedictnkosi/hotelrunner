@@ -24,6 +24,9 @@ class AddOnController extends AbstractController
     public function addAdOnToReservation($addonid, $reservationId, $quantity, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $addOnsApi->addAdOnToReservation($reservationId,$addonid, $quantity);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -37,6 +40,9 @@ class AddOnController extends AbstractController
     public function getConfigAddOns(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $addOns = $addOnsApi->getAddOns();
         $configAddonsHTML = new ConfigAddonsHTML( $entityManager, $logger);
         $formattedHtml = $configAddonsHTML->formatHtml($addOns);
@@ -52,6 +58,9 @@ class AddOnController extends AbstractController
     public function getAddOn($addOnId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $addOns = $addOnsApi->getAddOnsJson($addOnId);
         $callback = $request->get('callback');
         $response = new JsonResponse($addOns , 200, array());
@@ -113,9 +122,12 @@ class AddOnController extends AbstractController
     /**
      * @Route("api/json/addOn/{name}")
      */
-    public function getAddOnJson( $name, LoggerInterface $logger, AddOnsApi $addOnsApi): Response
+    public function getAddOnJson( $name, Request $request,LoggerInterface $logger, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $addOn = $addOnsApi->getAddOn($name);
 
         $serializer = SerializerBuilder::create()->build();

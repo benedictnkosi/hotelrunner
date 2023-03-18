@@ -27,6 +27,9 @@ class GuestController extends AbstractController
     public function getGuest($filterValue, LoggerInterface $logger, Request $request, GuestApi $guestApi, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $guestApi->getGuest($filterValue);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -91,6 +94,7 @@ class GuestController extends AbstractController
     public function createAirbnbGuest($confirmationCode, $name, LoggerInterface $logger,Request $request,GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+
         $response = $guestApi->createAirbnbGuest($confirmationCode, urldecode($name));
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -105,6 +109,9 @@ class GuestController extends AbstractController
     public function getConfigGuests( $nameFilter, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $guests = $guestApi->getConfigGuests($nameFilter);
         $logger->info("calling Method: formatHtml" );
         $configGuestsHTML = new ConfigGuestsHTML( $entityManager, $logger);
@@ -152,6 +159,9 @@ class GuestController extends AbstractController
     public function getGuestJson( $id, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $guest = $guestApi->getGuestById($id);
 
         $serializer = SerializerBuilder::create()->build();

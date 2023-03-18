@@ -73,6 +73,9 @@ class PaymentController extends AbstractController
     public function payfast_notify(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $logger->info("reservation ID: " . $request->get('item_description'));
         $logger->info("amount paid: " . $request->get('amount_gross'));
         $reservationId = $request->get('item_description');
@@ -92,6 +95,9 @@ class PaymentController extends AbstractController
     public function getTotalCashPayment($startDate, $endDate, $channel, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $paymentApi->getCashReport($startDate, $endDate, $channel);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -105,6 +111,9 @@ class PaymentController extends AbstractController
     public function getTotalCashPaymentByDay($startDate, $endDate,$channel, $isGroup, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         if (strcmp($isGroup, "true") === 0) {
             $response = $paymentApi->getCashReportByDay($startDate, $endDate, $channel);
         }else{
@@ -124,9 +133,12 @@ class PaymentController extends AbstractController
     /**
      * @Route("api/json/payment/{id}")
      */
-    public function getPaymentJson( $id, LoggerInterface $logger, PaymentApi $api): Response
+    public function getPaymentJson( $id, LoggerInterface $logger, Request $request,PaymentApi $api): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $payment = $api->getPayment($id);
 
         $serializer = SerializerBuilder::create()->build();

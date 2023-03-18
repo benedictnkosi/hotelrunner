@@ -36,6 +36,9 @@ class RoomController extends AbstractController
     public function getRooms($roomId, LoggerInterface $logger, Request $request,RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $roomApi->getRooms($roomId, $request);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -50,6 +53,9 @@ class RoomController extends AbstractController
     public function getAllRooms( LoggerInterface $logger, Request $request,RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $roomApi->getRooms("all", $request);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -63,6 +69,9 @@ class RoomController extends AbstractController
     public function getAvailableRooms($checkInDate, $checkOutDate,$propertyUid, $kids, Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $rooms = $roomApi->getAvailableRooms($checkInDate, $checkOutDate, $request, $kids, $propertyUid);
         $availableRoomsDropDownHTML = new BookingPageAvailableRoomsHTML($entityManager, $logger);
         $html = $availableRoomsDropDownHTML->formatHtml($rooms);
@@ -81,6 +90,9 @@ class RoomController extends AbstractController
     public function getRoomsHtml(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $rooms = $roomApi->getRoomsEntities(0, $request);
         $roomsPageHTML = new RoomsPageHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatHtml($rooms, $roomApi);
@@ -99,6 +111,9 @@ class RoomController extends AbstractController
     public function getConfigurationRooms( LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $rooms = $roomApi->getRoomsEntities();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatLeftDivRoomsHtml($rooms);
@@ -117,6 +132,9 @@ class RoomController extends AbstractController
     public function getComboListRooms( LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $rooms = $roomApi->getRoomsEntities();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatComboListHtml($rooms, true);
@@ -135,6 +153,9 @@ class RoomController extends AbstractController
     public function getComboListRoomStatuses(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $statuses = $roomApi->getRoomStatuses();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatComboListHtml($statuses);
@@ -153,6 +174,9 @@ class RoomController extends AbstractController
     public function getComboListRoomBedSizes(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $bedSizes = $roomApi->getRoomBedSizes();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatComboListHtml($bedSizes);
@@ -171,6 +195,9 @@ class RoomController extends AbstractController
     public function getComboListRoomBedSizesJson(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $bedSizes = $roomApi->getRoomBedSizesJson();
         return new JsonResponse(json_encode($bedSizes) , 200, array());
     }
@@ -180,6 +207,9 @@ class RoomController extends AbstractController
     public function getComboListRoomTvs(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $bedSizes = $roomApi->getRoomTvs();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatComboListHtml($bedSizes);
@@ -197,7 +227,9 @@ class RoomController extends AbstractController
     public function getFilteredRoomsHtml($checkin, $checkout, LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $rooms = $roomApi->getAvailableRooms($checkin, $checkout, $request);
         $roomsPageHTML = new RoomsPageHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatHtml($rooms, $roomApi);
@@ -236,6 +268,9 @@ class RoomController extends AbstractController
     public function getRoomSlide($roomId,Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $roomImages = $roomApi->getRoomImages($roomId);
         $roomImagesHtml = new RoomImagesHTML($entityManager, $logger);
         $imagesHtml = $roomImagesHtml->formatHtml($roomImages);
@@ -251,9 +286,12 @@ class RoomController extends AbstractController
     /**
      * @Route("api/json/room/{id}")
      */
-    public function getRoomJson( $id, LoggerInterface $logger, RoomApi $roomApi): Response
+    public function getRoomJson( $id, Request $request, LoggerInterface $logger, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $room = $roomApi->getRoom($id);
 
         $serializer = SerializerBuilder::create()->build();

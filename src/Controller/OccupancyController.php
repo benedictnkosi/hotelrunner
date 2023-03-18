@@ -21,6 +21,9 @@ class OccupancyController extends AbstractController
     public function getOccupancy($days,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, StatsApi $statsApi, OccupancyApi $occupancyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $occupancyApi->getOccupancy($days);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -35,6 +38,9 @@ class OccupancyController extends AbstractController
     public function getOccupancyPerRoom($days,  LoggerInterface $logger,Request $request, EntityManagerInterface $entityManager, OccupancyApi $occupancyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $occupancyApi->getOccupancyPerRoom($days);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());

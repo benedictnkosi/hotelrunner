@@ -35,6 +35,9 @@ class ReservationController extends AbstractController
     public function getCalendar( LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $calendarHtml = new CalendarHTML($entityManager, $logger);
         $html = $calendarHtml->formatHtml();
         $response = array(
@@ -53,6 +56,9 @@ class ReservationController extends AbstractController
     public function getJsonCheckOutReservations($propertyId,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservations = $reservationApi->getCheckOutReservation($propertyId);
         $logger->info("back from other call");
         $logger->info("reservations count " . sizeof($reservations) );
@@ -66,6 +72,9 @@ class ReservationController extends AbstractController
     public function getReservations($period,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservations = "";
         switch ($period) {
             case "future":
@@ -104,6 +113,9 @@ class ReservationController extends AbstractController
     public function getReservationByIdHtml($reservationId,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $reservationApi->getReservation($reservationId);
         $reservationHtml = new SingleReservationHtml($entityManager, $logger);
         $html = $reservationHtml->formatHtml($reservation);
@@ -124,6 +136,9 @@ class ReservationController extends AbstractController
     public function getReservationById($reservationId, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $reservationApi->getReservationJson($reservationId);
         $callback = $request->get('callback');
         $response = new JsonResponse($response, 200, array());
@@ -243,7 +258,9 @@ class ReservationController extends AbstractController
     public function updateReservationCheckInTime($reservationId, $checkInTime, $checkOutTime, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $reservationApi->getReservation($reservationId);
 
         $reservation->SetCheckInTime($checkInTime);
@@ -262,7 +279,9 @@ class ReservationController extends AbstractController
     public function updateReservationDates($reservationId, $checkInDate, $checkOutDate, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationDate($reservation, $checkInDate, $checkOutDate, $blockedRoomApi);
 
@@ -278,7 +297,9 @@ class ReservationController extends AbstractController
     public function updateReservationRoom($reservationId, $roomId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationRoom($reservation, $roomId);
         $callback = $request->get('callback');
@@ -293,7 +314,9 @@ class ReservationController extends AbstractController
     public function updateReservationConfirmationCode($reservationId, $confirmationCode, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationOriginUrl($reservation, $confirmationCode);
         $callback = $request->get('callback');
@@ -309,6 +332,7 @@ class ReservationController extends AbstractController
     public function creatReservation( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+
         if (!$request->isMethod('post')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
@@ -364,6 +388,9 @@ class ReservationController extends AbstractController
     public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Methods: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $logger->info("queue message" . $request->get("message"));
 
         //get uuid from the message
@@ -451,7 +478,9 @@ class ReservationController extends AbstractController
     public function getInvoiceDetails($reservationId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $reservationApi->getReservation($reservationId);
         $invoiceHtml = new InvoiceHTML($entityManager, $logger);
         $html = $invoiceHtml->formatHtml($reservation);
@@ -471,6 +500,9 @@ class ReservationController extends AbstractController
     public function sendReviewRequest($propertyId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $reservationApi->sendReviewRequest($propertyId);
         $callback = $request->get('callback');
         $response = new JsonResponse($response, 200, array());
@@ -500,6 +532,9 @@ class ReservationController extends AbstractController
     public function removeAddOnFromReservation($addOnId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('remove')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $addOnsApi->removeAddOnFromReservation($addOnId);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -510,9 +545,12 @@ class ReservationController extends AbstractController
     /**
      * @Route("api/json/reservation/{id}")
      */
-    public function getReservationJson( $id, LoggerInterface $logger, ReservationApi $api): Response
+    public function getReservationJson( $id, Request $request, LoggerInterface $logger, ReservationApi $api): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $reservation = $api->getReservation($id);
 
         $serializer = SerializerBuilder::create()->build();

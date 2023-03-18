@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -18,6 +19,11 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return $this->render('signup.html', [
+                'error' => "Internal Server Error",
+            ]);
+        }
         try{
             if(strlen($request->get("_password")) < 1 || strlen($request->get("_username")) < 1){
                 return $this->render('signup.html', [

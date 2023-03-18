@@ -22,6 +22,9 @@ class ImageController extends AbstractController
     public function removeImage($imageName, LoggerInterface $logger,Request $request, EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('remove')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $roomApi->removeImage($imageName);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -35,6 +38,9 @@ class ImageController extends AbstractController
     public function markDefault($imageName, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $roomApi->markDefault($imageName);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -48,6 +54,9 @@ class ImageController extends AbstractController
     public function getRoomImagesJson($roomId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $roomApi->getRoomImagesJson($roomId);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -58,8 +67,11 @@ class ImageController extends AbstractController
     /**
      * @Route("no_auth/room/image/{fileName}", name="signup")
      */
-    public function getFile($fileName): Response
+    public function getFile($fileName, Request $request): Response
     {
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $uploadDir = __DIR__ . '/../..no_auth/room/image/';
         return new BinaryFileResponse($uploadDir . $fileName);
     }
@@ -70,6 +82,9 @@ class ImageController extends AbstractController
     public function uploadImage(LoggerInterface $logger, Request $request, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $file = $request->files->get('file');
         if (empty($file))
         {

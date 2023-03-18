@@ -39,6 +39,9 @@ class BlockedRoomController extends AbstractController
     public function getBlockedRooms( LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $blockedRooms = $blockedRoomApi->getBlockedRoomsByProperty();
         $blockedRoomsHTML = new BlockedRoomsHTML($entityManager, $logger);
         $formattedHtml = $blockedRoomsHTML->formatHtml($blockedRooms);
@@ -57,6 +60,9 @@ class BlockedRoomController extends AbstractController
     public function deleteBlockedRooms($id, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('remove')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $response = $blockedRoomApi->deleteBlockedRoom($id);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -67,9 +73,12 @@ class BlockedRoomController extends AbstractController
     /**
      * @Route("api/json/blockedroom/{id}")
      */
-    public function getGetBlockedRoomJson( $id, LoggerInterface $logger, BlockedRoomApi $blockedRoomApi): Response
+    public function getGetBlockedRoomJson( $id, LoggerInterface $logger,Request $request, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
         $blockedRoom = $blockedRoomApi->getBlockedRoom($id);
 
         $serializer = SerializerBuilder::create()->build();

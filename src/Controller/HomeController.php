@@ -123,6 +123,10 @@ class HomeController extends AbstractController
     public function isUserLoggedIn(LoggerInterface $logger, Request $request, GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Internal server error" , 500, array());
+        }
+
         if(isset($_SESSION["PROPERTY_ID"])){
             $response = array("logged_in" => "true");
         }else{
