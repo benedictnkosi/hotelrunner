@@ -359,7 +359,7 @@ function blockGuest(event) {
             },
             error: function (xhr) {
                 $("body").removeClass("loading");
-                if (xhr.status === 404) {
+                if (xhr.status === 403) {
                     showResErrorMessage("reservation", "Unauthorised to use this function");
                 } else {
                     showResErrorMessage("reservation", "Server Error");
@@ -594,7 +594,7 @@ function removeAddOnFromBooking(event) {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("reservation", "Unauthorised to use this function");
             } else {
                 showResErrorMessage("reservation", "Server Error");

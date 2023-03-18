@@ -891,7 +891,7 @@ function deleteGuest(event) {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
@@ -1098,7 +1098,7 @@ function deleteScheduledMessage(event) {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
@@ -1128,7 +1128,7 @@ function createMessageTemplate() {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
@@ -1268,7 +1268,7 @@ function removeChannel(event) {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
