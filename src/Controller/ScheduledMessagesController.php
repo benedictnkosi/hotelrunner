@@ -157,7 +157,7 @@ class ScheduledMessagesController extends AbstractController
         }
         $response = $scheduleMessageApi->createScheduleMessage($messageId, $scheduleId, $rooms);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -173,7 +173,7 @@ class ScheduledMessagesController extends AbstractController
         }
         $response = $scheduleMessageApi->createMessageTemplate($name, $message);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -208,7 +208,7 @@ class ScheduledMessagesController extends AbstractController
         }
         $response = $scheduleMessageApi->deleteScheduledMessages($scheduleMessageId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }

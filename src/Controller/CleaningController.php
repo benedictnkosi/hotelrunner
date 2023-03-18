@@ -67,7 +67,7 @@ class CleaningController extends AbstractController
 
         $response = $cleaningApi->addCleaningToReservation($request->get('id'),$request->get('employee_id'));
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }

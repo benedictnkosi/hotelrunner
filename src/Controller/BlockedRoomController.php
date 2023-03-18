@@ -28,7 +28,7 @@ class BlockedRoomController extends AbstractController
         }
         $response = $blockedRoomApi->blockRoom($request->get('room'),  $request->get('start_date'), $request->get('end_date'), urldecode($request->get('note')));
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -65,7 +65,7 @@ class BlockedRoomController extends AbstractController
         }
         $response = $blockedRoomApi->deleteBlockedRoom($id);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }

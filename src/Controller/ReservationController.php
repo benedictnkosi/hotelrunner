@@ -195,7 +195,7 @@ class ReservationController extends AbstractController
                         );
                         $logger->info(print_r($responseArray, true));
                         $callback = $request->get('callback');
-                        $response = new JsonResponse($responseArray, 200, array());
+                        $response = new JsonResponse($responseArray, 200 , array());
                         $response->setCallback($callback);
                         return $response;
                     }
@@ -247,7 +247,7 @@ class ReservationController extends AbstractController
         }
         $response = $reservationApi->updateReservation($reservation);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -268,7 +268,7 @@ class ReservationController extends AbstractController
 
         $response = $reservationApi->updateReservation($reservation);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -286,7 +286,7 @@ class ReservationController extends AbstractController
         $response = $reservationApi->updateReservationDate($reservation, $checkInDate, $checkOutDate, $blockedRoomApi);
 
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -303,7 +303,7 @@ class ReservationController extends AbstractController
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationRoom($reservation, $roomId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -320,7 +320,7 @@ class ReservationController extends AbstractController
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationOriginUrl($reservation, $confirmationCode);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -347,7 +347,7 @@ class ReservationController extends AbstractController
         $response = $reservationApi->createReservation($request->get('room_ids'), $request->get('name'), $request->get('phone_number'),
             $request->get('email'), $request->get('check_in_date'), $request->get('check_out_date'), $request, $request->get('adult_guests'), $request->get('child_guests'), null, false, "website", "website", $request->get('smoking'));
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -376,7 +376,7 @@ class ReservationController extends AbstractController
 
         $response = $reservationApi->uploadReservations(file_get_contents($file), $request);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -521,7 +521,7 @@ class ReservationController extends AbstractController
         }
         $response = $guestApi->blockGuest($reservationId, $reason);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -537,7 +537,7 @@ class ReservationController extends AbstractController
         }
         $response = $addOnsApi->removeAddOnFromReservation($addOnId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }

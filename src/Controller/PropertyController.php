@@ -41,7 +41,7 @@ class PropertyController extends AbstractController
         }
         $response = $propertyApi->updatePropertyTerms( $terms);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }

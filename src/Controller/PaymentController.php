@@ -28,7 +28,7 @@ class PaymentController extends AbstractController
 
         $response = $paymentApi->addPayment($request->get('id'), $request->get('amount'), str_replace("_","/",$request->get('reference')), $request->get('channel'));
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -44,7 +44,7 @@ class PaymentController extends AbstractController
         }
         $response = $paymentApi->removePayment($paymentId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -62,7 +62,7 @@ class PaymentController extends AbstractController
 
         $response = $paymentApi->addDiscount($request->get('id'), $request->get('amount'), "discount");
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }

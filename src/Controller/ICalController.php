@@ -78,7 +78,7 @@ class ICalController extends AbstractController
         }
         $response = $iCalApi->addNewChannel($roomId, str_replace("###", "/", $link));
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -94,7 +94,7 @@ class ICalController extends AbstractController
         }
         $response = $iCalApi->removeIcalLink($linkId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 204, array());
         $response->setCallback($callback);
         return $response;
     }

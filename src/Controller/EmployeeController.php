@@ -51,7 +51,7 @@ class EmployeeController extends AbstractController
 
         $response = $employeeApi->createEmployee($request->get('name'));
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -68,7 +68,7 @@ class EmployeeController extends AbstractController
         }
         $response = $employeeApi->deleteEmployee($employeeId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -84,7 +84,7 @@ class EmployeeController extends AbstractController
         }
         $response = $employeeApi->updateEmployeeName($employeeId, $newValue);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }

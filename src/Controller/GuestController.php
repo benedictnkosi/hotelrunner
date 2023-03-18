@@ -50,7 +50,7 @@ class GuestController extends AbstractController
         $guestApi->sendBookDirectSMS($guestId);
 
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -66,7 +66,7 @@ class GuestController extends AbstractController
         }
         $response = $guestApi->updateGuestEmail($guestId, $email);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -82,7 +82,7 @@ class GuestController extends AbstractController
         }
         $response = $guestApi->updateGuestIdNumber($guestId, $idNumber);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -147,7 +147,7 @@ class GuestController extends AbstractController
 
 
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }

@@ -27,7 +27,7 @@ class ImageController extends AbstractController
         }
         $response = $roomApi->removeImage($imageName);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -43,7 +43,7 @@ class ImageController extends AbstractController
         }
         $response = $roomApi->markDefault($imageName);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 201, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -115,7 +115,7 @@ class ImageController extends AbstractController
             return new Response("500 Internal Server Error",
                 Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'text/plain']);
         }
-        return new Response("File uploaded",  Response::HTTP_OK,
+        return new Response("File uploaded",  201,
             ['content-type' => 'text/plain']);
     }
 
