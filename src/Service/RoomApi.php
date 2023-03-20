@@ -395,6 +395,7 @@ class RoomApi
     public function addImageToRoom($imageName, $roomId): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
+        $this->logger->debug("room id is " . $roomId);
         try {
             $roomImage = new RoomImages();
             $room = $this->getRoom($roomId);

@@ -465,7 +465,7 @@ function populateFormWithRoom(event) {
         let url = "/no_auth/rooms/" + roomId;
         $("body").addClass("loading");
         $.getJSON(url + "?callback=?", null, function (response) {
-            //initialiseImageUpload(roomId);
+            initialiseImageUpload(roomId);
             $("body").removeClass("loading");
             if (response[0].result_code === 0) {
                 $('#manage_room_h3').html("Update " + response[0].name + " Details");
