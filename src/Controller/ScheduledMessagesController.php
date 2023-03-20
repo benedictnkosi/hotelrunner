@@ -203,7 +203,7 @@ class ScheduledMessagesController extends AbstractController
     public function deleteScheduledMessages($scheduleMessageId, Request $request,LoggerInterface $logger, ScheduleMessageApi $scheduleMessageApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('remove')) {
+        if (!$request->isMethod('delete')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
         $response = $scheduleMessageApi->deleteScheduledMessages($scheduleMessageId);

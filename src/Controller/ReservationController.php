@@ -532,7 +532,7 @@ class ReservationController extends AbstractController
     public function removeAddOnFromReservation($addOnId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('remove')) {
+        if (!$request->isMethod('delete')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
         $response = $addOnsApi->removeAddOnFromReservation($addOnId);

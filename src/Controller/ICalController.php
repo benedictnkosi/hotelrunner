@@ -89,7 +89,7 @@ class ICalController extends AbstractController
     public function removeChannel($linkId, LoggerInterface $logger, Request $request, ICalApi $iCalApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('remove')) {
+        if (!$request->isMethod('delete')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
         $response = $iCalApi->removeIcalLink($linkId);

@@ -63,7 +63,7 @@ class EmployeeController extends AbstractController
     public function deleteEmployee($employeeId, LoggerInterface $logger, Request $request,EmployeeApi $employeeApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('remove')) {
+        if (!$request->isMethod('delete')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
         $response = $employeeApi->deleteEmployee($employeeId);

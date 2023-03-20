@@ -612,7 +612,7 @@ function deleteAddOn(event) {
 
     $.ajax({
         url : url,
-        type: "REMOVE",
+        type: "DELETE",
         data : "",
         success: function(response)
         {
@@ -850,7 +850,7 @@ function deleteEmployee(event) {
     let url = "/admin_api/employee/delete/" + employeeId;
     $.ajax({
         url : url,
-        type: "REMOVE",
+        type: "DELETE",
         data : "",
         success: function(response)
         {
@@ -1308,7 +1308,7 @@ function initialiseImageUpload(roomId) {
         maxFilesize: 5,
         addRemoveLinks: true,
         uploadMultiple: false,
-        maxFiles: 20,
+        maxFiles: 22,
 
         // on initialize get the images on the
         // server for the partner
@@ -1353,13 +1353,26 @@ function initialiseImageUpload(roomId) {
             // delete from server
             this
                 .on("removedfile", function (file) {
-                    $
-                        .get("/api/configuration/removeimage/" + file.name, function (data, status) {
-                            if (data[0].result_code !== 0) {
-                                showResErrorMessage("configuration", data[0].result_message);
-                                initialiseImageUpload(roomId);
+                    $.ajax({
+                        url: "/api/configuration/removeimage/" + file.name,
+                        type: 'DELETE',
+                        success: function(data) {
+                            $("body").removeClass("loading");
+                            showResErrorMessage("configuration", data[0].result_message);
+                            initialiseImageUpload(roomId);
+                        },
+                        error: function (xhr) {
+                            $("body").removeClass("loading");
+                            if (xhr.status === 403) {
+                                showResErrorMessage("configuration", "Unauthorised to use this function");
+                            } else {
+                                showResErrorMessage("configuration", "Internal Server Error");
                             }
-                        });
+                        }
+                    });
+
+
+
                 });
 
             // on successfull upload, add the

@@ -39,7 +39,7 @@ class PaymentController extends AbstractController
     public function removePayment($paymentId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('remove')) {
+        if (!$request->isMethod('delete')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
         $response = $paymentApi->removePayment($paymentId);
