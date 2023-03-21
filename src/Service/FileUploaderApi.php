@@ -87,7 +87,7 @@ class FileUploaderApi
         $name = $_FILES[$fileBrowse]["name"];
         $ext = $this->getExtension($name);
         if (!is_dir($this->destinationPath)) {
-            $this->setMessage("Destination folder is not a directory ");
+            $this->setMessage("Destination folder is not a directory: ". $this->destinationPath);
             $this->logger->debug($this->getMessage());
         } else if (!is_writable($this->destinationPath)) {
             $this->setMessage("Destination is not writable !");
