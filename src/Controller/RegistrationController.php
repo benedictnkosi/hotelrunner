@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Property;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -66,8 +67,15 @@ class RegistrationController extends AbstractController
             $user->setProperty($property);
             $roles = [ $request->get("_role")];
             $user->setRoles($roles);
-            $entityManager->persist($user);
-            $entityManager->flush();
+            try{
+                $entityManager->persist($user);
+                $entityManager->flush();
+            }catch (Exception $exception){
+                return $this->render('signup.html', [
+                    'error' => "Failed to register the user. please contact administrator",
+                ]);
+            }
+
 
             return $this->render('signup.html', [
                 'error' => "Successfully registered, Please sign in",
