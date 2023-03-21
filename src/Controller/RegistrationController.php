@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Property;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Exception;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
