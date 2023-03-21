@@ -88,16 +88,13 @@ class FileUploaderApi
         $ext = $this->getExtension($name);
         if (!is_dir($this->destinationPath)) {
             $this->setMessage("Destination folder is not a directory ");
-            $this->logger->debug(print_r($this->getMessage()));
+            $this->logger->debug($this->getMessage());
         } else if (!is_writable($this->destinationPath)) {
             $this->setMessage("Destination is not writable !");
-            $this->logger->debug(print_r($this->getMessage()));
         } else if (empty($name)) {
             $this->setMessage("File not selected ");
-            $this->logger->debug(print_r($this->getMessage()));
         } else if ($size > $this->maxSize) {
             $this->setMessage("Too large file !");
-            $this->logger->debug(print_r($this->getMessage()));
         } else if ($this->allowAll || (in_array($ext, $this->extensions))) {
             $this->logger->debug("Starting upload....");
             $this->uploadName = $this->imageSeq . "-" . substr(md5(rand(1111, 9999)), 0, 8) . $this->getRandom() . rand(1111, 1000) . rand(99, 9999) . "." . $ext;
@@ -110,7 +107,6 @@ class FileUploaderApi
             echo 'image width ' . $width;
             if ($width < $minDim || $height < $minDim) {
                 $this->setMessage('Image is too small. Please upload an image with a better quality');
-                $this->logger->debug(print_r($this->getMessage()));
                 return false;
             }
 
@@ -151,14 +147,11 @@ class FileUploaderApi
                     $result = true;
                 } else {
                     $this->setMessage("Upload failed , try later !");
-                    $this->logger->debug(print_r($this->getMessage()));
                 }
             }
         } else {
             $this->setMessage("Invalid file format !");
-            $this->logger->debug(print_r($this->getMessage()));
         }
-        $this->logger->debug(print_r($this->getMessage()));
         return $result;
     }
 }
