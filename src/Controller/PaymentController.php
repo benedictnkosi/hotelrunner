@@ -44,7 +44,7 @@ class PaymentController extends AbstractController
         }
         $response = $paymentApi->removePayment($paymentId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 204, array());
+        $response = new JsonResponse($response , 200, array());
         $response->setCallback($callback);
         return $response;
     }

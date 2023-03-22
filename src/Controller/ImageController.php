@@ -25,9 +25,9 @@ class ImageController extends AbstractController
         if (!$request->isMethod('delete')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
-        $response = $roomApi->removeImage($imageName);
+        $result = $roomApi->removeImage($imageName);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 204, array());
+        $response = new JsonResponse($result , 200, array());
         $response->setCallback($callback);
         return $response;
     }

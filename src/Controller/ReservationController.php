@@ -537,7 +537,7 @@ class ReservationController extends AbstractController
         }
         $response = $addOnsApi->removeAddOnFromReservation($addOnId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 204, array());
+        $response = new JsonResponse($response , 200, array());
         $response->setCallback($callback);
         return $response;
     }
