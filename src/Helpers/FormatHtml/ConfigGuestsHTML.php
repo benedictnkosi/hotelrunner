@@ -36,7 +36,7 @@ class ConfigGuestsHTML
                         </div>
                         <div class="addon-right-div">
                             <label>Phone Number</label>
-                            <input type="text" class="guest_field" data-guest-id="'.$guest->getId().'" data-guest-field="phoneNumber" value="'.$guest->getPhoneNumber().'"
+                            <input type="text" class="guest_field" data-guest-id="'.$guest->getId().'" data-guest-field="phoneNumber" maxlength="30" value="'.$guest->getPhoneNumber().'"
                                    required/>
                                    
                         </div>

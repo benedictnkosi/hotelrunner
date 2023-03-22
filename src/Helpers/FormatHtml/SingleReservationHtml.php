@@ -113,7 +113,7 @@ class SingleReservationHtml
         $this->logger->debug(" debug1 - checkout  " . $reservation->getCheckOut()->format("Y-m-d"));
 
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-calendar glyphicon-small-icon" > 
-						 <input id="checkindate_' . $reservationId . '" data-res-id="' . $reservationId . '" type="text"  name="check_in_date" class="input-as-text date-picker check_in_date_input" value="' . $reservation->getCheckIn()->format("m/d/Y") .
+						 <input id="checkindate_' . $reservationId . '" data-res-id="' . $reservationId . '" maxlength="30" type="text"  name="check_in_date" class="input-as-text date-picker check_in_date_input" value="' . $reservation->getCheckIn()->format("m/d/Y") .
             ' - ' . $reservation->getCheckOut()->format("m/d/Y") . '" ' . $checkInDateDisabled . '/>
 						 </span></p>';
 
@@ -374,7 +374,7 @@ class SingleReservationHtml
 
             $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="guest_phone_input" type="text" data-guestid="' . $guest->getId() . '"
+                <input id="guest_phone_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
 										 class="textbox  display-none block-display reservation_input" placeholder="Phone number"/><div id="add_guest_phone_button" class="ClickableButton res_add_guest_phone" data-guestid="' . $guest->getId() . '" >Add Phone Number</div></div>';
         }
 
@@ -384,7 +384,7 @@ class SingleReservationHtml
 
             $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="guest_email_input" type="text" data-guestid="' . $guest->getId() . '"
+                <input id="guest_email_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
 										 class="textbox  display-none block-display reservation_input" placeholder="Email Address"/><div id="add_guest_email_button" class="ClickableButton res_add_guest_email" data-guestid="' . $guest->getId() . '" >Add Email</div></div>';
         }
 
@@ -394,7 +394,7 @@ class SingleReservationHtml
 
             $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="guest_id_input" type="text" data-guestid="' . $guest->getId() . '"
+                <input id="guest_id_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
 										 class="textbox  display-none block-display reservation_input" placeholder="Passport\ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID\Passport</div></div>';
         }
 
@@ -410,9 +410,9 @@ class SingleReservationHtml
         $htmlString .= ' <option value="transfer">Transfer</option>';
 
         $htmlString .= '</select> 
-            <p>Amount</p><input id="amount_' . $reservationId . '" type="text"
+            <p>Amount</p><input maxlength="30" id="amount_' . $reservationId . '" type="text"
 										 class="textbox  display-none block-display reservation_input" placeholder="0.00"/>
-										 <p>Payment Reference</p><input id="payment_reference_' . $reservationId . '" type="text"
+										 <p>Payment Reference</p><input id="payment_reference_' . $reservationId . '" type="text" maxlength="30" 
 										 class="textbox display-none block-display reservation_input payment_reference" placeholder="e.g. 2023/01/000037"/>
             </div>';
 
@@ -425,7 +425,7 @@ class SingleReservationHtml
 
         $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="discount_' . $reservationId . '" type="text"
+                <input maxlength="30" id="discount_' . $reservationId . '" type="text" 
 										 class="textbox  display-none block-display reservation_input" placeholder="0.00"/><div id="add_discount_button_' . $reservationId . '" class="ClickableButton res_add_discount" data-resid="' . $reservationId . '" >Add Discount</div></div>';
 
         // add notes
@@ -505,7 +505,7 @@ class SingleReservationHtml
             //check if cleanliness score is not captured
             if (strcasecmp($reservation->getCleanlinessScore(), "0") == 0) {
                 //display the input field to capture score
-                $htmlString .= '<input name="score" type="text" id="score_input_' . $reservationId . '"   
+                $htmlString .= '<input name="score" maxlength="30" type="text" id="score_input_' . $reservationId . '"   
 							placeholder="Score" class="textbox cleaning_score_input display-none">';
                 $htmlString .= '<div class="ClickableButton res_add_add_on" reservation_id="' . $reservationId . '">Cleanliness Score</div>';
             } else {

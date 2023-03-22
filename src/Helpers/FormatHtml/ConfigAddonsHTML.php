@@ -25,21 +25,21 @@ class ConfigAddonsHTML
                 $html .= '<div class="addon_row">
                         <div class="addon-left-div">
                             <label>Add-ons Name</label>
-                            <input type="text" class="addon_field" data-addon-id="'.$addOn->getId().'" data-addon-field="name" value="'.$addOn->getName().'"
+                            <input type="text" class="addon_field"  maxlength="30" data-addon-id="'.$addOn->getId().'" data-addon-field="name" value="'.$addOn->getName().'"
                                    required/>
                                    <div class="ClickableButton remove_addon_button" data-addon-id="'.$addOn->getId().'" >Remove</div>
                                    
                         </div>
                         <div class="addon-right-div">
                             <label>Price</label>
-                            <input type="text" class="addon_field" data-addon-id="'.$addOn->getId().'" data-addon-field="price" value="'.$addOn->getPrice().'"
+                            <input type="text" class="addon_field" maxlength="30" data-addon-id="'.$addOn->getId().'" data-addon-field="price" value="'.$addOn->getPrice().'"
                                    required/>
                                    
                         </div>
                         
                         <div class="addon-right-div">
                             <label>Quantity</label>
-                            <input type="text" class="addon_field" data-addon-id="'.$addOn->getId().'" data-addon-field="quantity" value="'.$addOn->getQuantity().'"
+                            <input type="text" class="addon_field" maxlength="30" data-addon-id="'.$addOn->getId().'" data-addon-field="quantity" value="'.$addOn->getQuantity().'"
                                    required/>
                                    
                         </div>
