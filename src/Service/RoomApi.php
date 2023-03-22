@@ -208,7 +208,7 @@ class RoomApi
                         'status' => $room->GetStatus()->getId(),
                         'sleeps' => $room->GetSleeps(),
                         'description' => urldecode($room->getDescription()),
-                        'description_html' => $this->replaceWithBold(urldecode($room->getDescription())),
+                        'description_html' => $this->replaceWithBold($room->getDescription()),
                         'beds' => json_encode($roomBeds),
                         'stairs' => $stairs,
                         'linked_room' => $linkedRoomId,
