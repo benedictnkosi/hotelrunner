@@ -600,11 +600,11 @@ class RoomApi
             $this->logger->debug("getting current beds");
             $currentSelectedBeds = $this->em->getRepository(RoomBeds::class)->findBy(array('room' => $room->getId()));
 
-            if($currentSelectedBeds !== null){
+            if ($currentSelectedBeds !== null) {
                 foreach ($currentSelectedBeds as $currentSelectedBed){
                     $this->logger->debug("removing new Bed " .$currentSelectedBed->getBed()->getName() );
                     $this->em->remove($currentSelectedBed);
-                    $this->em->flush($currentSelectedBed);
+                   // $this->em->flush($currentSelectedBed);
                 }
             }
 
