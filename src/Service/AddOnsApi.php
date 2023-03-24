@@ -259,8 +259,9 @@ class AddOnsApi
                 );
             }
         } catch (Exception $ex) {
+            $this->logger->debug($ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString());
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => "Failed to delete employee",
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
