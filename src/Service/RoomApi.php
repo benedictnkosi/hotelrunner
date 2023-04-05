@@ -159,6 +159,8 @@ class RoomApi
         $responseArray = array();
         try {
             $_SESSION['ROOM_ID'] = $roomId;
+            $this->logger->debug("room id saved in room as : " . $_SESSION['ROOM_ID']);
+
             if (strcmp($roomId, "all") === 0) {
                 //check if the PROPERTY_ID if not get it from the host
                 $propertyApi = new PropertyApi($this->em, $this->logger);
