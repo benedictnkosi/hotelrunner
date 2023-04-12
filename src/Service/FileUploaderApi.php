@@ -104,7 +104,7 @@ class FileUploaderApi
             $minDim = 320;
             $file_name = $_FILES[$fileBrowse]['tmp_name'];
             list($width, $height, $type, $attr) = getimagesize($file_name);
-            echo 'image width ' . $width;
+            //echo 'image width ' . $width;
             if ($width < $minDim || $height < $minDim) {
                 $this->setMessage('Image is too small. Please upload an image with a better quality');
                 return false;
