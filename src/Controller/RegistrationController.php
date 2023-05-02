@@ -86,7 +86,6 @@ class RegistrationController extends AbstractController
                 'error' => $exception->getMessage(),
             ]);
         }
-
     }
 
 

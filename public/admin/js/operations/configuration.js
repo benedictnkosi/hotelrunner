@@ -18,6 +18,7 @@ $(document).ready(function () {
 function createBedsTokenField(selectedRooms) {
     $('#beds_tokenfield').tokenfield('destroy');
     $('#beds_tokenfield').val(selectedRooms);
+    $('#beds_tokenfield').tokenfield('readonly');
     $('#beds_tokenfield').tokenfield({
         autocomplete: {
             source: function (request, response) {
@@ -30,14 +31,9 @@ function createBedsTokenField(selectedRooms) {
             },
             delay: 100
         },
-        showAutocompleteOnFocus: true
+        showAutocompleteOnFocus: true,
+        createTokensOnBlur: false
     });
-
-    $('#beds_tokenfield')
-        .on('tokenfield:createdtoken', function (e) {
-            $('#beds_tokenfield-tokenfield').blur();
-        })
-        .tokenfield()
 }
 
 function loadConfigurationPageData() {
@@ -495,11 +491,19 @@ function populateFormWithRoom(event) {
 
                 createBedsTokenField(stringSelectedBeds);
 
+                $('input[name="kids_allowed"]').each(function() {
+                    this.checked = false;
+                });
+
                 if(response[0].kids_policy === true){
                     $("#yes_kids_radio").prop("checked", true);
-                }else{
+                }else if(response[0].kids_policy === false){
                     $("#no_kids").prop("checked", true);
                 }
+
+                $('input[name="amenities"]').each(function() {
+                    this.checked = false;
+                });
 
                 const amenities = JSON.parse(response[0].amenities);
                 for (i = 0; i < amenities.length; i++) {
@@ -1359,9 +1363,15 @@ function initialiseImageUpload(roomId) {
                         const imageName = event.target.getAttribute("alt");
                         let url = "/api/configuration/markdefault/" + imageName;
                         isUserLoggedIn();
-                        $.getJSON(url + "?callback=?", null, function (response) {
-                            if (response[0].result_code === 0) {
-                                initialiseImageUpload(roomId);
+                        $.ajax({
+                            url: url,
+                            type: "PUT",
+                            data: "",
+                            success: function (response) {
+                                $("body").removeClass("loading");
+                                if (response[0].result_code === 0) {
+                                    initialiseImageUpload(roomId);
+                                }
                             }
                         });
                     });
@@ -1387,13 +1397,10 @@ function initialiseImageUpload(roomId) {
                             }
                         }
                     });
-
-
-
                 });
 
-            // on successfull upload, add the
-            // server anme mappinging to the
+            // on successful upload, add the
+            // server anme mapping to the
             // array and save in sessiopn
             // storage
             this

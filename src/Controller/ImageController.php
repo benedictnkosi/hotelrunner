@@ -96,7 +96,7 @@ class ImageController extends AbstractController
         $uploadDir = __DIR__ . '/../../public/room/image/';
         $uploader   =   new FileUploaderApi($logger);
         $uploader->setDir($uploadDir);
-        $uploader->setExtensions(array('jpg','jpeg','png','gif'));  //allowed extensions list//
+        $uploader->setExtensions(array('jpeg','png'));  //allowed extensions list//
         $uploader->setMaxSize(1);                          //set max file size to be allowed in MB//
 
         if($uploader->uploadFile('file')){   //txtFile is the filebrowse element name //
