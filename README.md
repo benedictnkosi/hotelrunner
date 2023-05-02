@@ -65,6 +65,8 @@ TRUNCATE TABLE `cleaning`;
 delete FROM `reservations` where id > 0;
 delete FROM `guest` where id > 0;
 delete from room_images where id > 0;
+delete from room_beds where id > 0;
+
 delete from blocked_rooms where id > 0;
 delete from ical where id > 0;
 delete from schedule_messages where id > 0;
