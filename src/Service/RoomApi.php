@@ -218,6 +218,8 @@ class RoomApi
                         'uploaded_images' => $imagesHtml,
                         'tv' => $room->getTv()->getId(),
                         'tv_name' => $room->getTv()->getName(),
+                        'kids_policy' => $room->isKids(),
+                        'amenities' => $room->getAmenities(),
                         'ical_links' => $icalFormattedHtml,
                         'export_link' => "https://" . SERVER_NAME . "/public/ical/export/" . $room->GetId(),
                         'result_code' => 0
@@ -469,9 +471,7 @@ class RoomApi
             $i = 1;
             foreach ($roomBedSizes as $roomBedSize) {
                 $i++;
-                if(sizeof($roomBedSizes) > $i){
-                    $json[] = $roomBedSize->getName();
-                }
+                $json[] = $roomBedSize->getName();
             }
             return $json;
         } catch (Exception $ex) {
@@ -526,12 +526,13 @@ class RoomApi
         return $responseArray;
     }
 
-    public function updateCreateRoom($id, $name, $price, $sleeps, $status, $linkedRoom, $size, $beds, $stairs, $tv, $description, $kidsPolicy): array
+    public function updateCreateRoom($id, $name, $price, $sleeps, $status, $linkedRoom, $size, $beds, $stairs, $tv, $description, $kidsPolicy, $amenities): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
             $room = $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $id));
+            $successMessage = "";
             if ($room == null && strcmp($id, "0") ==0) {
                 $room = new Rooms();
                 $successMessage = "Successfully created room";
@@ -542,16 +543,11 @@ class RoomApi
                     'result_code' => 1
                 );
                 return $responseArray;
-            } else {
+            }else{
                 $successMessage = "Successfully updated room";
-                $responseArray[] = array(
-                    'result_message' => $successMessage,
-                    'result_code' => 0
-                );
-                return $responseArray;
             }
 
-            /*if(intval($sleeps) < 1){
+            if(intval($sleeps) < 1){
                 $responseArray[] = array(
                     'result_message' => "Number of occupants can not be less than 1",
                     'result_code' => 1,
@@ -559,7 +555,7 @@ class RoomApi
                     'room_name' => $room->getName()
                 );
                 return $responseArray;
-            }*/
+            }
 
             $beds = urldecode($beds);
             $beds = trim($beds);
@@ -576,25 +572,20 @@ class RoomApi
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $propertyId));
 
             $room->setName($name);
-            if(intval($price)>999){
-                $price = "999";
-            }
             $room->setPrice($price);
             $room->setKids($kidsPolicy);
             $room->setSleeps($sleeps);
             $room->setStatus($roomStatus);
             $room->setLinkedRoom($linkedRoom);
             $room->setSize($size);
-            $stairs = 1;
             $room->setStairs($stairs);
-            $room->setDescription(substr(urldecode($description), 0, 200));
+            $room->setDescription(urldecode($description));
             $room->setProperty($property);
             $room->setTv($tvType);
-
             $now = new DateTime();
             $room->setBdcLastExport($now);
             $room->setAirbnbLastExport($now);
-
+            $room->setAmenities($amenities);
             $this->em->persist($room);
             $this->em->flush($room);
 
@@ -606,11 +597,9 @@ class RoomApi
                 foreach ($currentSelectedBeds as $currentSelectedBed){
                     $this->logger->debug("removing new Bed " .$currentSelectedBed->getBed()->getName() );
                     $this->em->remove($currentSelectedBed);
-                   // $this->em->flush($currentSelectedBed);
+                    $this->em->flush($currentSelectedBed);
                 }
             }
-
-
 
             // add new selected beds
             //update beds

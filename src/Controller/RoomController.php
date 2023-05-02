@@ -252,9 +252,11 @@ class RoomController extends AbstractController
             return new JsonResponse("Internal server error" , 500, array());
         }
 
+        $logger->info("amenities: " . json_encode($request->get('amenities')));
+
         $response = $roomApi->updateCreateRoom($request->get('room_id'), $request->get('room_name'), $request->get('room_price'), $request->get('room_sleeps'),
             $request->get('room_status'), $request->get('linked_room'), $request->get('room_size'), $request->get('bed'), $request->get('stairs'),$request->get('tv')
-            , str_replace("###", "/", $request->get('description')), $request->get('kids_policy'));
+            , str_replace("###", "/", $request->get('description')), $request->get('kids_policy'), json_encode($request->get('amenities')));
 
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 201, array());

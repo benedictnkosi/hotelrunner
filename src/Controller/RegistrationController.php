@@ -33,15 +33,15 @@ class RegistrationController extends AbstractController
             }
 
             if (!preg_match("/^[a-zA-Z-' ]*$/",$request->get("_username"))) {
-                /*return $this->render('signup.html', [
+                return $this->render('signup.html', [
                     'error' => "Username must be a valid email address",
-                ]);*/
+                ]);
             }
 
             if(strcmp($request->get("_password"), $request->get("_confirm_password")) !== 0){
-                /*return $this->render('signup.html', [
-                    'error' => "Passwards are not the same",
-                ]);*/
+                return $this->render('signup.html', [
+                    'error' => "Passwords are not the same",
+                ]);
             }
 
             $passwordErrors = $this->validatePassword($request->get("_password"));
@@ -71,11 +71,11 @@ class RegistrationController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
             }catch (Exception $exception){
+                $logger->error($exception->getMessage());
                 return $this->render('signup.html', [
-                    'error' => "Failed to register the user. please contact administrator",
+                    'error' => "Failed to register the user. please contact administrator. " . $exception->getMessage(),
                 ]);
             }
-
 
             return $this->render('signup.html', [
                 'error' => "Successfully registered, Please sign in",
@@ -93,10 +93,10 @@ class RegistrationController extends AbstractController
     public function validatePassword($pass){
         $errors = array();
         if (strlen($pass) < 8 || strlen($pass) > 16) {
-            //$errors[] = "Password should be min 8 characters and max 16 characters";
+            $errors[] = "Password should be min 8 characters and max 16 characters";
         }
         if (!preg_match("/\d/", $pass)) {
-            //$errors[] = "Password should contain at least one digit";
+            $errors[] = "Password should contain at least one digit";
         }
         if (!preg_match("/[A-Z]/", $pass)) {
             $errors[] = "Password should contain at least one Capital Letter";

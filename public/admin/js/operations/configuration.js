@@ -193,6 +193,11 @@ function createUpdateRoom() {
     const select_Stairs = $('#select_Stairs').find(":selected").val();
     const select_tv = $('#select_tv').find(":selected").val();
 
+    let amenities = [];
+    $("input:checkbox[name=amenities]:checked").each(function(){
+        amenities.push($(this).val());
+    });
+
     if (input_bed.length < 1) {
         $('#beds_tokenfield').form();
     }
@@ -223,6 +228,7 @@ function createUpdateRoom() {
         stairs: select_Stairs,
         tv: select_tv,
         kids_policy: kids_policy,
+        amenities: amenities,
         description: encodeURIComponent(room_description.replaceAll("/", "###"))
     };
 
@@ -488,6 +494,17 @@ function populateFormWithRoom(event) {
                 }
 
                 createBedsTokenField(stringSelectedBeds);
+
+                if(response[0].kids_policy === true){
+                    $("#yes_kids_radio").prop("checked", true);
+                }else{
+                    $("#no_kids").prop("checked", true);
+                }
+
+                const amenities = JSON.parse(response[0].amenities);
+                for (i = 0; i < amenities.length; i++) {
+                    $('input[value="' + amenities[i] + '"]').prop("checked", true);
+                }
 
                 $('#select_tv').val(response[0].tv);
                 $('#select_Stairs').val(response[0].stairs);
@@ -1308,7 +1325,7 @@ function initialiseImageUpload(roomId) {
         maxFilesize: 5,
         addRemoveLinks: true,
         uploadMultiple: false,
-        maxFiles: 22,
+        maxFiles: 10,
 
         // on initialize get the images on the
         // server for the partner

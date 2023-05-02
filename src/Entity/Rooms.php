@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Rooms
  *
- * @ORM\Table(name="rooms", indexes={@ORM\Index(name="fk_room_property", columns={"property"}), @ORM\Index(name="fk_room_tv", columns={"tv"}), @ORM\Index(name="rooms_ibfk_2", columns={"status"}), @ORM\Index(name="rooms_ibfk_1", columns={"bed"})})
+ * @ORM\Table(name="rooms", indexes={@ORM\Index(name="fk_room_tv", columns={"tv"}), @ORM\Index(name="rooms_ibfk_2", columns={"status"}), @ORM\Index(name="rooms_ibfk_1", columns={"bed"}), @ORM\Index(name="fk_room_property", columns={"property"})})
  * @ORM\Entity
  */
 class Rooms
@@ -92,14 +92,11 @@ class Rooms
     private $kids = '0';
 
     /**
-     * @var RoomTv
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="RoomTv")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tv", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="amenities", type="string", length=500, nullable=false)
      */
-    private $tv;
+    private $amenities;
 
     /**
      * @var RoomBedSize
@@ -130,6 +127,16 @@ class Rooms
      * })
      */
     private $status;
+
+    /**
+     * @var RoomTv
+     *
+     * @ORM\ManyToOne(targetEntity="RoomTv")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="tv", referencedColumnName="id")
+     * })
+     */
+    private $tv;
 
     /**
      * @return int
@@ -308,20 +315,21 @@ class Rooms
     }
 
     /**
-     * @return RoomTv
+     * @return string
      */
-    public function getTv(): RoomTv
+    public function getAmenities(): string
     {
-        return $this->tv;
+        return $this->amenities;
     }
 
     /**
-     * @param RoomTv $tv
+     * @param string $amenities
      */
-    public function setTv(RoomTv $tv): void
+    public function setAmenities(string $amenities): void
     {
-        $this->tv = $tv;
+        $this->amenities = $amenities;
     }
+
 
     /**
      * @return RoomBedSize
@@ -369,6 +377,22 @@ class Rooms
     public function setStatus(RoomStatus $status): void
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return RoomTv
+     */
+    public function getTv(): RoomTv
+    {
+        return $this->tv;
+    }
+
+    /**
+     * @param RoomTv $tv
+     */
+    public function setTv(RoomTv $tv): void
+    {
+        $this->tv = $tv;
     }
 
 
