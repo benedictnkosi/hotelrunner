@@ -32,7 +32,9 @@ class RegistrationController extends AbstractController
                 ]);
             }
 
-            if (!preg_match("/^[a-zA-Z-' ]*$/",$request->get("_username"))) {
+            $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+
+            if (!preg_match($pattern,$request->get("_username"))) {
                 return $this->render('signup.html', [
                     'error' => "Username must be a valid email address",
                 ]);
