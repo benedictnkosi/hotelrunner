@@ -167,10 +167,12 @@ class PropertyApi
         $this->logger->info("Starting Method: " . __METHOD__);
         $propertyId = null;
         try {
+            $this->logger->info(print_r($request->headers, true));
+
             $referer = $request->headers->get('referer');
             $host = parse_url($referer, PHP_URL_HOST);
-            $this->logger->info("referrer is " . $referer);
-            $this->logger->info("referrer host is " . $host);
+            $this->logger->info("referer is " . $referer);
+            $this->logger->info("referer host is " . $host);
 
             $property = $this->em->getRepository(Property::class)->findOneBy(
                 array("serverName" => $host));
