@@ -101,9 +101,8 @@ class ImageController extends AbstractController
         if(!$uploader->uploadFile()){
             //upload failed
             header("HTTP/1.1 500 Internal Server Error");
-            print_r($uploader->getMessage()); //get upload error message
-            return new Response("500 Internal Server Error",
-                Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'text/plain']);
+            return new Response($uploader->getMessage(),
+                Response::HTTP_NOT_ACCEPTABLE, ['content-type' => 'text/plain']);
         }
         return new Response("File uploaded",  201,
             ['content-type' => 'text/plain']);
