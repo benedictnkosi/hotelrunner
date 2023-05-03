@@ -23,7 +23,7 @@ class CleaningController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $html = $cleaningApi->getCleaningsByRoom($roomId);
         $response = array(
@@ -43,7 +43,7 @@ class CleaningController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $html = $cleaningApi->getOutstandingCleaningsForToday();
         $response = array(
@@ -62,7 +62,7 @@ class CleaningController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $response = $cleaningApi->addCleaningToReservation($request->get('id'),$request->get('employee_id'));
@@ -80,7 +80,7 @@ class CleaningController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $cleaning = $api->getCleaningById($id);
 

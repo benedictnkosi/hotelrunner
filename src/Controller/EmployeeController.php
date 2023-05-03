@@ -25,7 +25,7 @@ class EmployeeController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $employees = $employeeApi->getEmployees();
         $configEmployeesHTML = new ConfigEmployeesHTML( $entityManager, $logger);
@@ -46,46 +46,51 @@ class EmployeeController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
-        $response = $employeeApi->createEmployee($request->get('name'));
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response , 201, array());
-        $response->setCallback($callback);
+        $response = $employeeApi->createEmployee($request->get('name'), $request->get('gender'));
+        if ($response[0]['result_code'] === 0) {
+            $response = new JsonResponse($response , 201, array());
+        }else{
+            $response = new JsonResponse($response , 200, array());
+        }
         return $response;
     }
-
 
     /**
      * @Route("admin_api/employee/delete/{employeeId}")
      */
     public function deleteEmployee($employeeId, LoggerInterface $logger, Request $request,EmployeeApi $employeeApi): Response
     {
-        $logger->info("Starting Method: " . __METHOD__);
+        $logger->info("Starting Method: " . $request->getMethod());
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $employeeApi->deleteEmployee($employeeId);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response , 204, array());
-        $response->setCallback($callback);
+        if ($response[0]['result_code'] === 0) {
+            $response = new JsonResponse($response , 204, array());
+        }else{
+            $response = new JsonResponse($response , 200, array());
+        }
         return $response;
     }
 
     /**
-     * @Route("admin_api/employee/update/{employeeId}/{newValue}")
+     * @Route("admin_api/employee/update/{employeeId}/{name}")
      */
-    public function updateEmployees($employeeId, $newValue, LoggerInterface $logger,Request $request, EntityManagerInterface $entityManager, EmployeeApi $employeeApi): Response
+    public function updateEmployees($employeeId, $name, LoggerInterface $logger,Request $request, EntityManagerInterface $entityManager, EmployeeApi $employeeApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
-        $response = $employeeApi->updateEmployeeName($employeeId, $newValue);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response , 201, array());
-        $response->setCallback($callback);
+        $response = $employeeApi->updateEmployeeName($employeeId, $name);
+        if ($response[0]['result_code'] === 0) {
+            $response = new JsonResponse($response , 201, array());
+        }else{
+            $response = new JsonResponse($response , 200, array());
+        }
         return $response;
     }
 
@@ -96,7 +101,7 @@ class EmployeeController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $employee = $employeeApi->getEmployee($id);
 

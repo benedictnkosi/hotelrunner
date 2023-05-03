@@ -27,7 +27,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $iCalApi->importIcalForRoom($roomId);
         $callback = $request->get('callback');
@@ -43,7 +43,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $iCalApi->importIcalForAllRooms();
         $callback = $request->get('callback');
@@ -59,7 +59,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $ical = $iCalApi->exportIcalForRoom($roomId, $request);
         $response = new Response($ical);
@@ -74,7 +74,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $iCalApi->addNewChannel($roomId, str_replace("###", "/", $link));
         $callback = $request->get('callback');
@@ -90,7 +90,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $iCalApi->removeIcalLink($linkId);
         $callback = $request->get('callback');
@@ -106,7 +106,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $configIcalLinksLogsHTML = new ConfigIcalLinksLogsHTML($entityManager, $logger);
         $html = $configIcalLinksLogsHTML->formatHtml( $roomApi, $iCalApi);
@@ -127,7 +127,7 @@ class ICalController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $ICalApi->updateAirbnbGuestUsingEmail($emailReaderApi);
         return new JsonResponse($response, 200, array());

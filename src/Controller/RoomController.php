@@ -37,7 +37,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $roomApi->getRooms($roomId, $request);
         $callback = $request->get('callback');
@@ -54,7 +54,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $roomApi->getRooms("all", $request);
         $callback = $request->get('callback');
@@ -70,7 +70,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $rooms = $roomApi->getAvailableRooms($checkInDate, $checkOutDate, $request, $kids, $propertyUid);
         $availableRoomsDropDownHTML = new BookingPageAvailableRoomsHTML($entityManager, $logger);
@@ -91,7 +91,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $rooms = $roomApi->getRoomsEntities(0, $request);
         $roomsPageHTML = new RoomsPageHTML($entityManager, $logger);
@@ -112,7 +112,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $rooms = $roomApi->getRoomsEntities();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
@@ -133,7 +133,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $rooms = $roomApi->getRoomsEntities();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
@@ -154,7 +154,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $statuses = $roomApi->getRoomStatuses();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
@@ -175,7 +175,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $bedSizes = $roomApi->getRoomBedSizes();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
@@ -196,7 +196,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $bedSizes = $roomApi->getRoomBedSizesJson();
         return new JsonResponse(json_encode($bedSizes) , 200, array());
@@ -208,7 +208,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $bedSizes = $roomApi->getRoomTvs();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
@@ -228,7 +228,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $rooms = $roomApi->getAvailableRooms($checkin, $checkout, $request);
         $roomsPageHTML = new RoomsPageHTML($entityManager, $logger);
@@ -249,7 +249,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $logger->info("amenities: " . json_encode($request->get('amenities')));
@@ -271,7 +271,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $roomImages = $roomApi->getRoomImages($roomId);
         $roomImagesHtml = new RoomImagesHTML($entityManager, $logger);
@@ -292,7 +292,7 @@ class RoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $room = $roomApi->getRoom($id);
 

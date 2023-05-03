@@ -111,7 +111,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -160,7 +160,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -229,7 +229,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -322,7 +322,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -409,7 +409,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -608,7 +608,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -650,7 +650,7 @@ class FlipabilityApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -695,7 +695,7 @@ class FlipabilityApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -719,7 +719,7 @@ class FlipabilityApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));
@@ -744,7 +744,7 @@ class FlipabilityApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("Error " . print_r($responseArray, true));

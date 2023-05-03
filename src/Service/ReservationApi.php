@@ -41,7 +41,7 @@ class ReservationApi
             return $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -95,7 +95,7 @@ class ReservationApi
             return $responseArray;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -114,7 +114,7 @@ class ReservationApi
             return $this->em->getRepository(Reservations::class)->findOneBy(array('uid' => $uid, 'status' => $status));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -145,7 +145,7 @@ class ReservationApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -196,7 +196,7 @@ class ReservationApi
                 ->getResult();
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -231,7 +231,7 @@ class ReservationApi
                 ->getResult();
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -269,7 +269,7 @@ class ReservationApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -420,7 +420,7 @@ class ReservationApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -451,7 +451,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -495,7 +495,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -533,7 +533,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -561,7 +561,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -894,7 +894,7 @@ class ReservationApi
         (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
             );
             $this->logger->debug(print_r($responseArray, true));
             if ($isImport) {
@@ -1022,7 +1022,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
             );
             $this->logger->error(print_r($responseArray, true));
         }

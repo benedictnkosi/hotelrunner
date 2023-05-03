@@ -21,7 +21,7 @@ class PropertyController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $propertyApi->getPropertyTerms($roomApi,  $request);
         $callback = $request->get('callback');
@@ -37,7 +37,7 @@ class PropertyController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $propertyApi->updatePropertyTerms( $terms);
         $callback = $request->get('callback');
@@ -53,7 +53,7 @@ class PropertyController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $propertyApi->getPropertyUid();
         $callback = $request->get('callback');
@@ -69,7 +69,7 @@ class PropertyController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $propertyApi->getPropertyDetailsByUid($uid);
         $callback = $request->get('callback');

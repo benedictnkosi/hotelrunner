@@ -25,7 +25,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $addOnsApi->addAdOnToReservation($reservationId,$addonid, $quantity);
         $callback = $request->get('callback');
@@ -41,7 +41,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $addOns = $addOnsApi->getAddOns();
         $configAddonsHTML = new ConfigAddonsHTML( $entityManager, $logger);
@@ -59,7 +59,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $addOns = $addOnsApi->getAddOnsJson($addOnId);
         $callback = $request->get('callback');
@@ -75,7 +75,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $addOnsApi->createAddOn($request->get('name'), $request->get('price'));
         $callback = $request->get('callback');
@@ -91,7 +91,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $response = $addOnsApi->deleteAddOn($addOnId);
@@ -109,7 +109,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $addOnsApi->updateAddOn($addOnId, $field, $newValue);
         $callback = $request->get('callback');
@@ -126,7 +126,7 @@ class AddOnController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $addOn = $addOnsApi->getAddOn($name);
 

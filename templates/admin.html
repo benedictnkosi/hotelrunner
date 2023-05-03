@@ -328,7 +328,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                     <img class="menu_icon_image" src="/admin/images/menu_rooms.png" title="Rooms"></img>
                     <i class="desktopOnlyMenu">Rooms</i>
                 </div>
-                <!--<div class="profile-ser-grids-15 filter-configuration clickable"
+                <div class="profile-ser-grids-15 filter-configuration clickable"
                      id="configuration_add_ons">
                     <img class="menu_icon_image" src="/admin/images/menu_add_ons.png" title="Add-Ons"></img><i
                         class="desktopOnlyMenu">Add
@@ -340,7 +340,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                     <img class="menu_icon_image" src="/admin/images/employee.png" title="Employees"></img><i
                         class="desktopOnlyMenu">Employees</i>
                 </div>
-                <div
+                <!--<div
                         class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
                         id="configuration_guests">
                     <img class="menu_icon_image" src="/admin/images/employee.png" title="Guests"></img><i
@@ -538,11 +538,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             </div>
             <div id="configuration-employees-list" class='configuration_tabs display-none reservations_div'>
                 <form class="contact-form" id="config_employee_form" action="#">
-                    <h3>Manage Employee</h3>
 
-                    <div id="employee_div"></div>
-
-                    <hr>
                     <h3>Create New Employee</h3>
                     <div class="addon-left-div">
                         <label>Name</label>
@@ -553,17 +549,26 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                         <label>Gender</label>
                         <div>
                             <input type="radio" id="male_radio" name="gender" value="male">
-                            <label for="male_radio">Male</label><br>
+                            <label for="male_radio">Male</label>
                             <input type="radio" id="female_radio" name="gender" value="female">
-                            <label for="female_radio">Female</label><br>
-                            <input type="radio" id="other_radio" name="other" value="other">
-                            <label for="other_radio">Other</label><br>
+                            <label for="female_radio">Female</label>
+                            <input type="radio" id="other_radio" name="gender" value="other">
+                            <label for="other_radio">Other</label>
                         </div>
 
                     </div>
                     <div>
                         <span><input type="submit" value="Submit" id="config_employee_submit" class="button-50"></span>
                     </div>
+
+                    <hr>
+
+                    <h3>Manage Employees</h3>
+
+                    <div id="employee_div"></div>
+
+
+
                 </form>
 
             </div>

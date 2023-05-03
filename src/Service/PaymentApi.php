@@ -38,7 +38,7 @@ class PaymentApi
             return $payments;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("failed to get payments " . print_r($responseArray, true));
@@ -57,7 +57,7 @@ class PaymentApi
             return $this->em->getRepository(Payments::class)->findOneBy(array('id' => $paymentId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("failed to get payments " . print_r($responseArray, true));
@@ -84,7 +84,7 @@ class PaymentApi
             return $html;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error($ex->getMessage());
@@ -195,7 +195,7 @@ class PaymentApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("failed to get payments " . print_r($responseArray, true));
@@ -258,7 +258,7 @@ class PaymentApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("failed to add discount " . print_r($responseArray, true));
@@ -334,7 +334,7 @@ class PaymentApi
             return $due;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("failed to get payments " . print_r($responseArray, true));
@@ -440,7 +440,7 @@ class PaymentApi
             return $responseArray;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error("failed to get occupancy " . print_r($responseArray, true));

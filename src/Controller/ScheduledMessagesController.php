@@ -21,7 +21,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->sendScheduledMessages("Day of check-in");
         $callback = $request->get('callback');
@@ -37,7 +37,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->sendScheduledMessages("Day before check-in");
         $callback = $request->get('callback');
@@ -54,7 +54,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->sendScheduledMessages("Week before check-in");
         $callback = $request->get('callback');
@@ -70,7 +70,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->sendScheduledMessages("Day after check-out");
         $callback = $request->get('callback');
@@ -86,7 +86,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->sendScheduledMessages("Week after check-out");
         $callback = $request->get('callback');
@@ -102,7 +102,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $html = $scheduleMessageApi->getScheduleTemplates();
         $response = array(
@@ -121,7 +121,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->getScheduleTimes();
         $callback = $request->get('callback');
@@ -137,7 +137,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->getMessageVariables();
         $callback = $request->get('callback');
@@ -153,7 +153,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->createScheduleMessage($messageId, $scheduleId, $rooms);
         $callback = $request->get('callback');
@@ -169,7 +169,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->createMessageTemplate($name, $message);
         $callback = $request->get('callback');
@@ -185,7 +185,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $html = $scheduleMessageApi->getScheduledMessages();
         $response = array(
@@ -204,7 +204,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->deleteScheduledMessages($scheduleMessageId);
         $callback = $request->get('callback');
@@ -220,7 +220,7 @@ class ScheduledMessagesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $scheduleMessageApi->getTemplateMessage($templateId);
         $callback = $request->get('callback');

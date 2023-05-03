@@ -20,7 +20,7 @@ class NotesController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $response = $notesApi->addNote($request->get('id'), str_replace("+", "", $request->get('note')));

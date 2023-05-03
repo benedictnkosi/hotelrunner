@@ -22,7 +22,7 @@ class OccupancyController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $occupancyApi->getOccupancy($days);
         $callback = $request->get('callback');
@@ -39,7 +39,7 @@ class OccupancyController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $occupancyApi->getOccupancyPerRoom($days);
         $callback = $request->get('callback');

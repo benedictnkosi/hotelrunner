@@ -29,6 +29,20 @@ class Employee
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", length=10, nullable=false, options={"default"="live"})
+     */
+    private $status = 'live';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="gender", type="string", length=10, nullable=false)
+     */
+    private $gender;
+
+    /**
      * @var Property
      *
      * @ORM\ManyToOne(targetEntity="Property")
@@ -47,19 +61,43 @@ class Employee
     }
 
     /**
-     * @param int $id
-     */
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    /**
      * @return string|null
      */
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGender(): string
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @return Property
+     */
+    public function getProperty(): Property
+    {
+        return $this->property;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     /**
@@ -71,11 +109,19 @@ class Employee
     }
 
     /**
-     * @return Property
+     * @param string $status
      */
-    public function getProperty(): Property
+    public function setStatus(string $status): void
     {
-        return $this->property;
+        $this->status = $status;
+    }
+
+    /**
+     * @param string $gender
+     */
+    public function setGender(string $gender): void
+    {
+        $this->gender = $gender;
     }
 
     /**

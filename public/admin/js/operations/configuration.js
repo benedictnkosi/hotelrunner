@@ -826,7 +826,7 @@ function updateGuest(event) {
 
 function createEmployee() {
     const employee_name = $("#employee_name").val().trim();
-    const gender = $('input[name=gender]:checked', '#config_room_form').val();
+    const gender = $('input[name=gender]:checked', '#config_employee_form').val();
 
     $("body").addClass("loading");
     isUserLoggedIn();
@@ -838,7 +838,8 @@ function createEmployee() {
     }
 
     const data = {
-        name: employee_name
+        name: employee_name,
+        gender: gender
     };
 
     $.ajax({
@@ -873,14 +874,12 @@ function deleteEmployee(event) {
         url : url,
         type: "DELETE",
         data : "",
-        success: function(response)
+        complete: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
+            if (response.status === 204) {
                 getEmployees();
-                showResSuccessMessage("configuration", response[0].result_message);
             } else {
-
                 showResErrorMessage("configuration", response[0].result_message);
             }
         },

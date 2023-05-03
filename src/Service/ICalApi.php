@@ -50,7 +50,7 @@ class ICalApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -381,7 +381,7 @@ class ICalApi
             return $this->em->getRepository(Ical::class)->findBy(array('room' => $roomId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -536,7 +536,7 @@ class ICalApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -608,7 +608,7 @@ class ICalApi
            // }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -626,7 +626,7 @@ class ICalApi
             return $this->em->getRepository(Ical::class)->findBy(array('room' => $roomId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -657,7 +657,7 @@ class ICalApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));

@@ -36,7 +36,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $calendarHtml = new CalendarHTML($entityManager, $logger);
         $html = $calendarHtml->formatHtml();
@@ -57,7 +57,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservations = $reservationApi->getCheckOutReservation($propertyId);
         $logger->info("back from other call");
@@ -73,7 +73,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservations = "";
         switch ($period) {
@@ -114,7 +114,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
         $reservationHtml = new SingleReservationHtml($entityManager, $logger);
@@ -137,7 +137,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $reservationApi->getReservationJson($reservationId);
         $callback = $request->get('callback');
@@ -154,7 +154,7 @@ class ReservationController extends AbstractController
         $logger->info("Starting Method: " . __METHOD__);
 
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
 
@@ -259,7 +259,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
 
@@ -280,7 +280,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationDate($reservation, $checkInDate, $checkOutDate, $blockedRoomApi);
@@ -298,7 +298,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationRoom($reservation, $roomId);
@@ -315,7 +315,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
         $response = $reservationApi->updateReservationOriginUrl($reservation, $confirmationCode);
@@ -334,7 +334,7 @@ class ReservationController extends AbstractController
         $logger->info("Starting Method: " . __METHOD__);
 
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $nowDate = new DateTime($request->get('date'));
@@ -389,7 +389,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Methods: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $logger->info("queue message" . $request->get("message"));
 
@@ -479,7 +479,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
         $invoiceHtml = new InvoiceHTML($entityManager, $logger);
@@ -501,7 +501,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $reservationApi->sendReviewRequest($propertyId);
         $callback = $request->get('callback');
@@ -517,7 +517,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->blockGuest($reservationId, $reason);
         $callback = $request->get('callback');
@@ -533,7 +533,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $addOnsApi->removeAddOnFromReservation($addOnId);
         $callback = $request->get('callback');
@@ -549,7 +549,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $api->getReservation($id);
 

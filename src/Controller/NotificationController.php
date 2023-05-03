@@ -22,7 +22,7 @@ class NotificationController  extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $notifications = $notificationApi->getNotificationsToAction();
         $callback = $request->get('callback');
@@ -38,7 +38,7 @@ class NotificationController  extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $notificationApi->updateAdsNotificationAction("Pause Google Ads", true);
         $html = $notificationApi->updateAdsNotification($propertyId);
@@ -59,7 +59,7 @@ class NotificationController  extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $html = $notificationApi->updateAdsNotificationAction($name, true);
         $response = array(

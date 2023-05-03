@@ -28,7 +28,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__ );
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->getGuest($filterValue);
         $callback = $request->get('callback');
@@ -44,7 +44,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->updateGuestPhoneNumber($guestId, $phoneNumber);
         $guestApi->sendBookDirectSMS($guestId);
@@ -62,7 +62,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->updateGuestEmail($guestId, $email);
         $callback = $request->get('callback');
@@ -78,7 +78,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->updateGuestIdNumber($guestId, $idNumber);
         $callback = $request->get('callback');
@@ -110,7 +110,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $guests = $guestApi->getConfigGuests($nameFilter);
         $logger->info("calling Method: formatHtml" );
@@ -133,7 +133,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('put')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = match ($field) {
             "name" => $guestApi->updateGuestName($guestId, $newValue),
@@ -160,7 +160,7 @@ class GuestController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $guest = $guestApi->getGuestById($id);
 

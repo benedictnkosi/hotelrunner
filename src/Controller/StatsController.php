@@ -19,7 +19,7 @@ class StatsController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__ );
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $statsApi->getReservationCount($type, $day);
         $callback = $request->get('callback');
@@ -35,7 +35,7 @@ class StatsController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__ );
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $statsApi->getStayOverCount($day);
         $callback = $request->get('callback');

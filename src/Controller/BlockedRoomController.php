@@ -24,7 +24,7 @@ class BlockedRoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $blockedRoomApi->blockRoom($request->get('room'),  $request->get('start_date'), $request->get('end_date'), urldecode($request->get('note')));
         $callback = $request->get('callback');
@@ -40,7 +40,7 @@ class BlockedRoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $blockedRooms = $blockedRoomApi->getBlockedRoomsByProperty();
         $blockedRoomsHTML = new BlockedRoomsHTML($entityManager, $logger);
@@ -61,7 +61,7 @@ class BlockedRoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $blockedRoomApi->deleteBlockedRoom($id);
         $callback = $request->get('callback');
@@ -77,7 +77,7 @@ class BlockedRoomController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $blockedRoom = $blockedRoomApi->getBlockedRoom($id);
 

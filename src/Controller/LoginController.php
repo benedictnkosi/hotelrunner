@@ -42,7 +42,7 @@ class LoginController extends AbstractController
     public function meAction(Request $request): JsonResponse
     {
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $responseArray[] = array(
             'authenticated' => $this->getUser() !== null,

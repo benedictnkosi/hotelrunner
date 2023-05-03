@@ -23,7 +23,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $response = $paymentApi->addPayment($request->get('id'), $request->get('amount'), str_replace("_","/",$request->get('reference')), $request->get('channel'));
@@ -40,7 +40,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('delete')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $paymentApi->removePayment($paymentId);
         $callback = $request->get('callback');
@@ -57,7 +57,7 @@ class PaymentController extends AbstractController
         $logger->info("Starting Method: " . __METHOD__);
 
         if (!$request->isMethod('post')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
         $response = $paymentApi->addDiscount($request->get('id'), $request->get('amount'), "discount");
@@ -74,7 +74,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $logger->info("reservation ID: " . $request->get('item_description'));
         $logger->info("amount paid: " . $request->get('amount_gross'));
@@ -96,7 +96,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $paymentApi->getCashReport($startDate, $endDate, $channel);
         $callback = $request->get('callback');
@@ -112,7 +112,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         if (strcmp($isGroup, "true") === 0) {
             $response = $paymentApi->getCashReportByDay($startDate, $endDate, $channel);
@@ -137,7 +137,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
-            return new JsonResponse("Internal server error" , 500, array());
+            return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $payment = $api->getPayment($id);
 
