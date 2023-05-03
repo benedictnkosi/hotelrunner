@@ -506,10 +506,11 @@ function populateFormWithRoom(event) {
                 });
 
                 const amenities = JSON.parse(response[0].amenities);
-                for (i = 0; i < amenities.length; i++) {
-                    $('input[value="' + amenities[i] + '"]').prop("checked", true);
+                if(amenities !== null){
+                    for (i = 0; i < amenities.length; i++) {
+                        $('input[value="' + amenities[i] + '"]').prop("checked", true);
+                    }
                 }
-
                 $('#select_tv').val(response[0].tv);
                 $('#select_Stairs').val(response[0].stairs);
                 $("#links_div").html(response[0].ical_links);
@@ -1320,17 +1321,16 @@ function initialiseImageUpload(roomId) {
     $(".dropzone").remove();
     newUploadForm = '<form action="/api/configuration/image/upload" class="dropzone" id="fileUpload_dropzone"></form>';
     $("#imageUploaderDiv").append(newUploadForm);
-
-
+    let processing = false;
     const myNewdDropzone = new Dropzone("#fileUpload_dropzone", {
         dictDefaultMessage: "Drop files here or click to upload.",
         clickable: true,
         enqueueForUpload: true,
-        maxFilesize: 5,
+        maxFilesize: 1,
         addRemoveLinks: true,
-        uploadMultiple: false,
+        uploadMultiple: true,
         maxFiles: 10,
-
+        parallelUploads: 10,
         // on initialize get the images on the
         // server for the partner
         init: function () {
@@ -1385,7 +1385,7 @@ function initialiseImageUpload(roomId) {
                         type: 'DELETE',
                         success: function(data) {
                             $("body").removeClass("loading");
-                            showResErrorMessage("configuration", data[0].result_message);
+                            showResSuccessMessage("configuration", data[0].result_message);
                             initialiseImageUpload(roomId);
                         },
                         error: function (xhr) {
@@ -1399,12 +1399,9 @@ function initialiseImageUpload(roomId) {
                     });
                 });
 
-            // on successful upload, add the
-            // server anme mapping to the
-            // array and save in sessiopn
-            // storage
+
             this
-                .on("success", function (file, responseText) {
+                .on("successmultiple", function () {
                     initialiseImageUpload(roomId);
                 });
         }
