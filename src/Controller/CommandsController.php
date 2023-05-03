@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helpers\DatabaseHelper;
 use App\Service\PropertyApi;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -263,5 +264,50 @@ class CommandsController extends AbstractController
         ];
     }
 
+    /**
+     * @Route("no_auth/runcommand/deleteallrooms")
+     */
+
+    function cleanDatabase(LoggerInterface $logger) {
+        try{
+            $databaseHelper = new DatabaseHelper($logger);
+            $sql = "TRUNCATE TABLE `reservation_notes`;";
+            $databaseHelper->execute($sql);
+            $sql = "TRUNCATE TABLE `reservation_add_ons`;";
+            $databaseHelper->execute($sql);
+            $sql = "TRUNCATE TABLE `payments`;";
+            $databaseHelper->execute($sql);
+            $sql = "TRUNCATE TABLE `cleaning`;";
+            $databaseHelper->execute($sql);
+            $sql = "delete FROM `reservations` where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete FROM `guest` where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from room_images where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from room_beds where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from blocked_rooms where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from ical where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from schedule_messages where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from rooms where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from add_ons where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from employee where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from message_template where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from schedule_messages where id > 0;";
+            $databaseHelper->execute($sql);
+        }catch(Exception $exception){
+            return new JsonResponse( "Failed to delete rooms: " . $exception->getMessage(), 500, array());
+        }
+
+        return new JsonResponse( "Success", 200, array());
+    }
 
 }
