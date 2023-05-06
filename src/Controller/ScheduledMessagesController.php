@@ -208,7 +208,7 @@ class ScheduledMessagesController extends AbstractController
         }
         $response = $scheduleMessageApi->deleteScheduledMessages($scheduleMessageId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }

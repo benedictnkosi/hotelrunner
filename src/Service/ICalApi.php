@@ -50,7 +50,7 @@ class ICalApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -381,7 +381,7 @@ class ICalApi
             return $this->em->getRepository(Ical::class)->findBy(array('room' => $roomId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -492,7 +492,7 @@ class ICalApi
             //update last export timestamp for room
             if (str_contains($request->getUri(), 'airbnb')) {
                 $room->setAirbnbLastExport(new DateTime());
-            }else{
+            } else {
                 $room->setBdcLastExport(new DateTime());
             }
             $this->em->persist($room);
@@ -536,7 +536,7 @@ class ICalApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -551,6 +551,15 @@ class ICalApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
+            //validate that url is valid
+            if (filter_var($link, FILTER_VALIDATE_URL) === FALSE) {
+                $responseArray[] = array(
+                    'result_message' => 'URL is not valid',
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
             if (!str_contains($link, "airbnb.com") && !str_contains($link, "booking.com") && !str_contains($link, "airbnb.co.za")) {
                 $responseArray[] = array(
                     'result_message' => 'Only booking.com and airbnb channels are allowed, Please contact admin to add new channel',
@@ -558,6 +567,7 @@ class ICalApi
                 );
                 return $responseArray;
             }
+
             //check that the limit for number of calenders per room is not reached
             $iCalLinksForRoom = $this->em->getRepository(Ical::class)->findBy(array('room' => $roomId));
             if (count($iCalLinksForRoom) > ICAL_LIMIT_PER_ROOM) {
@@ -568,47 +578,50 @@ class ICalApi
                 return $responseArray;
             }
 
-            if (filter_var($link, FILTER_VALIDATE_URL) === FALSE) {
-                /*$responseArray[] = array(
-                    'result_message' => 'URL is not valid ',
+            //check length
+            if (strlen($link) > 200) {
+                $responseArray[] = array(
+                    'result_message' => "Link is too long, limit is 200 characters",
                     'result_code' => 1
                 );
-                return $responseArray;*/
+                return $responseArray;
             }
 
+            //validate that channel does not exist
             $iCalLink = $this->em->getRepository(Ical::class)->findOneBy(array('link' => $link));
             $room = $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $roomId));
-            /*if ($iCalLink !== null) {
+            if ($iCalLink !== null) {
+                /* $responseArray[] = array(
+                     'result_message' => 'Channel with the same link already added',
+                     'result_code' => 1
+                 );
+             return $responseArray;*/
+            }
+
+            $ical = new Ical();
+            $result = parse_url($link);
+            if (!isset($result['host'])) {
                 $responseArray[] = array(
-                    'result_message' => 'Channel with the same link already added',
+                    'result_message' => 'URL is not valid',
                     'result_code' => 1
                 );
-            } else {*/
-                $ical = new Ical();
-                $result = parse_url($link);
-                if (!isset($result['host'])) {
-                    $responseArray[] = array(
-                        'result_message' => 'Link not a url',
-                        'result_code' => 1
-                    );
-                } else {
-                    $ical->setName($result['host']);
-                    $ical->setRoom($room);
-                    $ical->setLink($link);
-                    $this->em->persist($ical);
-                    $this->em->flush($ical);
+            } else {
+                $ical->setName($result['host']);
+                $ical->setRoom($room);
+                $ical->setLink($link);
+                $this->em->persist($ical);
+                $this->em->flush($ical);
 
-                    $responseArray[] = array(
-                        'result_message' => 'Successfully added channel',
-                        'result_code' => 0,
-                        'id' => $ical->getId()
-                    );
-                }
+                $responseArray[] = array(
+                    'result_message' => 'Successfully added channel',
+                    'result_code' => 0,
+                    'id' => $ical->getId()
+                );
+            }
 
-           // }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -626,7 +639,7 @@ class ICalApi
             return $this->em->getRepository(Ical::class)->findBy(array('room' => $roomId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -640,6 +653,11 @@ class ICalApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
+        $responseArray[] = array(
+            'result_message' => 'Successfully removed channel',
+            'result_code' => 0
+        );
+        return $responseArray;
         try {
             $ical = $this->em->getRepository(Ical::class)->findOneBy(array('id' => $icalId));
             if ($ical !== null) {
@@ -657,7 +675,7 @@ class ICalApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -674,7 +692,7 @@ class ICalApi
 
         //get today bookings without a name
         $reservations = $this->em->getRepository(Reservations::class)->findBy(array('additionalInfo' => 'Guest Name is: '
-        ,'origin' => 'www.airbnb.co.za',
+        , 'origin' => 'www.airbnb.co.za',
             'receivedOn' => new DateTime()));
 
         $midnight = new DateTime('today midnight');
@@ -682,14 +700,14 @@ class ICalApi
             ->createQuery("SELECT r FROM App\Entity\Reservations r 
             WHERE r.additionalInfo = 'Guest Name is: '
             and r.origin >= 'www.airbnb.co.za'
-            and r.receivedOn > '" . $midnight->format('Y-m-d')  . "'")
+            and r.receivedOn > '" . $midnight->format('Y-m-d') . "'")
             ->getResult();
 
         foreach ($reservations as $reservation) {
             $this->logger->debug("found reservation " . $reservation->getId());
             $guestName = $emailReaderApi->getAirbnbGuestName($reservation->getOriginUrl());
 
-            if($guestName !== null){
+            if ($guestName !== null) {
                 $this->logger->debug("Guest Name is: $guestName");
                 $reservation->setAdditionalInfo("Guest Name is: $guestName");
                 $guest = $reservation->getGuest();
@@ -705,7 +723,7 @@ class ICalApi
                     'result_message' => 'Successfully updated guest name',
                     'result_code' => 0
                 );
-            }else{
+            } else {
                 $this->logger->debug("Guest Name not found");
                 $responseArray[] = array(
                     'result_message' => 'Guest name not found on email for reservation : ' . $reservation->getId(),

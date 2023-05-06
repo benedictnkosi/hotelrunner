@@ -96,7 +96,7 @@ class AddOnController extends AbstractController
 
         $response = $addOnsApi->deleteAddOn($addOnId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
+        $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -113,7 +113,7 @@ class AddOnController extends AbstractController
         }
         $response = $addOnsApi->updateAddOn($addOnId, $field, $newValue);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 201, array());
+        $response = new JsonResponse($response , 200, array());
         $response->setCallback($callback);
         return $response;
     }

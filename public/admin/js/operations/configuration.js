@@ -660,7 +660,7 @@ function updateAddOn(event) {
     const newValue = $(event.target).val().trim();
     $("body").addClass("loading");
     isUserLoggedIn();
-    let url = "/admin_api/addon/update/" + addOnId + "/" + field + "/" + newValue;
+        let url = "/admin_api/addon/update/" + addOnId + "/" + field + "/" + newValue;
 
     $.ajax({
         url : url,
@@ -846,14 +846,14 @@ function createEmployee() {
         url : url,
         type: "POST",
         data : data,
-        success: function(response)
+        complete: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                showResSuccessMessage("configuration", response[0].result_message);
+            if (response.responseJSON[0].result_code === 0) {
+                showResSuccessMessage("configuration", response.responseJSON[0].result_message);
                 getEmployees();
             } else {
-                showResErrorMessage("configuration", response[0].result_message);
+                showResErrorMessage("configuration", response.responseJSON[0].result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -879,6 +879,7 @@ function deleteEmployee(event) {
             $("body").removeClass("loading");
             if (response.status === 204) {
                 getEmployees();
+                showResSuccessMessage("configuration", "Successfully deleted employee");
             } else {
                 showResErrorMessage("configuration", response[0].result_message);
             }
@@ -1240,31 +1241,36 @@ function addNewChannel() {
     const room_id = $("#room_id").val().trim();
     const link = $("#icalLink").val().trim();
     isUserLoggedIn();
-    let url = "/admin_api/ical/links/" + room_id + "/" + encodeURIComponent(link.replaceAll("/", "###"));
+    let url = "/admin_api/ical/add";
     $("body").addClass("loading");
+
+    const data = {
+        room_id: room_id,
+        url: encodeURIComponent(link)
+    };
+
     $.ajax({
-        type: "get",
-        url: url,
-        crossDomain: true,
-        cache: false,
-        dataType: "jsonp",
-        contentType: "application/json; charset=UTF-8",
-        success: function (data) {
+        url : url,
+        type: "POST",
+        data : data,
+        complete: function(response)
+        {
             $("body").removeClass("loading");
-            const jsonObj = data[0];
-            if (jsonObj.result_code === 0) {
+            if (response.responseJSON[0].result_code === 0) {
                 $('#icalLink').val('');
                 populateFormWithRoom(room_id);
-                showResSuccessMessage("configuration", jsonObj.result_message)
+                showResSuccessMessage("configuration", response.responseJSON[0].result_message)
             } else {
-                showResErrorMessage("configuration", jsonObj.result_message)
+                showResErrorMessage("configuration", response.responseJSON[0].result_message)
             }
         },
-        error: function (xhr) {
+        error: function (jqXHR, textStatus, errorThrown)
+        {
             $("body").removeClass("loading");
-            console.log("request for addNewChannel " + xhr.status);
+            showResErrorMessage("configuration", errorThrown)
         }
     });
+
 }
 
 function removeChannel(event) {
@@ -1274,17 +1280,19 @@ function removeChannel(event) {
     let url = "/admin_api/ical/remove/" + channelId;
 
     $.ajax({
-        type: "get",
+        type: "DELETE",
         url: url,
-        crossDomain: true,
-        cache: false,
-        dataType: "jsonp",
         contentType: "application/json; charset=UTF-8",
-        success: function (data) {
-            const parent = $(event.target).parent();
-            parent.remove();
+        complete: function(response)
+        {
             $("body").removeClass("loading");
-            showResSuccessMessage("configuration", data[0].result_message);
+            if (response.status === 204) {
+                const parent = $(event.target).parent();
+                parent.remove();
+                showResSuccessMessage("configuration", "Successfully removed channel");
+            } else {
+                showResErrorMessage("configuration", response[0].result_message);
+            }
         },
         error: function (xhr) {
             $("body").removeClass("loading");

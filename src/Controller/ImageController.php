@@ -27,7 +27,7 @@ class ImageController extends AbstractController
         }
         $result = $roomApi->removeImage($imageName);
         $callback = $request->get('callback');
-        $response = new JsonResponse($result , 200, array());
+        $response = new JsonResponse($result , 204, array());
         $response->setCallback($callback);
         return $response;
     }
@@ -43,7 +43,7 @@ class ImageController extends AbstractController
         }
         $response = $roomApi->markDefault($imageName);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response , 201, array());
+        $response = new JsonResponse($response , 200, array());
         $response->setCallback($callback);
         return $response;
     }

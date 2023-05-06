@@ -68,18 +68,22 @@ class ICalController extends AbstractController
     }
 
     /**
-     * @Route("admin_api/ical/links/{roomId}/{link}")
+     * @Route("admin_api/ical/add")
      */
-    public function addNewChannel($roomId, $link, LoggerInterface $logger, Request $request, ICalApi $iCalApi): Response
+    public function addNewChannel(LoggerInterface $logger, Request $request, ICalApi $iCalApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+
         if (!$request->isMethod('post')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
-        $response = $iCalApi->addNewChannel($roomId, str_replace("###", "/", $link));
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response, 201, array());
-        $response->setCallback($callback);
+
+        $response = $iCalApi->addNewChannel($request->get("room_id"), urldecode($request->get("url")));
+        if ($response[0]['result_code'] === 0) {
+            $response = new JsonResponse($response , 201, array());
+        }else{
+            $response = new JsonResponse($response , 200, array());
+        }
         return $response;
     }
 
@@ -94,7 +98,7 @@ class ICalController extends AbstractController
         }
         $response = $iCalApi->removeIcalLink($linkId);
         $callback = $request->get('callback');
-        $response = new JsonResponse($response, 200, array());
+        $response = new JsonResponse($response, 204, array());
         $response->setCallback($callback);
         return $response;
     }

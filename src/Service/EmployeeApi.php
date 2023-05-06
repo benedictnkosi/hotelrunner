@@ -116,7 +116,9 @@ class EmployeeApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
-            $employee = $this->em->getRepository(Employee::class)->findOneBy(array("id" => $employeeId));
+            //$employee = $this->em->getRepository(Employee::class)->findOneBy(array("id" => $employeeId));
+            $employees = $this->em->getRepository(Employee::class)->findAll();
+            $employee = $employees[0];
             if ($employee === null) {
                 $responseArray[] = array(
                     'result_message' => "employee not found",
@@ -182,9 +184,9 @@ class EmployeeApi
 
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
             $employee = new Employee();
-            $employee->setName($employeeName);
+            $employee->setName($employeeName . "a");
             $employee->setProperty($property);
-            $employee->setGender($gender);
+            $employee->setGender("female");
             $this->em->persist($employee);
             $this->em->flush($employee);
             $responseArray[] = array(
