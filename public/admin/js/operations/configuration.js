@@ -635,14 +635,13 @@ function deleteAddOn(event) {
         url : url,
         type: "DELETE",
         data : "",
-        success: function(response)
+        complete: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
+            if (response.status === 204) {
                 getAddOns();
-                showResSuccessMessage("configuration", response[0].result_message);
+                showResSuccessMessage("configuration", "Successfully removed add-on");
             } else {
-
                 showResErrorMessage("configuration", response[0].result_message);
             }
         },
@@ -772,6 +771,7 @@ function updateEmployee(event) {
         {
             $("body").removeClass("loading");
             if (response[0].result_code === 0) {
+                getEmployees();
                 showResSuccessMessage("configuration", data[0].result_message);
             } else {
                 showResErrorMessage("configuration", response[0].result_message);

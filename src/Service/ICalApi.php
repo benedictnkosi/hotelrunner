@@ -568,6 +568,14 @@ class ICalApi
                 return $responseArray;
             }
 
+            if(intval($link) > 200){
+                $responseArray[] = array(
+                    'result_message' => "Channel Link Length should be between 1 and 200",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
             //check that the limit for number of calenders per room is not reached
             $iCalLinksForRoom = $this->em->getRepository(Ical::class)->findBy(array('room' => $roomId));
             if (count($iCalLinksForRoom) > ICAL_LIMIT_PER_ROOM) {

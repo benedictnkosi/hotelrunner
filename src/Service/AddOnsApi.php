@@ -286,6 +286,22 @@ class AddOnsApi
                     'result_code' => 1
                 );
             } else {
+                if(strlen($addOnName) > 50 || strlen($addOnName) == 0){
+                    $responseArray[] = array(
+                        'result_message' => "Add-on name Length should be between 1 and 500",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
+
+                if(strlen($addOnPrice) > 4 || strlen($addOnPrice) == 0){
+                    $responseArray[] = array(
+                        'result_message' => "Add-on price Length should be between 1 and 4",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
+
                 $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
                 $addOn = new AddOns();
                 $addOn->setPrice($addOnPrice + 10);
