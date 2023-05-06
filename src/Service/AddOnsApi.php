@@ -202,12 +202,33 @@ class AddOnsApi
             } else {
                 switch ($field) {
                     case "price":
+                        if(strlen($newValue) > 4 || strlen($newValue) == 0){
+                            $responseArray[] = array(
+                                'result_message' => "Add-on price Length should be between 1 and 4",
+                                'result_code' => 1
+                            );
+                            return $responseArray;
+                        }
                         $addOn->setPrice($newValue);
                         break;
                     case "name":
+                        if(strlen($newValue) > 50 || strlen($newValue) == 0){
+                            $responseArray[] = array(
+                                'result_message' => "Add-on name Length should be between 1 and 500",
+                                'result_code' => 1
+                            );
+                            return $responseArray;
+                        }
                         $addOn->setName($newValue);
                         break;
                     case "quantity":
+                        if(strlen($newValue) > 2 || strlen($newValue) == 0){
+                            $responseArray[] = array(
+                                'result_message' => "Add-on quantity Length should be between 1 and 2",
+                                'result_code' => 1
+                            );
+                            return $responseArray;
+                        }
                         $addOn->setQuantity(intval($newValue) + 1);
                         break;
                     default:
