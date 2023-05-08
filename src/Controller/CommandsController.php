@@ -303,6 +303,13 @@ class CommandsController extends AbstractController
             $databaseHelper->execute($sql);
             $sql = "delete from schedule_messages where id > 0;";
             $databaseHelper->execute($sql);
+
+            $files = glob(__DIR__ . '/../../public/room/image/*'); // get all file names
+            foreach($files as $file){ // iterate files
+                if(is_file($file)) {
+                    unlink($file); // delete file
+                }
+            }
         }catch(Exception $exception){
             return new JsonResponse( "Failed to delete rooms: " . $exception->getMessage(), 500, array());
         }
