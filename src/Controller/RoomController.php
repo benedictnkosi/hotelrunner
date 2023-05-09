@@ -114,7 +114,7 @@ class RoomController extends AbstractController
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
-        $rooms = $roomApi->getRoomsEntities();
+        $rooms = $roomApi->getActiveAndPendingRoomsEntities();
         $roomsPageHTML = new ConfigurationRoomsHTML($entityManager, $logger);
         $html = $roomsPageHTML->formatLeftDivRoomsHtml($rooms);
         $response = array(

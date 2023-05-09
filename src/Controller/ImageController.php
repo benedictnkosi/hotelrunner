@@ -79,7 +79,7 @@ class ImageController extends AbstractController
     /**
      * @Route("api/configuration/image/upload")
      */
-    public function uploadImage(LoggerInterface $logger, Request $request, RoomApi $roomApi): Response
+    public function uploadImage(LoggerInterface $logger, Request $request, FileUploaderApi $uploader): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {
@@ -94,26 +94,15 @@ class ImageController extends AbstractController
         }
 
         $uploadDir = __DIR__ . '/../../public/room/image/';
-        $uploader   =   new FileUploaderApi($logger);
         $uploader->setDir($uploadDir);
         $uploader->setExtensions(array('jpeg','png'));  //allowed extensions list//
         $uploader->setMaxSize(1);                          //set max file size to be allowed in MB//
 
-        if($uploader->uploadFile('file')){   //txtFile is the filebrowse element name //
-            $imageName  =   $uploader->getUploadName(); //get uploaded file name, renames on upload//
-            //update database
-            if(isset($_SESSION['ROOM_ID'])){
-                $roomApi->addImageToRoom($imageName, $_SESSION['ROOM_ID']);
-            }else{
-                $logger->info("Room id not set, refresh page");
-                return new Response("Room id not set, refresh page",
-                    Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'text/plain']);
-            }
-        }else{//upload failed
+        if(!$uploader->uploadFile()){
+            //upload failed
             header("HTTP/1.1 500 Internal Server Error");
-            print_r($uploader->getMessage()); //get upload error message
-            return new Response("500 Internal Server Error",
-                Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'text/plain']);
+            return new Response($uploader->getMessage(),
+                Response::HTTP_NOT_ACCEPTABLE, ['content-type' => 'text/plain']);
         }
         return new Response("File uploaded",  201,
             ['content-type' => 'text/plain']);
