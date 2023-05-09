@@ -304,7 +304,16 @@ class CommandsController extends AbstractController
             $sql = "delete from schedule_messages where id > 0;";
             $databaseHelper->execute($sql);
 
+            //delete the images
             $files = glob(__DIR__ . '/../../public/room/image/*'); // get all file names
+            foreach($files as $file){ // iterate files
+                if(is_file($file)) {
+                    unlink($file); // delete file
+                }
+            }
+
+            //delete the logs
+            $files = glob(__DIR__ . '/../../var/log/*'); // get all file names
             foreach($files as $file){ // iterate files
                 if(is_file($file)) {
                     unlink($file); // delete file
