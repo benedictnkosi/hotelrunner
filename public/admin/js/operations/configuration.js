@@ -1385,7 +1385,11 @@ function initialiseImageUpload(roomId) {
                         type: 'DELETE',
                         success: function(data) {
                             $("body").removeClass("loading");
-                            showResSuccessMessage("configuration", data[0].result_message);
+                            if (data[0].result_code === 0) {
+                                showResSuccessMessage("configuration", data[0].result_message);
+                            }else{
+                                showResErrorMessage("configuration", data[0].result_message);
+                            }
                             initialiseImageUpload(roomId);
                         },
                         error: function (xhr) {
