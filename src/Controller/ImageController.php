@@ -79,7 +79,7 @@ class ImageController extends AbstractController
             try{
                 return new BinaryFileResponse($filePath);
             }catch(InvalidArgumentException $exception){
-                return new JsonResponse($exception->getMessage() , 404, array());
+                return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
             }
         }else{
             return new JsonResponse("file does not exist or is not readable" , 404, array());
