@@ -788,6 +788,11 @@ class RoomApi
                     $this->em->persist($roomImage);
                     $this->em->flush($roomImage);
 
+                    $filePath = "__DIR__ . '/../../public/room/image/" . $imageId;
+                    if(is_file($filePath)) {
+                        unlink($filePath); // delete file
+                    }
+
                     $responseArray[] = array(
                         'result_message' => "Successfully removed image",
                         'result_code' => 0
