@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Service\FileUploaderApi;
 use App\Service\RoomApi;
+use http\Exception;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
@@ -74,7 +76,11 @@ class ImageController extends AbstractController
         }
         $filePath = __DIR__ . '/../../public/room/image/'. $fileName;
         if(file_exists($filePath)){
-            return new BinaryFileResponse($filePath);
+            try{
+                return new BinaryFileResponse($filePath);
+            }catch(InvalidArgumentException $exception){
+                return new JsonResponse($exception->getMessage() , 404, array());
+            }
         }else{
             return new JsonResponse("file does not exist or is not readable" , 404, array());
         }
