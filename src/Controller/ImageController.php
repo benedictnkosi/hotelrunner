@@ -76,9 +76,8 @@ class ImageController extends AbstractController
         if(file_exists($filePath)){
             return new BinaryFileResponse($filePath);
         }else{
-            return new JsonResponse("File Not Found" , 404, array());
+            return new JsonResponse("file does not exist or is not readable" , 404, array());
         }
-
     }
 
     /**
