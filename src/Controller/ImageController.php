@@ -72,8 +72,13 @@ class ImageController extends AbstractController
         if (!$request->isMethod('get')) {
             return new JsonResponse("Internal server error" , 500, array());
         }
-        $uploadDir = __DIR__ . '/../../public/room/image/';
-        return new BinaryFileResponse($uploadDir . $fileName);
+        $filePath = __DIR__ . '/../../public/room/image/'. $fileName;
+        if(file_exists($filePath)){
+            return new BinaryFileResponse($filePath);
+        }else{
+            return new JsonResponse("File Not Found" , 404, array());
+        }
+
     }
 
     /**
