@@ -568,9 +568,9 @@ class ICalApi
                 return $responseArray;
             }
 
-            if(intval($link) > 200){
+            if(strlen($link) > 200 || strlen($link) < 1){
                 $responseArray[] = array(
-                    'result_message' => "Channel Link Length should be between 1 and 200",
+                    'result_message' => "Channel Link Length should be between 1 and 200 ",
                     'result_code' => 1
                 );
                 return $responseArray;
@@ -586,15 +586,6 @@ class ICalApi
                 return $responseArray;
             }
 
-            //check length
-            if (strlen($link) > 200) {
-                $responseArray[] = array(
-                    'result_message' => "Link is too long, limit is 200 characters",
-                    'result_code' => 1
-                );
-                return $responseArray;
-            }
-
             //validate that channel does not exist
             $iCalLink = $this->em->getRepository(Ical::class)->findOneBy(array('link' => $link));
             $room = $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $roomId));
@@ -604,6 +595,14 @@ class ICalApi
                      'result_code' => 1
                  );
              return $responseArray;*/
+            }
+
+            if($room == null){
+                $responseArray[] = array(
+                    'result_message' => 'Room with id not found',
+                    'result_code' => 1
+                );
+                return $responseArray;
             }
 
             $ical = new Ical();
@@ -661,11 +660,11 @@ class ICalApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        $responseArray[] = array(
-            'result_message' => 'Successfully removed channel',
-            'result_code' => 0
-        );
-        return $responseArray;
+//        $responseArray[] = array(
+//            'result_message' => 'Successfully removed channel',
+//            'result_code' => 0
+//        );
+        //return $responseArray;
         try {
             $ical = $this->em->getRepository(Ical::class)->findOneBy(array('id' => $icalId));
             if ($ical !== null) {
@@ -677,7 +676,7 @@ class ICalApi
                 );
             } else {
                 $responseArray[] = array(
-                    'result_message' => 'Channel not found, please refresh page',
+                    'result_message' => 'Channel with id not found',
                     'result_code' => 1
                 );
             }

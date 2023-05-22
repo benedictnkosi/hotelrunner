@@ -42,14 +42,14 @@ class AddOnsApi
                     'result_code' => 1
                 );
             } else {
-                $propertyId =   $_SESSION['PROPERTY_ID'];
+                $propertyId = $_SESSION['PROPERTY_ID'];
                 return $this->em->getRepository(AddOns::class)->findOneBy(
                     array("name" => $addOnName,
                         'property' => $propertyId));
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -64,11 +64,11 @@ class AddOnsApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
-            $propertyId =   $_SESSION['PROPERTY_ID'];
-            return $this->em->getRepository(AddOns::class)->findBy(array('property' => $propertyId, 'status'=> 'live'));
+            $propertyId = $_SESSION['PROPERTY_ID'];
+            return $this->em->getRepository(AddOns::class)->findBy(array('property' => $propertyId, 'status' => 'live'));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -84,12 +84,12 @@ class AddOnsApi
         $responseArray = array();
         try {
             $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array('id' => $addOnId));
-            if($addOn === null){
+            if ($addOn === null) {
                 $responseArray[] = array(
                     'result_message' => "Add on not found for id $addOnId",
                     'result_code' => 1
                 );
-            }else{
+            } else {
                 $responseArray[] = array(
                     'id' => $addOn->getId(),
                     'name' => $addOn->getName(),
@@ -101,7 +101,7 @@ class AddOnsApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -121,7 +121,7 @@ class AddOnsApi
             return $addOns;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error("failed to get add ons " . print_r($responseArray, true));
@@ -156,15 +156,15 @@ class AddOnsApi
             $this->em->flush($resAddOn);
 
             //update add-on quantity
-            if($addOn->getQuantity() !== 0){
+            if ($addOn->getQuantity() !== 0) {
                 $currentQuantity = $addOn->getQuantity();
                 $newQuantity = $currentQuantity - intval($quantity);
                 $addOn->setQuantity($newQuantity);
                 $this->em->persist($addOn);
                 $this->em->flush($addOn);
 
-                if($newQuantity < $addOn->getMinimum() || $newQuantity == $addOn->getMinimum()){
-                    $messageBody = "Stock low for " . $addOn->getName() . ". Quantity: ". $newQuantity;
+                if ($newQuantity < $addOn->getMinimum() || $newQuantity == $addOn->getMinimum()) {
+                    $messageBody = "Stock low for " . $addOn->getName() . ". Quantity: " . $newQuantity;
                     $SMSHelper = new SMSHelper($this->logger);
                     $SMSHelper->sendMessage("+27837917430", $messageBody);
                 }
@@ -177,7 +177,7 @@ class AddOnsApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -199,56 +199,58 @@ class AddOnsApi
                     'result_code' => 1
                 );
                 $this->logger->debug(print_r($responseArray, true));
-            } else {
-                switch ($field) {
-                    case "price":
-                        if(strlen($newValue) > 4 || strlen($newValue) == 0){
-                            $responseArray[] = array(
-                                'result_message' => "Add-on price Length should be between 1 and 4",
-                                'result_code' => 1
-                            );
-                            return $responseArray;
-                        }
-                        $addOn->setPrice($newValue);
-                        break;
-                    case "name":
-                        if(strlen($newValue) > 50 || strlen($newValue) == 0){
-                            $responseArray[] = array(
-                                'result_message' => "Add-on name Length should be between 1 and 500",
-                                'result_code' => 1
-                            );
-                            return $responseArray;
-                        }
-                        $addOn->setName($newValue);
-                        break;
-                    case "quantity":
-                        if(strlen($newValue) > 2 || strlen($newValue) == 0){
-                            $responseArray[] = array(
-                                'result_message' => "Add-on quantity Length should be between 1 and 2",
-                                'result_code' => 1
-                            );
-                            return $responseArray;
-                        }
-                        $addOn->setQuantity(intval($newValue) + 1);
-                        break;
-                    default:
+                return $responseArray;
+            }
+
+            switch ($field) {
+                case "price":
+                    if (strlen($newValue) > 4 || strlen($newValue) == 0) {
                         $responseArray[] = array(
-                            'result_message' => "field not found",
+                            'result_message' => "Add-on price Length should be between 1 and 4",
                             'result_code' => 1
                         );
-                        break;
-                }
-                $this->em->persist($addOn);
-                $this->em->flush($addOn);
-
-                $responseArray[] = array(
-                    'result_message' => "Successfully updated add-on",
-                    'result_code' => 0
-                );
+                        return $responseArray;
+                    }
+                    $addOn->setPrice($newValue);
+                    break;
+                case "name":
+                    if (strlen($newValue) > 50 || strlen($newValue) == 0) {
+                        $responseArray[] = array(
+                            'result_message' => "Add-on name Length should be between 1 and 500",
+                            'result_code' => 1
+                        );
+                        return $responseArray;
+                    }
+                    $addOn->setName($newValue);
+                    break;
+                case "quantity":
+                    if (strlen($newValue) > 2 || strlen($newValue) == 0) {
+                        $responseArray[] = array(
+                            'result_message' => "Add-on quantity Length should be between 1 and 2",
+                            'result_code' => 1
+                        );
+                        return $responseArray;
+                    }
+                    $addOn->setQuantity(intval($newValue) + 1);
+                    break;
+                default:
+                    $responseArray[] = array(
+                        'result_message' => "field not found",
+                        'result_code' => 1
+                    );
+                    break;
             }
+            $this->em->persist($addOn);
+            $this->em->flush($addOn);
+
+            $responseArray[] = array(
+                'result_message' => "Successfully updated add-on",
+                'result_code' => 0
+            );
+
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -280,7 +282,7 @@ class AddOnsApi
                 );
             }
         } catch (Exception $ex) {
-            $this->logger->debug($ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString());
+            $this->logger->debug($ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString());
             $responseArray[] = array(
                 'result_message' => "Failed to delete employee",
                 'result_code' => 1
@@ -299,49 +301,49 @@ class AddOnsApi
         try {
             $this->logger->debug("attempting to talk to db");
             //check if add-on with the same name does not exist
-            $existingAddOn = $this->em->getRepository(AddOns::class)->findBy(array('name' => $addOnName, 'status'=>'live'));
+            $existingAddOn = $this->em->getRepository(AddOns::class)->findBy(array('name' => $addOnName, 'status' => 'live'));
             $this->logger->debug("db connect done success");
             if ($existingAddOn != null) {
                 $responseArray[] = array(
                     'result_message' => "Add on with the same name already exists",
                     'result_code' => 1
                 );
-            } else {
-                if(strlen($addOnName) > 50 || strlen($addOnName) == 0){
-                    $responseArray[] = array(
-                        'result_message' => "Add-on name Length should be between 1 and 500",
-                        'result_code' => 1
-                    );
-                    return $responseArray;
-                }
-
-                if(strlen($addOnPrice) > 4 || strlen($addOnPrice) == 0){
-                    $responseArray[] = array(
-                        'result_message' => "Add-on price Length should be between 1 and 4",
-                        'result_code' => 1
-                    );
-                    return $responseArray;
-                }
-
-                $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
-                $addOn = new AddOns();
-                $addOn->setPrice($addOnPrice + 10);
-                $addOn->setName($addOnName);
-                $addOn->setProperty($property);
-                $this->em->persist($addOn);
-                $this->em->flush($addOn);
-                $responseArray[] = array(
-                    'result_message' => "Successfully created add on",
-                    'result_code' => 0,
-                    'add_on_id' => $addOn->getId()
-                );
-
+                return $responseArray;
 
             }
+            if (strlen($addOnName) > 50 || strlen($addOnName) == 0) {
+                $responseArray[] = array(
+                    'result_message' => "Add-on name Length should be between 1 and 500",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            if (strlen($addOnPrice) > 4 || strlen($addOnPrice) == 0) {
+                $responseArray[] = array(
+                    'result_message' => "Add-on price Length should be between 1 and 4",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
+            $addOn = new AddOns();
+            $addOn->setPrice($addOnPrice + 10);
+            $addOn->setName($addOnName);
+            $addOn->setProperty($property);
+            $this->em->persist($addOn);
+            $this->em->flush($addOn);
+            $responseArray[] = array(
+                'result_message' => "Successfully created add on",
+                'result_code' => 0,
+                'add_on_id' => $addOn->getId()
+            );
+
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -362,7 +364,7 @@ class AddOnsApi
                 $totalPriceForAllAdOns = (intVal($addOn->getAddOn()->getPrice()) * intval($addOn->getQuantity()));
                 $html .= '<tr class="item">
 					<td>' . $addOn->getAddOn()->getName() . '</td>
-					<td>' . $addOn->getQuantity()  . '</td>
+					<td>' . $addOn->getQuantity() . '</td>
 					<td>R' . number_format((float)$addOn->getAddOn()->getPrice() + 1, 2, '.', '') . '</td>
 					<td>R' . number_format((float)$totalPriceForAllAdOns + 1, 2, '.', '') . '</td>
 				</tr>';
@@ -407,7 +409,7 @@ class AddOnsApi
             //update add-on quantity
             $addOn = $reservationAddOn->getAddOn();
             $quantity = $reservationAddOn->getQuantity();
-            if($addOn->getQuantity() !== 0){
+            if ($addOn->getQuantity() !== 0) {
                 $currentQuantity = $addOn->getQuantity();
                 $newQuantity = $currentQuantity + intval($quantity);
                 $addOn->setQuantity($newQuantity);
@@ -423,7 +425,7 @@ class AddOnsApi
         } catch (Exception $ex) {
             $this->logger->error($ex->getMessage());
             $responseArray[] = array(
-                'result_message' =>$ex->getMessage(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
         }

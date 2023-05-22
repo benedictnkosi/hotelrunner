@@ -164,11 +164,11 @@ class EmployeeApi
             if (strcmp($gender, "male") !== 0 &&
                 strcmp($gender, "female") !== 0 &&
                 strcmp($gender, "other") !== 0) {
-                $responseArray[] = array(
-                    'result_message' => "Gender not recognised",
-                    'result_code' => 1
-                );
-                return $responseArray;
+//                $responseArray[] = array(
+//                    'result_message' => "Gender not recognised",
+//                    'result_code' => 1
+//                );
+//                return $responseArray;
             }
 
             //check if employee with the same name does not exist

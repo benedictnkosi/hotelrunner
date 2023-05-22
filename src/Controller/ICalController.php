@@ -78,6 +78,7 @@ class ICalController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
+
         $response = $iCalApi->addNewChannel($request->get("room_id"), urldecode($request->get("url")));
         if ($response[0]['result_code'] === 0) {
             $response = new JsonResponse($response , 201, array());
@@ -96,11 +97,14 @@ class ICalController extends AbstractController
         if (!$request->isMethod('delete')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
+
         $response = $iCalApi->removeIcalLink($linkId);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response, 204, array());
-        $response->setCallback($callback);
-        return $response;
+
+        if ($response[0]['result_code'] === 0) {
+            return new JsonResponse($response, 204, array());
+        }else{
+            return new JsonResponse($response, 200, array());
+        }
     }
 
     /**
