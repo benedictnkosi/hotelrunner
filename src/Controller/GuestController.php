@@ -43,7 +43,7 @@ class GuestController extends AbstractController
     public function updateGuestPhone($guestId, $phoneNumber, LoggerInterface $logger,Request $request,GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->updateGuestPhoneNumber($guestId, $phoneNumber);
@@ -61,7 +61,7 @@ class GuestController extends AbstractController
     public function updateGuestEmail($guestId, $email, LoggerInterface $logger,Request $request,GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->updateGuestEmail($guestId, $email);
@@ -77,7 +77,7 @@ class GuestController extends AbstractController
     public function updateGuestIdNumber($guestId, $idNumber, LoggerInterface $logger, Request $request,GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->updateGuestIdNumber($guestId, $idNumber);
@@ -132,7 +132,7 @@ class GuestController extends AbstractController
     public function updateGuest($guestId, $field, $newValue, Request $request,LoggerInterface $logger, EntityManagerInterface $entityManager, guestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = match ($field) {

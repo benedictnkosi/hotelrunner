@@ -37,7 +37,7 @@ class NotificationController  extends AbstractController
     public function updateAdsNotification($propertyId, LoggerInterface $logger, Request $request, NotificationApi $notificationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $notificationApi->updateAdsNotificationAction("Pause Google Ads", true);
@@ -58,7 +58,7 @@ class NotificationController  extends AbstractController
     public function updateNotificationAsActioned($name, LoggerInterface $logger, Request $request, NotificationApi $notificationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $html = $notificationApi->updateAdsNotificationAction($name, true);

@@ -40,7 +40,7 @@ class ImageController extends AbstractController
     public function markDefault($imageName, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $roomApi->markDefault($imageName);

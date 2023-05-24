@@ -660,12 +660,18 @@ function updateAddOn(event) {
     const newValue = $(event.target).val().trim();
     $("body").addClass("loading");
     isUserLoggedIn();
-        let url = "/admin_api/addon/update/" + addOnId + "/" + field + "/" + newValue;
+        let url = "/admin_api/addon/update";
+
+    const data = {
+        id: addOnId,
+        field: field,
+        value: newValue
+    };
 
     $.ajax({
         url : url,
         type: "PUT",
-        data : "",
+        data : data,
         success: function(response)
         {
             $("body").removeClass("loading");
@@ -673,7 +679,6 @@ function updateAddOn(event) {
                 getAddOns();
                 showResSuccessMessage("configuration", data[0].result_message);
             } else {
-
                 showResErrorMessage("configuration", response[0].result_message);
             }
         },

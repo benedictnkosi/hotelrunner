@@ -36,7 +36,7 @@ class PropertyController extends AbstractController
     public function updatePropertyTerms( $terms, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $propertyApi->updatePropertyTerms( $terms);

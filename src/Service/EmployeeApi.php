@@ -6,6 +6,7 @@ use App\Entity\Employee;
 use App\Entity\Property;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
+use JMS\Serializer\Exception\NotAcceptableException;
 use Psr\Log\LoggerInterface;
 
 class EmployeeApi
@@ -40,14 +41,26 @@ class EmployeeApi
         return $responseArray;
     }
 
-    public function getEmployee($id)
+    public function getEmployee($employeeId)
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
-            return $this->em->getRepository(Employee::class)->findOneBy(array('id' => $id));
+            $employees = $this->em->getRepository(Employee::class)->findBy(array("id" => $employeeId));
+            $this->logger->debug("found employees " . sizeof($employees));
+
+            if(sizeof($employees) < 1){
+                $responseArray = array(
+                    'result_message' => "Employee not found",
+                    'result_code' => 1
+                );
+                $this->logger->debug(print_r($responseArray, true));
+                return $responseArray;
+            }
+
+            return $this->em->getRepository(Employee::class)->findOneBy(array('id' => $employeeId));
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
@@ -83,12 +96,14 @@ class EmployeeApi
             }
 
             $employee = $this->em->getRepository(Employee::class)->findOneBy(array("id" => $employeeId));
+
             if ($employee === null) {
                 $responseArray[] = array(
                     'result_message' => "Employee not found",
                     'result_code' => 1
                 );
                 $this->logger->debug(print_r($responseArray, true));
+                return $responseArray;
             } else {
                 $employee->setName($employeeName);
                 $this->em->persist($employee);
@@ -116,9 +131,8 @@ class EmployeeApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
-            //$employee = $this->em->getRepository(Employee::class)->findOneBy(array("id" => $employeeId));
-            $employees = $this->em->getRepository(Employee::class)->findAll();
-            $employee = $employees[0];
+            $employee = $this->em->getRepository(Employee::class)->findOneBy(array("id" => $employeeId));
+
             if ($employee === null) {
                 $responseArray[] = array(
                     'result_message' => "employee not found",
@@ -172,9 +186,9 @@ class EmployeeApi
             }
 
             //check if employee with the same name does not exist
-            $existingEmployees = $this->em->getRepository(Employee::class)->findBy(array('name' => $employeeName));
+            $existingEmployees = $this->em->getRepository(Employee::class)->findOneBy(array('name' => $employeeName));
 
-            if ($existingEmployees != null) {
+            if ($existingEmployees !== null) {
                 $responseArray[] = array(
                     'result_message' => "Employee with the same name already exists",
                     'result_code' => 1

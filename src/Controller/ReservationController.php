@@ -153,7 +153,7 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
 
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
@@ -258,7 +258,7 @@ class ReservationController extends AbstractController
     public function updateReservationCheckInTime($reservationId, $checkInTime, $checkOutTime, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
@@ -279,7 +279,7 @@ class ReservationController extends AbstractController
     public function updateReservationDates($reservationId, $checkInDate, $checkOutDate, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
@@ -297,7 +297,7 @@ class ReservationController extends AbstractController
     public function updateReservationRoom($reservationId, $roomId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
@@ -314,7 +314,7 @@ class ReservationController extends AbstractController
     public function updateReservationConfirmationCode($reservationId, $confirmationCode, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
@@ -516,7 +516,7 @@ class ReservationController extends AbstractController
     public function blockGuest($reservationId, $reason, LoggerInterface $logger, Request $request,GuestApi $guestApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->blockGuest($reservationId, $reason);

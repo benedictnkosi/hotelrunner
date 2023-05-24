@@ -96,7 +96,7 @@ class AddOnsApi
                     'price' => $addOn->getPrice(),
                     'property' => $addOn->getProperty()->getId(),
                     'status' => $addOn->getStatus(),
-                    'result_code' => 1
+                    'result_code' => 0
                 );
             }
         } catch (Exception $ex) {
@@ -265,7 +265,7 @@ class AddOnsApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
-            $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array("id" => $addOnId));
+            $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array("id" => $addOnId, "status"=>"live"));
             if ($addOn === null) {
                 $responseArray[] = array(
                     'result_message' => "Addon not found",
@@ -311,7 +311,7 @@ class AddOnsApi
                 return $responseArray;
 
             }
-            if (strlen($addOnName) > 50 || strlen($addOnName) == 0) {
+            if (strlen($addOnName) > 50 || strlen($addOnName) == 0 ) {
                 $responseArray[] = array(
                     'result_message' => "Add-on name Length should be between 1 and 500",
                     'result_code' => 1
@@ -319,9 +319,9 @@ class AddOnsApi
                 return $responseArray;
             }
 
-            if (strlen($addOnPrice) > 4 || strlen($addOnPrice) == 0) {
+            if (strlen($addOnPrice) > 4 || strlen($addOnPrice) == 0 || !is_numeric($addOnPrice)) {
                 $responseArray[] = array(
-                    'result_message' => "Add-on price Length should be between 1 and 4",
+                    'result_message' => "Add-on price Length should be between 1 and 4 and should be a number",
                     'result_code' => 1
                 );
                 return $responseArray;

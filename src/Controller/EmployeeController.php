@@ -40,6 +40,23 @@ class EmployeeController extends AbstractController
     }
 
     /**
+     * @Route("api/config/json/employees")
+     */
+    public function getJsonEmployees( LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, EmployeeApi $employeeApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $employees = $employeeApi->getEmployees();
+        $serializer = SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize($employees, 'json');
+
+        $logger->info($jsonContent);
+        return new JsonResponse($jsonContent , 200, array(), true);
+    }
+
+    /**
      * @Route("admin_api/createemployee")
      */
     public function createEmployee(LoggerInterface $logger, Request $request,EmployeeApi $employeeApi): Response
@@ -82,22 +99,17 @@ class EmployeeController extends AbstractController
     public function updateEmployees($employeeId, $name, LoggerInterface $logger,Request $request, EntityManagerInterface $entityManager, EmployeeApi $employeeApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('put')) {
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $employeeApi->updateEmployeeName($employeeId, $name);
-        if ($response[0]['result_code'] === 0) {
-            $response = new JsonResponse($response , 200, array());
-        }else{
-            $response = new JsonResponse($response , 200, array());
-        }
-        return $response;
+        return new JsonResponse($response , 200, array());
     }
 
     /**
      * @Route("api/json/employee/{id}")
      */
-    public function getPaymentJson( $id, LoggerInterface $logger, Request $request,EmployeeApi $employeeApi): Response
+    public function getEmployeeJson( $id, LoggerInterface $logger, Request $request,EmployeeApi $employeeApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
