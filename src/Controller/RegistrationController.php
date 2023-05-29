@@ -90,6 +90,80 @@ class RegistrationController extends AbstractController
         }
     }
 
+    #[Route('/register_json', name: 'app_register_json')]
+    public function register_json(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return $this->render('signup.html', [
+                'error' => "Internal Server Error",
+            ]);
+        }
+        try{
+            if(strlen($request->get("_password")) < 1 || strlen($request->get("_username")) < 1){
+                return $this->render('signup.html', [
+                    'error' => "Username and password is mandatory",
+                ]);
+            }
+
+            $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+
+            if (!preg_match($pattern,$request->get("_username"))) {
+                return $this->render('signup.html', [
+                    'error' => "Username must be a valid email address",
+                ]);
+            }
+
+            if(strcmp($request->get("_password"), $request->get("_confirm_password")) !== 0){
+                return $this->render('signup.html', [
+                    'error' => "Passwords are not the same",
+                ]);
+            }
+
+            $passwordErrors = $this->validatePassword($request->get("_password"));
+            $logger->info("Size of errors: " . sizeof($passwordErrors));
+            if(sizeof($passwordErrors) > 0){
+                return $this->render('signup.html', [
+                    'error' => $passwordErrors[0],
+                ]);
+            }
+
+            $user = new User();
+
+            $user->setPassword(
+                $userPasswordHasher->hashPassword(
+                    $user,
+                    $request->get("_password")
+                )
+            );
+
+            $user->setEmail($request->get("_username"));
+            $property = $entityManager->getRepository(Property::class)->findOneBy(
+                array("id" => 3));
+            $user->setProperty($property);
+            $roles = [ $request->get("_role")];
+            $user->setRoles($roles);
+            try{
+                $entityManager->persist($user);
+                $entityManager->flush();
+            }catch (Exception $exception){
+                $logger->error($exception->getMessage());
+                return $this->render('signup.html', [
+                    'error' => "Failed to register the user. please contact administrator. " . $exception->getMessage(),
+                ]);
+            }
+
+            return $this->render('signup.html', [
+                'error' => "Successfully registered, Please sign in",
+            ]);
+        }catch(\Exception $exception){
+            $logger->info($exception->getMessage());
+            return $this->render('signup.html', [
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
 
     public function validatePassword($pass){
         $errors = array();
