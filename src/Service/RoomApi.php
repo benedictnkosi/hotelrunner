@@ -163,13 +163,13 @@ class RoomApi
 
             if (strcmp($roomId, "all") === 0) {
                 //check if the PROPERTY_ID if not get it from the host
-                $propertyApi = new PropertyApi($this->em, $this->logger);
-                if (!isset($_SESSION['PROPERTY_ID'])) {
-                    $propertyId = $propertyApi->getPropertyIdByHost($request);
-                } else {
-                    $propertyId = $_SESSION['PROPERTY_ID'];
-                }
-                $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId, 'status' => 1));
+//                $propertyApi = new PropertyApi($this->em, $this->logger);
+//                if (!isset($_SESSION['PROPERTY_ID'])) {
+//                    $propertyId = $propertyApi->getPropertyIdByHost($request);
+//                } else {
+//                    $propertyId = $_SESSION['PROPERTY_ID'];
+//                }
+                $rooms = $this->em->getRepository(Rooms::class)->findBy(array('status' => 1));
             } else {
                 $rooms = $this->em->getRepository(Rooms::class)->findBy(array('id' => $roomId));
             }
