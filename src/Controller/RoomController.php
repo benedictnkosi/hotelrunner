@@ -245,7 +245,7 @@ class RoomController extends AbstractController
     /**
      * @Route("/admin_api/createroom")
      */
-    public function updateCreateRoom(Request $request, LoggerInterface $logger,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
+    public function updateCreateRoom(Request $request, LoggerInterface $logger, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {

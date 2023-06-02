@@ -626,6 +626,17 @@ class RoomApi
                 return $responseArray;
             }
 
+            //check amenities
+            $amenitiesArray = json_decode($amenities);
+            if(sizeof($amenitiesArray) < 1 ){
+
+                $responseArray[] = array(
+                    'result_message' => "Amenities are required",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
             $beds = urldecode($beds);
             $beds = trim($beds);
             $bedsNameArray = explode(",", $beds);
