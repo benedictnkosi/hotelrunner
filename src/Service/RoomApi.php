@@ -628,7 +628,7 @@ class RoomApi
 
             //check amenities
             $amenitiesArray = json_decode($amenities);
-            if(sizeof($amenitiesArray) < 1 ){
+            if($amenitiesArray === null){
 
                 $responseArray[] = array(
                     'result_message' => "Amenities are required",
