@@ -263,6 +263,33 @@ class RoomApi
         return $responseArray;
     }
 
+    public function getActiveAndPendingRoomsEntities($roomId = 0, $request = null): ?array
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        try {
+            if ($roomId === 0) {
+                if (!isset($_SESSION['PROPERTY_ID'])) {
+                    $propertyApi = new PropertyApi($this->em, $this->logger);
+                    $propertyId = $propertyApi->getPropertyIdByHost($request);
+                } else {
+                    $propertyId = $_SESSION['PROPERTY_ID'];
+                }
+                $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId));
+            } else {
+                $rooms = $this->em->getRepository(Rooms::class)->findBy(array('id' => $roomId));
+            }
+            $this->logger->debug("Ending Method before the return: " . __METHOD__);
+            return $rooms;
+        } catch (Exception $ex) {
+            $responseArray[] = array(
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_code' => 1
+            );
+            $this->logger->error(print_r($responseArray, true));
+            return null;
+        }
+    }
+
     public function getRoomsEntities($roomId = 0, $request = null): ?array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
