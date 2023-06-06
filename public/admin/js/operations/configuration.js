@@ -519,7 +519,7 @@ function populateFormWithRoom(event) {
                 //show uploaded images
                 $("#uploaded_images_div").html(response[0].uploaded_images);
                 $('#imageUploaderDiv').removeClass("display-none");
-                $('#icalDiv').removeClass("display-none");
+                //$('#icalDiv').removeClass("display-none");
 
                 $(".remove_link_button").click(function (event) {
                     event.stopImmediatePropagation();
