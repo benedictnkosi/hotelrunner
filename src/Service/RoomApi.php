@@ -467,6 +467,20 @@ class RoomApi
         return $responseArray;
     }
 
+    public function getNumberOfRoomImages($roomId): int
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        try {
+            $roomImages = $this->em->getRepository(RoomImages::class)->findBy(array('room' => $roomId, 'status' => array("active", "default")));
+            $this->logger->debug("Number of room images: " . sizeof($roomImages));
+            $this->logger->debug("Ending Method before the return: " . __METHOD__);
+            return sizeof($roomImages);
+        } catch (Exception $ex) {
+            $this->logger->error($ex->getMessage());
+            return 0;
+        }
+    }
+
     public function getRoomStatuses(): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -581,19 +595,10 @@ class RoomApi
                 return $responseArray;
             }
 
-
-            if(intval($sleeps) < 1){
-                $responseArray[] = array(
-                    'result_message' => "Number of occupants can not be less than 1",
-                    'result_code' => 1
-                );
-                return $responseArray;
-            }
-
             //check description length
             if(strlen($description) < 50 || strlen($description) > 500){
                 $responseArray[] = array(
-                    'result_message' => "Description Length should be between 50 and 500",
+                    'result_message' => "Description length should be between 50 and 500",
                     'result_code' => 1
                 );
                 return $responseArray;
@@ -602,34 +607,35 @@ class RoomApi
             //check name length
             if(strlen($name) > 30){
                 $responseArray[] = array(
-                    'result_message' => "Name Length should have maximum of 30 characters",
+                    'result_message' => "Name length should have maximum of 30 characters",
                     'result_code' => 1
                 );
                 return $responseArray;
             }
 
             //check price
-            if(strlen($price) > 3 || !is_numeric($price) ){
+            if(strlen($price) > 3 || !is_numeric($price) || intval($price) < 1){
                 $responseArray[] = array(
-                    'result_message' => "Price must be a number and maximum length of 3",
+                    'result_message' => "Price must be a number greater than 1 and maximum length of 3",
                     'result_code' => 1
                 );
                 return $responseArray;
             }
 
+
             //check sleeps
-            if(strlen($sleeps) > 2 || !is_numeric($sleeps) ){
+            if(strlen($sleeps) > 2 || !is_numeric($sleeps) || intval($sleeps) < 1){
                 $responseArray[] = array(
-                    'result_message' => "Price must be a number and maximum length of 2",
+                    'result_message' => "Sleeps must be a number greater than 1 and maximum length of 2",
                     'result_code' => 1
                 );
                 return $responseArray;
             }
 
             //check room size
-            if(strlen($size) > 3 || !is_numeric($size) ){
+            if(strlen($size) > 3 || !is_numeric($size) || intval($size) < 1 ){
                 $responseArray[] = array(
-                    'result_message' => "Room Size must be a number and maximum length of 3",
+                    'result_message' => "Room size must be a number greater than 1 and maximum length of 3",
                     'result_code' => 1
                 );
                 return $responseArray;
