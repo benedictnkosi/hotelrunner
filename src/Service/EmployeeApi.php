@@ -178,11 +178,11 @@ class EmployeeApi
             if (strcmp($gender, "male") !== 0 &&
                 strcmp($gender, "female") !== 0 &&
                 strcmp($gender, "other") !== 0) {
-//                $responseArray[] = array(
-//                    'result_message' => "Gender not recognised",
-//                    'result_code' => 1
-//                );
-//                return $responseArray;
+                $responseArray[] = array(
+                    'result_message' => "Gender not recognised",
+                    'result_code' => 1
+                );
+                return $responseArray;
             }
 
             //check if employee with the same name does not exist
@@ -198,7 +198,7 @@ class EmployeeApi
 
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
             $employee = new Employee();
-            $employee->setName($employeeName . "a");
+            $employee->setName($employeeName);
             $employee->setProperty($property);
             $employee->setGender("female");
             $this->em->persist($employee);
