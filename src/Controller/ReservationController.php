@@ -108,6 +108,50 @@ class ReservationController extends AbstractController
     }
 
     /**
+     * @Route("api/reservations_json/{period}")
+     */
+    public function getReservations_json($period,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $reservations = "";
+        switch ($period) {
+            case "future":
+                $reservations = $reservationApi->getUpComingReservations(0, true,true);
+                break;
+            case "past":
+                $reservations = $reservationApi->getPastReservations();
+                break;
+            case "checkout":
+                $reservations = $reservationApi->getCheckOutReservation();
+                break;
+            case "stayover":
+                $reservations = $reservationApi->getStayOversReservations();
+                break;
+            case "pending":
+                $reservations = $reservationApi->getPendingReservations();
+                break;
+            default:
+                $reservations = null;
+        }
+
+        if($reservations == null){
+            $reservations = array(
+                'result_message' => "Reservations not found" ,
+                'result_code' => 1
+            );
+        }
+
+        $serializer = SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize($reservations, 'json');
+
+        $logger->info($jsonContent);
+        return new JsonResponse($jsonContent , 200, array(), true);
+    }
+
+    /**
      * @Route("api/reservation_html/{reservationId}")
      */
     public function getReservationByIdHtml($reservationId,  LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response

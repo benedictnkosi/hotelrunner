@@ -219,9 +219,9 @@ class SingleReservationHtml
         $htmlString .= '<a title="Whatsapp Guest" class="image_verified" target="_blank" href="https://api.whatsapp.com/send?phone=' . $guest->getPhoneNumber() . '&text=Hello)"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>';
 
         //guest id verified
-        if (strcasecmp($reservation->getOrigin(), "website") === 0) {
-            $htmlString .= '<img title="Customer ID - ' . str_replace(".png", "", $customerIdImage) . '" src="/admin/images/' . $customerIdImage . '" class="image_verified clickable"/>';
-        }
+//        if (strcasecmp($reservation->getOrigin(), "website") === 0) {
+//            $htmlString .= '<img title="Customer ID - ' . str_replace(".png", "", $customerIdImage) . '" src="/admin/images/' . $customerIdImage . '" class="image_verified clickable"/>';
+//        }
 
         // display if guest already checked in
         $this->logger->debug("HTML output - display if guest already checked in" . $reservation->getId());
@@ -298,16 +298,16 @@ class SingleReservationHtml
         }
 
         //apply discount based on loyalty rewards
-        if($guest->isRewards()){
-            //apply discount based on number of stays
-            if($stayCount < 10){
-                $roomPrice = $roomPrice * 0.9;
-            }elseif($stayCount < 20){
-                $roomPrice = $roomPrice * 0.8;
-            }else{
-                $roomPrice = $roomPrice * 0.7;
-            }
-        }
+//        if($guest->isRewards()){
+//            //apply discount based on number of stays
+//            if($stayCount < 10){
+//                $roomPrice = $roomPrice * 0.9;
+//            }elseif($stayCount < 20){
+//                $roomPrice = $roomPrice * 0.8;
+//            }else{
+//                $roomPrice = $roomPrice * 0.7;
+//            }
+//        }
 
 
 

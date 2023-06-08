@@ -33,11 +33,19 @@ class PaymentApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
+            //validate id is a number
+            if(!is_numeric($resId)){
+                return array(
+                    'result_message' => "ID is not a number" ,
+                    'result_code' => 1
+                );
+            }
+
             $payments = $this->em->getRepository(Payments::class)->findBy(array('reservation' => $resId));
             $this->logger->debug("no errors finding payments for reservation $resId. payment count " . count($payments));
             return $payments;
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -54,9 +62,16 @@ class PaymentApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
+            //validate id is a number
+            if(!is_numeric($paymentId)){
+                return array(
+                    'result_message' => "ID is not a number" ,
+                    'result_code' => 1
+                );
+            }
             return $this->em->getRepository(Payments::class)->findOneBy(array('id' => $paymentId));
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -104,9 +119,25 @@ class PaymentApi
 
             foreach ($reservationIdsArray as $resId) {
                 $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+                if($reservation == null){
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'Reservation not found'
+                    );
+                }
                 $payment = new Payments();
                 $now = new DateTime();
 
+                //validate channel
+                if(strcmp($channel, "cash") !== 0
+                && strcmp($channel, "transfer") !== 0
+                        && strcmp($channel, "payfast") !== 0
+                            && strcmp($channel, "card") !== 0){
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'Channel not allowed'
+                    );
+                }
                 $payment->setReservation($reservation);
                 $amountPerReservation = intval($amount) / intval($numberOfReservations);
                 $payment->setAmount($amountPerReservation);
@@ -146,7 +177,7 @@ class PaymentApi
 
 
                         $this->sendEmailToGuest($reservation, $amountPerReservation);
-                        $responseArray[] = array(
+                        $responseArray = array(
                             'result_code' => 0,
                             'result_message' => 'Successfully added payment'
                         );
@@ -176,7 +207,7 @@ class PaymentApi
                             $communicationApi->sendEmailViaGmail(ALUVEAPP_ADMIN_EMAIL, $reservation->getGuest()->getEmail(), $emailBody, 'Aluve App - Adding payment failed', $reservation->getRoom()->getProperty()->getName(), $reservation->getRoom()->getProperty()->getEmailAddress());
                         }
 
-                        $responseArray[] = array(
+                        $responseArray = array(
                             'result_code' => 1,
                             'result_message' => 'This room is not available anymore. payment not added'
                         );
@@ -186,15 +217,16 @@ class PaymentApi
                     //commit the payment changes
                     $this->em->persist($payment);
                     $this->em->flush($payment);
-                    $responseArray[] = array(
+                    $responseArray = array(
                         'result_code' => 0,
-                        'result_message' => 'Successfully added payment'
+                        'result_message' => 'Successfully added payment',
+                        'payment_id' => $payment->getId()
                     );
                     $this->sendEmailToGuest($reservation, $amountPerReservation);
                 }
             }
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -521,20 +553,25 @@ order by date desc";
     public function removePayment($paymentId): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             $payment = $this->em->getRepository(Payments::class)->findOneBy(array('id' => $paymentId));
+            if($payment == null){
+                return array(
+                    'result_message' => "Payment not found",
+                    'result_code' => 1
+                );
+            }
             $this->em->remove($payment);
             $this->em->flush($payment);
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => "Successfully removed payment",
                 'result_code' => 0
             );
 
         } catch (Exception $ex) {
             $this->logger->error($ex->getMessage());
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' =>$ex->getMessage(),
                 'result_code' => 1
             );

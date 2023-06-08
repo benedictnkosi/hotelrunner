@@ -36,11 +36,26 @@ class ReservationApi
     public function getReservation($resId)
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
+
         try {
-            return $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+            //validate id is a number
+            if(!is_numeric($resId)){
+                return array(
+                    'result_message' => "Reservation id is not a number" ,
+                    'result_code' => 1
+                );
+            }
+            $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+            if($reservation == null){
+                $responseArray = array(
+                    'result_message' => "Reservation not found" ,
+                    'result_code' => 1
+                );
+            }else{
+                return $reservation;
+            }
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );

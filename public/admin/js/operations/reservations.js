@@ -862,13 +862,13 @@ function addPayment(event) {
             data: data,
             success: function (response) {
                 $("body").removeClass("loading");
-                if (response[0].result_code === 0) {
+                if (response.result_code === 0) {
                     refreshReservations();
                     getBlockedRooms();
                     getReservationById(sessionStorage.getItem("reservation_id"));
-                    showResSuccessMessage("reservation", response[0].result_message);
+                    showResSuccessMessage("reservation", response.result_message);
                 } else {
-                    showResErrorMessage("reservation", response[0].result_message);
+                    showResErrorMessage("reservation", response.result_message);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

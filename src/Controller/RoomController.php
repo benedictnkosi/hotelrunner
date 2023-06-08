@@ -84,6 +84,26 @@ class RoomController extends AbstractController
         return $response;
     }
 
+
+    /**
+     * @Route("no_auth/availablerooms_json/")
+     */
+    public function getAvailableRoomsJson(Request $request, LoggerInterface $logger,RoomApi $roomApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $logger->info("params " . $request->get("check_in_date"));
+
+        $rooms = $roomApi->getAvailableRooms($request->get("check_in_date"), $request->get("check_out_date"), $request, $request->get("kids"), $request->get("property_uid"));
+        $serializer = SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize($rooms, 'json');
+
+        $logger->info($jsonContent);
+        return new JsonResponse($jsonContent , 200, array(), true);
+    }
+
     /**
      * @Route("no_auth/allrooms/")
      */
