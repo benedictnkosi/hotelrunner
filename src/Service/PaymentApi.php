@@ -138,6 +138,18 @@ class PaymentApi
                         'result_message' => 'Channel not allowed'
                     );
                 }
+
+                //validate that first time guests do not pay by cash
+                $guestApi = new GuestApi($this->em, $this->logger);
+                $stayCount = $guestApi->getGuestStaysCount($reservation->getGuest()->getId());
+
+                if($stayCount == 0 && strcmp($channel, "cash") == 0){
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'First time guests are not allowed to pay by cash'
+                    );
+                }
+
                 $payment->setReservation($reservation);
                 $amountPerReservation = intval($amount) / intval($numberOfReservations);
                 $payment->setAmount($amountPerReservation);
@@ -151,6 +163,15 @@ class PaymentApi
                 if (strcmp($reservation->getStatus()->getName(), "pending") === 0) {
                     $roomApi = new RoomApi($this->em, $this->logger);
 
+                    //is amount 50% or more of the nightly price
+                    $halfRoomPrice = intval($reservation->getRoom()->getPrice())/2;
+
+                    if($halfRoomPrice > intval($amount)){
+                        return array(
+                            'result_code' => 1,
+                            'result_message' => 'Amount must be at least 50% of the room price'
+                        );
+                    }
                     $isRoomAvailable = $roomApi->isRoomAvailable($reservation->getRoom()->getId(), $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"));
                     if ($isRoomAvailable) {
                         $this->logger->debug("room is available");

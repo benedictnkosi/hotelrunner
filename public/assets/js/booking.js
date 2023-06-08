@@ -21,8 +21,8 @@ $(document).ready(function () {
         }
     });
 
-    $("#phoneNumber").blur(function () {
-        if (document.referrer.includes("admin")) {
+    $("#phoneNumber").blur(function (event) {
+        if(event.target.value.length > 3 && $("#guestName").val().length < 1){
             getCustomer();
         }
     });

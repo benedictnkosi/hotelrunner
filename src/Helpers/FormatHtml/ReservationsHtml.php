@@ -55,11 +55,10 @@ class ReservationsHtml
 												<h5 id="res_div_error_message_' . $period . '"></h5>
 											</div>
 										</div>
-									</div>
+									</div>';
 									
-									<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
-<a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>
-									';
+//									<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
+//<a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
 
         if (strcmp($period, 'past') === 0) {
             $numberOfDays = 180;
