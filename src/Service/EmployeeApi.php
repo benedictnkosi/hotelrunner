@@ -200,7 +200,7 @@ class EmployeeApi
             $employee = new Employee();
             $employee->setName($employeeName);
             $employee->setProperty($property);
-            $employee->setGender("female");
+            $employee->setGender($gender);
             $this->em->persist($employee);
             $this->em->flush($employee);
             $responseArray[] = array(
