@@ -354,6 +354,43 @@ class ReservationController extends AbstractController
 
 
     /**
+     * @Route("no_auth/reservations/json/create")
+     * @throws \Exception
+     */
+    public function creatReservationJson( Request $request, LoggerInterface $logger, ReservationApi $reservationApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $parameters = json_decode($request->getContent(), true);
+        $logger->info($parameters['name']);
+        $nowDate = new DateTime($parameters['date']);
+        $now = new DateTime();
+
+        if(strcmp($nowDate->format("Y-m-d"), $now->format("Y-m-d")) !== 0){
+            return new JsonResponse("Date must be today" , 500, array());
+        }
+
+        $rooms = $parameters['rooms'];
+        $roomIds = array();
+        foreach ($rooms as $room ) {
+            $logger->info("Room ID: " . $room['id']);
+            $roomIds[] = $room['id'];
+        }
+
+        $response = $reservationApi->createReservation(implode(",",$roomIds), $parameters['name'], $parameters['phone_number'],
+            $parameters['email'], $parameters['check_in_date'], $parameters['check_out_date'], $request, $parameters['guest']['adult_guests'], $parameters['guest']['child_guests'], null, false, "website", "website", $parameters['smoking']);
+        $callback = $request->get('callback');
+        $response = new JsonResponse($response, 201, array());
+        $response->setCallback($callback);
+        return $response;
+    }
+
+
+    /**
      * @Route("/api/reservations/upload/")
      * @throws \Exception
      */
