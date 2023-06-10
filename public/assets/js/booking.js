@@ -64,21 +64,13 @@ $(document).ready(function () {
             });
 
             $('#checkindate').on('apply.daterangepicker', function (event, picker) {
+                hideMessages("reservation");
                 let checkInDate = new Date(picker.startDate.format("YYYY-MM-DD"));
                 let checkOutDate = new Date(picker.endDate.format("YYYY-MM-DD"))
                 let difference = checkOutDate - checkInDate;
                 let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
                 if (totalDays < 1) {
                     showResErrorMessage("reservation", "Check-in and check-out date can not be the same");
-                    $('#checkindate').daterangepicker({
-                        startDate: date,
-                        endDate: endDate,
-                        opens: 'left',
-                        autoApply: true,
-                        minDate: minDate
-                    }, function (start, end, label) {
-                        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                    });
                     return;
                 }
 
@@ -173,17 +165,17 @@ function getAvailableRooms(checkInDate, checkOutDate) {
             } else {
                 if (bedshtml.length > 1) {
                     var item = '<li>' +
-                        '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
+                        '<div class="div-select-room-name">' +
                         '<img src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div><button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
-                        '</a></li>';
+                        '</li>';
                 } else {
                     var item = '<li>' +
-                        '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
+                        '<div class="div-select-room-name">' +
                         '<img class="no_beds_image" src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div>' +
                         '<button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
-                        '</a></li>';
+                        '</li>';
                 }
 
             }

@@ -369,34 +369,34 @@ class SingleReservationHtml
         $htmlString .= '<div id="right-div-' . $reservation->getId() . '">';
 
         // add phone number
-        if ($guest->getPhoneNumber() === null || empty($guest->getPhoneNumber())) {
-            $this->logger->debug(" HTML output - add guest phonenumber" . $reservation->getId());
-
-            $htmlString .= '
-                <div class="right-side-action-block">
-                <input id="guest_phone_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
-										 class="textbox  display-none block-display reservation_input" placeholder="Phone number"/><div id="add_guest_phone_button" class="ClickableButton res_add_guest_phone" data-guestid="' . $guest->getId() . '" >Add Phone Number</div></div>';
-        }
+//        if ($guest->getPhoneNumber() === null || empty($guest->getPhoneNumber())) {
+//            $this->logger->debug(" HTML output - add guest phonenumber" . $reservation->getId());
+//
+//            $htmlString .= '
+//                <div class="right-side-action-block">
+//                <input id="guest_phone_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
+//										 class="textbox  display-none block-display reservation_input" placeholder="Phone number"/><div id="add_guest_phone_button" class="ClickableButton res_add_guest_phone" data-guestid="' . $guest->getId() . '" >Add Phone Number</div></div>';
+//        }
 
         // add email
-        if ($guest->getEmail() === null || empty($guest->getPhoneNumber())) {
-            $this->logger->debug(" HTML output - add guest email" . $reservation->getId());
-
-            $htmlString .= '
-                <div class="right-side-action-block">
-                <input id="guest_email_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
-										 class="textbox  display-none block-display reservation_input" placeholder="Email Address"/><div id="add_guest_email_button" class="ClickableButton res_add_guest_email" data-guestid="' . $guest->getId() . '" >Add Email</div></div>';
-        }
+//        if ($guest->getEmail() === null || empty($guest->getPhoneNumber())) {
+//            $this->logger->debug(" HTML output - add guest email" . $reservation->getId());
+//
+//            $htmlString .= '
+//                <div class="right-side-action-block">
+//                <input id="guest_email_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
+//										 class="textbox  display-none block-display reservation_input" placeholder="Email Address"/><div id="add_guest_email_button" class="ClickableButton res_add_guest_email" data-guestid="' . $guest->getId() . '" >Add Email</div></div>';
+//        }
 
         // add Guest ID
-        if ($guest->getIdNumber() === null || empty($guest->getIdNumber())) {
-            $this->logger->debug(" HTML output - add guest ID" . $reservation->getId());
-
-            $htmlString .= '
-                <div class="right-side-action-block">
-                <input id="guest_id_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
-										 class="textbox  display-none block-display reservation_input" placeholder="Passport\ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID\Passport</div></div>';
-        }
+//        if ($guest->getIdNumber() === null || empty($guest->getIdNumber())) {
+//            $this->logger->debug(" HTML output - add guest ID" . $reservation->getId());
+//
+//            $htmlString .= '
+//                <div class="right-side-action-block">
+//                <input id="guest_id_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
+//										 class="textbox  display-none block-display reservation_input" placeholder="Passport\ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID\Passport</div></div>';
+//        }
 
         // add payment
         $this->logger->debug(" HTML output - add payment" . $reservation->getId());
@@ -421,98 +421,98 @@ class SingleReservationHtml
 
 
         // add discount
-        $this->logger->debug(" HTML output - add discount" . $reservation->getId());
-
-        $htmlString .= '
-                <div class="right-side-action-block">
-                <input maxlength="30" id="discount_' . $reservationId . '" type="text" 
-										 class="textbox  display-none block-display reservation_input" placeholder="0.00"/><div id="add_discount_button_' . $reservationId . '" class="ClickableButton res_add_discount" data-resid="' . $reservationId . '" >Add Discount</div></div>';
-
-        // add notes
-        $this->logger->debug(" HTML output - add notes" . $reservation->getId());
-        $htmlString .= '
-                    <div class="right-side-action-block">
-                    <textarea id="note_' . $reservationId . '"
-                        class="textbox  display-none block-display reservation_input" placeholder="e.g. 12h00 early check in"></textarea><div id="add_note_button_' . $reservationId . '" class="ClickableButton res_add_note" data-resid="' . $reservationId . '" >Add Note</div></div>';
+//        $this->logger->debug(" HTML output - add discount" . $reservation->getId());
+//
+//        $htmlString .= '
+//                <div class="right-side-action-block">
+//                <input maxlength="30" id="discount_' . $reservationId . '" type="text"
+//										 class="textbox  display-none block-display reservation_input" placeholder="0.00"/><div id="add_discount_button_' . $reservationId . '" class="ClickableButton res_add_discount" data-resid="' . $reservationId . '" >Add Discount</div></div>';
 
         // add notes
-        $this->logger->debug(" HTML output - block guest" . $reservation->getId());
-        $htmlString .= '
-                    <div class="right-side-action-block">
-                    <textarea id="block_note_' . $reservationId . '"
-                        class="textbox  display-none block-display reservation_input" placeholder="e.g. smoking in room"></textarea><div id="block_guest_button_' . $reservationId . '" class="ClickableButton blockGuest" data-resid="' . $reservationId . '" >Block Guest</div></div>';
+//        $this->logger->debug(" HTML output - add notes" . $reservation->getId());
+//        $htmlString .= '
+//                    <div class="right-side-action-block">
+//                    <textarea id="note_' . $reservationId . '"
+//                        class="textbox  display-none block-display reservation_input" placeholder="e.g. 12h00 early check in"></textarea><div id="add_note_button_' . $reservationId . '" class="ClickableButton res_add_note" data-resid="' . $reservationId . '" >Add Note</div></div>';
+
+        // add notes
+//        $this->logger->debug(" HTML output - block guest" . $reservation->getId());
+//        $htmlString .= '
+//                    <div class="right-side-action-block">
+//                    <textarea id="block_note_' . $reservationId . '"
+//                        class="textbox  display-none block-display reservation_input" placeholder="e.g. smoking in room"></textarea><div id="block_guest_button_' . $reservationId . '" class="ClickableButton blockGuest" data-resid="' . $reservationId . '" >Block Guest</div></div>';
 
         // add add-ons - only for confirmed booking
-        if (strcmp($reservation->getStatus()->getName(), "pending") != 0) {
-            $this->logger->debug(" HTML output - add add-ons" . $reservation->getId());
-            $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_add_on_' . $reservationId . '" ><select id="select_add_on_' . $reservationId . '">';
-            $htmlString .= ' <option value="none">Select Add On</option>';
-            $addOnsList = $addOnsApi->getAddOns();
-            if ($addOnsList !== null) {
-                foreach ($addOnsList as $addOn) {
-                    $htmlString .= ' <option value="' . $addOn->getId() . '">' . $addOn->getName() . '</option>';
-                }
-            }
-
-            $htmlString .= '</select> 
-            <p>Quantity</p><input type="number" value="1" id="add_on_quantity_' . $reservationId . '"></p>
-            </div>';
-
-            $htmlString .= '
-                    <div id="add_add_on_button_' . $reservationId . '" class="ClickableButton res_add_add_on" data-resid="' . $reservationId . '" >Add Add-Ons</div></div>';
-
-        }
+//        if (strcmp($reservation->getStatus()->getName(), "pending") != 0) {
+//            $this->logger->debug(" HTML output - add add-ons" . $reservation->getId());
+//            $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_add_on_' . $reservationId . '" ><select id="select_add_on_' . $reservationId . '">';
+//            $htmlString .= ' <option value="none">Select Add On</option>';
+//            $addOnsList = $addOnsApi->getAddOns();
+//            if ($addOnsList !== null) {
+//                foreach ($addOnsList as $addOn) {
+//                    $htmlString .= ' <option value="' . $addOn->getId() . '">' . $addOn->getName() . '</option>';
+//                }
+//            }
+//
+//            $htmlString .= '</select>
+//            <p>Quantity</p><input type="number" value="1" id="add_on_quantity_' . $reservationId . '"></p>
+//            </div>';
+//
+//            $htmlString .= '
+//                    <div id="add_add_on_button_' . $reservationId . '" class="ClickableButton res_add_add_on" data-resid="' . $reservationId . '" >Add Add-Ons</div></div>';
+//
+//        }
 
         // check if guest eligible for check in 1. Guest ID provided 2. guest has phone number recorded
-        $this->logger->debug("HTML output - check if guest eligible for check in" . $reservation->getId());
-
-        if (strcasecmp($reservation->getCheckInStatus(), "not checked in") === 0
-            && (strcasecmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) == 0)) {
-            $this->logger->debug("this user is checking in today");
-            $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedIn" id="check_in_user_' . $reservationId . '"  reservation_id="' . $reservationId . '">Check In Guest</div></div>';
-        }
+//        $this->logger->debug("HTML output - check if guest eligible for check in" . $reservation->getId());
+//
+//        if (strcasecmp($reservation->getCheckInStatus(), "not checked in") === 0
+//            && (strcasecmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) == 0)) {
+//            $this->logger->debug("this user is checking in today");
+//            $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedIn" id="check_in_user_' . $reservationId . '"  reservation_id="' . $reservationId . '">Check In Guest</div></div>';
+//        }
 
         // guest checkout button
-        $this->logger->debug("HTML output - check if guest eligible for check out" . $reservation->getId() . " - " . $reservation->getCheckInStatus());
-        if (strcasecmp($reservation->getCheckInStatus(), "checked_in") === 0) {
-            $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedOut" id="check_out_user_' . $reservationId . '" reservation_id="' . $reservationId . '">Check Out Guest</div></div>';
-        }
+//        $this->logger->debug("HTML output - check if guest eligible for check out" . $reservation->getId() . " - " . $reservation->getCheckInStatus());
+//        if (strcasecmp($reservation->getCheckInStatus(), "checked_in") === 0) {
+//            $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedOut" id="check_out_user_' . $reservationId . '" reservation_id="' . $reservationId . '">Check Out Guest</div></div>';
+//        }
 
 
         //Mark room as cleaned
-        $this->logger->debug("HTML output - Mark room as cleaned " . $reservation->getId());
-        $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_mark_cleaned_' . $reservationId . '" ><select id="select_employee_' . $reservationId . '">';
-        $htmlString .= ' <option value="none">Select Cleaner</option>';
-        $employeeApi = new EmployeeApi($this->em, $this->logger);
-        $employees = $employeeApi->getEmployees();
-        if (count($employees) > 0) {
-            foreach ($employees as $employee) {
-                $htmlString .= ' <option value="' . $employee->getId() . '">' . $employee->getName() . '</option>';
-            }
-        }
-
-        $htmlString .= '</select> 
-
-            </div>';
-
-        $htmlString .= '
-                    <div id="mark_cleaned_button_' . $reservationId . '" class="ClickableButton res_mark_cleaned" data-resid="' . $reservationId . '" >Add Cleaning</div></div>';
-
+//        $this->logger->debug("HTML output - Mark room as cleaned " . $reservation->getId());
+//        $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_mark_cleaned_' . $reservationId . '" ><select id="select_employee_' . $reservationId . '">';
+//        $htmlString .= ' <option value="none">Select Cleaner</option>';
+//        $employeeApi = new EmployeeApi($this->em, $this->logger);
+//        $employees = $employeeApi->getEmployees();
+//        if (count($employees) > 0) {
+//            foreach ($employees as $employee) {
+//                $htmlString .= ' <option value="' . $employee->getId() . '">' . $employee->getName() . '</option>';
+//            }
+//        }
+//
+//        $htmlString .= '</select>
+//
+//            </div>';
+//
+//        $htmlString .= '
+//                    <div id="mark_cleaned_button_' . $reservationId . '" class="ClickableButton res_mark_cleaned" data-resid="' . $reservationId . '" >Add Cleaning</div></div>';
+//
 
         //cleaning score - if check out date is in the past and not direct booking
-        $this->logger->debug("HTML output - cleaning score " . $reservation->getId());
-        if ($reservation->getCheckOut() < $now && strcasecmp($reservation->getOrigin(), "website") != 0) {
-            //check if cleanliness score is not captured
-            if (strcasecmp($reservation->getCleanlinessScore(), "0") == 0) {
-                //display the input field to capture score
-                $htmlString .= '<input name="score" maxlength="30" type="text" id="score_input_' . $reservationId . '"   
-							placeholder="Score" class="textbox cleaning_score_input display-none">';
-                $htmlString .= '<div class="ClickableButton res_add_add_on" reservation_id="' . $reservationId . '">Cleanliness Score</div>';
-            } else {
-                //display score
-                $htmlString .= '<div>Cleanliness score: ' . $reservation->getCleanlinessScore() . '</div>';
-            }
-        }
+//        $this->logger->debug("HTML output - cleaning score " . $reservation->getId());
+//        if ($reservation->getCheckOut() < $now && strcasecmp($reservation->getOrigin(), "website") != 0) {
+//            //check if cleanliness score is not captured
+//            if (strcasecmp($reservation->getCleanlinessScore(), "0") == 0) {
+//                //display the input field to capture score
+//                $htmlString .= '<input name="score" maxlength="30" type="text" id="score_input_' . $reservationId . '"
+//							placeholder="Score" class="textbox cleaning_score_input display-none">';
+//                $htmlString .= '<div class="ClickableButton res_add_add_on" reservation_id="' . $reservationId . '">Cleanliness Score</div>';
+//            } else {
+//                //display score
+//                $htmlString .= '<div>Cleanliness score: ' . $reservation->getCleanlinessScore() . '</div>';
+//            }
+//        }
 
         $this->logger->debug("Ending HTML output" . $reservation->getId());
         $htmlString .= '</div>
