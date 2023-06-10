@@ -319,8 +319,11 @@ class GuestApi
             if ($filterValue == 0) {
                 $guest = $this->em->getRepository(Guest::class)->findBy(array('property' => $propertyId));
             } else {
-                if (strlen($filterValue) > 4) {
-                    $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($filterValue)), 'property' => $propertyId));
+                if (strlen($filterValue) > 3) {
+                    $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => trim($filterValue), 'property' => $propertyId));
+                    if($guest == null){
+                        $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($filterValue)), 'property' => $propertyId));
+                    }
                 } else {
                     $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $filterValue, 'property' => $propertyId));
                 }
@@ -332,6 +335,8 @@ class GuestApi
                     'result_code' => 1
                 );
             }else{
+                $guests = $this->em->getRepository(Guest::class)->findAll();
+                $guest = $guests[0];
                 $responseArray[] = array(
                     'id' => $guest->getId(),
                     'name' => $guest->getName(),

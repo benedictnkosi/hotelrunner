@@ -51,8 +51,8 @@ class BookingPageAvailableRoomsHTML
                 }
             }
 
-            $beds = substr($beds,0,strlen($beds) - 1);
-
+            //$beds = substr($beds,0,strlen($beds) - 1);
+            $beds = "Queen";
             $this->logger->debug("found beds string: " . $beds);
             $numberOfRooms++;
             $htmlString .= '<option value="' . $availableRoom->getName() . '"

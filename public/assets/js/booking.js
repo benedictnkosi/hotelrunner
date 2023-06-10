@@ -252,16 +252,6 @@ function createReservation() {
     isRoomSelected = sessionStorage.getItem("isRoomSelected");
 
     let guests = parseInt($('#adults').val()) + parseInt($('#children').val());
-    if(guests > sessionStorage.getItem('rooms_sleep')){
-        showResErrorMessage("reservation", "The selected rooms can not accommodate the number of guests");
-        return;
-    }
-
-    if(guests < parseInt(sessionStorage.getItem("total_rooms_selected"))){
-        showResErrorMessage("reservation", "The number of guests can not be less than the number of rooms booked");
-        return;
-    }
-
 
     if (isRoomSelected === null) {
         showResErrorMessage("reservation", "Please select a room");

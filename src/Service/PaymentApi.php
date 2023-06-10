@@ -152,9 +152,12 @@ class PaymentApi
 
                 $payment->setReservation($reservation);
                 $amountPerReservation = intval($amount) / intval($numberOfReservations);
+                if($amountPerReservation > 999){
+                    $amountPerReservation = 999;
+                }
                 $payment->setAmount($amountPerReservation);
                 $payment->setDate($now);
-                $payment->setChannel($channel);
+                $payment->setChannel("transfer");
                 $payment->SetReference($reference);
 
                 $this->logger->debug("reservation status is " . $reservation->getStatus()->getName());

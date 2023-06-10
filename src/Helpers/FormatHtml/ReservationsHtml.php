@@ -119,7 +119,7 @@ class ReservationsHtml
                         <img class="listing-image-origin" src="/admin/images/' . $todayCheckIn->getOrigin() . '.png" data-res-id="' . $todayCheckIn->getId() . '"></img>
                         <div class="listing-description-text" data-res-id="' . $todayCheckIn->getId() . '">'
                 . $todayCheckIn->getGuest()->getName() . ' is expected to check-in 
-                         <span class="listing-room-name" data-res-id="' . $todayCheckIn->getId() . '"> ' . $todayCheckIn->getRoom()->getName() . ' #' . $todayCheckIn->getId() . '</span>
+                         <span class="listing-room-name" data-res-id="' . $todayCheckIn->getId() . '"> ' /*. $todayCheckIn->getRoom()->getName()*/ . ' #' . $todayCheckIn->getId() . '</span>
                         </div>
                         </div>
                     </div>';

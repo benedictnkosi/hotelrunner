@@ -77,11 +77,11 @@ class RoomApi
             $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId, 'status'=>1));
             foreach ($rooms as $room) {
                 if ($this->isRoomAvailable($room->getId(), $checkInDate, $checkOutDate)) {
-                    if(!$room->isKids() && intval($kids) > 0){
-                        $this->logger->info("This room does not allow kids");
-                    }else{
+//                    if(!$room->isKids() && intval($kids) > 0){
+//                        $this->logger->info("This room does not allow kids");
+//                    }else{
                         $responseArray[] = $room;
-                    }
+                    //}
 
                 }
             }
