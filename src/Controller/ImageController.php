@@ -28,10 +28,15 @@ class ImageController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $result = $roomApi->removeImage($imageName);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($result , 204, array());
-        $response->setCallback($callback);
-        return $response;
+        if ($result[0]['result_code'] === 0) {
+            return new JsonResponse($result , 204, array());
+        }else{
+            $responseArray[] = array(
+                'result_message' => $result[0]['result_message'],
+                'result_code' => 1
+            );
+            return new JsonResponse($responseArray , 200, array());
+        }
     }
 
     /**

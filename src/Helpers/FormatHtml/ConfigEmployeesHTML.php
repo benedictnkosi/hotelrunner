@@ -25,7 +25,7 @@ class ConfigEmployeesHTML
                 $html .= '<div class="employee_row">
                         
                             <input type="text" class="employee_field" maxlength="30" data-employee-id="'.$employee->getId().'" placeholder="'.$employee->getName(). ' ('.$employee->getGender().')"
-                                   required/>
+                                   />
                                    <div class="ClickableButton remove_employee_button" data-employee-id="'.$employee->getId().'" >Remove</div>
                         
                     </div>';
