@@ -231,7 +231,7 @@ class AddOnsApi
                         );
                         return $responseArray;
                     }
-                    $addOn->setQuantity(intval($newValue) + 1);
+                    $addOn->setQuantity(intval($newValue));
                     break;
                 default:
                     $responseArray[] = array(
