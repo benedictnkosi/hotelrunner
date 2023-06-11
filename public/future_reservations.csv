@@ -2,12 +2,15 @@ id,room_name,check_in,check_out,guest_name,phone_number,amount
 758,Upstairs+King+Room,2023-06-10,2023-06-11,sasasas,34343434,500
 758,Upstairs+King+Room,2023-06-10,2023-06-11,sasasas,34343434,434.78
 758,Upstairs+King+Room,2023-06-10,2023-06-11,sasasas,34343434,65.22
+777,Upstairs+King+Room,2023-06-17,2023-06-18,Benedict,0837917431,500
+777,Upstairs+King+Room,2023-06-17,2023-06-18,Benedict,0837917431,434.78
+777,Upstairs+King+Room,2023-06-17,2023-06-18,Benedict,0837917431,65.22
 747,"no kids",2023-06-24,2023-06-25,benedizzadf,0837917430,500
 747,"no kids",2023-06-24,2023-06-25,benedizzadf,0837917430,434.78
 747,"no kids",2023-06-24,2023-06-25,benedizzadf,0837917430,65.22
-750,Upstairs+King+Room2,2023-06-25,2023-06-26,benedizzadf,0837917430,500
-750,Upstairs+King+Room2,2023-06-25,2023-06-26,benedizzadf,0837917430,434.78
-750,Upstairs+King+Room2,2023-06-25,2023-06-26,benedizzadf,0837917430,65.22
 749,Upstairs+King+Room,2023-06-25,2023-06-26,benedizzadf,0837917430,500
 749,Upstairs+King+Room,2023-06-25,2023-06-26,benedizzadf,0837917430,434.78
 749,Upstairs+King+Room,2023-06-25,2023-06-26,benedizzadf,0837917430,65.22
+750,Upstairs+King+Room2,2023-06-25,2023-06-26,benedizzadf,0837917430,500
+750,Upstairs+King+Room2,2023-06-25,2023-06-26,benedizzadf,0837917430,434.78
+750,Upstairs+King+Room2,2023-06-25,2023-06-26,benedizzadf,0837917430,65.22

@@ -288,12 +288,12 @@ function createReservation() {
         success: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                showResSuccessMessage("reservation", response[0].result_message);
+            if (response.result_code === 0) {
+                showResSuccessMessage("reservation", response.result_message);
                 sessionStorage.setItem("reservation_id", JSON.stringify(data[0].reservation_id));
                 window.location.href = "/confirmation";
             } else {
-                showResErrorMessage("reservation", response[0].result_message);
+                showResErrorMessage("reservation", response.result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)

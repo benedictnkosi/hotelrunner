@@ -116,29 +116,17 @@ class ReservationController extends AbstractController
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
-        $reservations = "";
-        switch ($period) {
-            case "future":
-                $reservations = $reservationApi->getUpComingReservations(0, true,true);
-                break;
-            case "past":
-                $reservations = $reservationApi->getPastReservations();
-                break;
-            case "checkout":
-                $reservations = $reservationApi->getCheckOutReservation();
-                break;
-            case "stayover":
-                $reservations = $reservationApi->getStayOversReservations();
-                break;
-            case "pending":
-                $reservations = $reservationApi->getPendingReservations();
-                break;
-            default:
-                $reservations = null;
-        }
+        $reservations = match ($period) {
+            "future" => $reservationApi->getUpComingReservations(0, true, true),
+            "past" => $reservationApi->getPastReservations(),
+            "checkout" => $reservationApi->getCheckOutReservation(),
+            "stayover" => $reservationApi->getStayOversReservations(),
+            "pending" => $reservationApi->getPendingReservations(),
+            default => null,
+        };
 
         if($reservations == null){
-            $reservations = array(
+            $reservations[] = array(
                 'result_message' => "Reservations not found" ,
                 'result_code' => 1
             );
@@ -385,7 +373,11 @@ class ReservationController extends AbstractController
         $now = new DateTime();
 
         if(strcmp($nowDate->format("Y-m-d"), $now->format("Y-m-d")) !== 0){
-            return new JsonResponse("Date must be today" , 500, array());
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Date must be today",
+            );
+            return new JsonResponse($response , 200, array());
         }
 
         $response = $reservationApi->createReservation($request->get('room_ids'), $request->get('name'), $request->get('phone_number'),
@@ -415,7 +407,11 @@ class ReservationController extends AbstractController
         $now = new DateTime();
 
         if(strcmp($nowDate->format("Y-m-d"), $now->format("Y-m-d")) !== 0){
-            return new JsonResponse("Date must be today" , 500, array());
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Date must be today",
+            );
+            return new JsonResponse($response , 200, array());
         }
 
         $rooms = $parameters['rooms'];

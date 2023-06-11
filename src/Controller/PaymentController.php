@@ -44,7 +44,7 @@ class PaymentController extends AbstractController
         }
         $parameters = json_decode($request->getContent(), true);
         $response = $paymentApi->addPayment($parameters['reservation_id'], $parameters['amount'], str_replace("_","/",$parameters['reference']), $parameters['channel']);
-        if ($response['result_code'] === 0) {
+        if ($response[0]['result_code'] === 0) {
             $response = new JsonResponse($response , 201, array());
         }else{
             $response = new JsonResponse($response , 200, array());
@@ -189,7 +189,7 @@ class PaymentController extends AbstractController
         $payment = $api->getReservationPayments($id);
 
         if($payment == null){
-            $payment = array(
+            $payment[] = array(
                 'result_code' => 1,
                 'result_message' => 'Payment not found'
             );

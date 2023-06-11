@@ -120,34 +120,52 @@ class PaymentApi
             foreach ($reservationIdsArray as $resId) {
                 $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
                 if($reservation == null){
-                    return array(
+                    $responseArray[] = array(
                         'result_code' => 1,
                         'result_message' => 'Reservation not found'
                     );
+
+                    return $responseArray;
                 }
                 $payment = new Payments();
                 $now = new DateTime();
 
                 //validate channel
-                if(strcmp($channel, "cash") !== 0
-                && strcmp($channel, "transfer") !== 0
-                        && strcmp($channel, "payfast") !== 0
-                            && strcmp($channel, "card") !== 0){
-                    return array(
+                if(strcmp(strtolower($channel), "cash") !== 0
+                && strcmp(strtolower($channel), "transfer") !== 0
+                        && strcmp(strtolower($channel), "payfast") !== 0
+                            && strcmp(strtolower($channel), "card") !== 0){
+                    $responseArray[] = array(
                         'result_code' => 1,
                         'result_message' => 'Channel not allowed'
                     );
+                    return $responseArray;
                 }
+
+                //validate that the ref is correct for card
+                if(strcmp($channel, "card") == 0){
+                    if (strlen($reference) !== 14
+                        || strpos($reference, "/") !== 4
+                        || strrpos($reference, "/") !== 7) {
+                        $responseArray[] = array(
+                            'result_code' => 1,
+                            'result_message' => 'Card payment reference format incorrect'
+                        );
+                        return $responseArray;
+                    }
+                }
+
 
                 //validate that first time guests do not pay by cash
                 $guestApi = new GuestApi($this->em, $this->logger);
                 $stayCount = $guestApi->getGuestStaysCount($reservation->getGuest()->getId());
 
                 if($stayCount == 0 && strcmp($channel, "cash") == 0){
-                    return array(
+                    $responseArray[] = array(
                         'result_code' => 1,
                         'result_message' => 'First time guests are not allowed to pay by cash'
                     );
+                    return $responseArray;
                 }
 
                 $payment->setReservation($reservation);
@@ -170,10 +188,11 @@ class PaymentApi
                     $halfRoomPrice = intval($reservation->getRoom()->getPrice())/2;
 
                     if($halfRoomPrice > intval($amount)){
-                        return array(
+                        $responseArray[] = array(
                             'result_code' => 1,
                             'result_message' => 'Amount must be at least 50% of the room price'
                         );
+                        return $responseArray;
                     }
                     $isRoomAvailable = $roomApi->isRoomAvailable($reservation->getRoom()->getId(), $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"));
                     if ($isRoomAvailable) {
@@ -201,7 +220,7 @@ class PaymentApi
 
 
                         $this->sendEmailToGuest($reservation, $amountPerReservation);
-                        $responseArray = array(
+                        $responseArray[] = array(
                             'result_code' => 0,
                             'result_message' => 'Successfully added payment'
                         );
@@ -231,7 +250,7 @@ class PaymentApi
                             $communicationApi->sendEmailViaGmail(ALUVEAPP_ADMIN_EMAIL, $reservation->getGuest()->getEmail(), $emailBody, 'Aluve App - Adding payment failed', $reservation->getRoom()->getProperty()->getName(), $reservation->getRoom()->getProperty()->getEmailAddress());
                         }
 
-                        $responseArray = array(
+                        $responseArray[] = array(
                             'result_code' => 1,
                             'result_message' => 'This room is not available anymore. payment not added'
                         );
@@ -241,7 +260,7 @@ class PaymentApi
                     //commit the payment changes
                     $this->em->persist($payment);
                     $this->em->flush($payment);
-                    $responseArray = array(
+                    $responseArray[] = array(
                         'result_code' => 0,
                         'result_message' => 'Successfully added payment',
                         'payment_id' => $payment->getId()
@@ -250,7 +269,7 @@ class PaymentApi
                 }
             }
         } catch (Exception $ex) {
-            $responseArray = array(
+            $responseArray[] = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );

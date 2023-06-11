@@ -74,6 +74,44 @@ class RoomApi
                 }
             }
 
+            //validate dates
+
+            if (strlen($checkInDate) < 1 || strlen($checkOutDate) < 1) {
+                $responseArray[] = array(
+                    'result_message' => "Check-in and check-out date is mandatory",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            if (strcmp($checkInDate, $checkOutDate) == 0) {
+                $responseArray[] = array(
+                    'result_message' => "Check-in and check-out date can not be the same",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            $checkInDateDateObject = new DateTime($checkInDate);
+            $checkOutDateDateObject = new DateTime($checkOutDate);
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                $responseArray[] = array(
+                    'result_message' => "Check-in date can not be after check-out date",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            //validate kids
+            if (strlen($kids) > 2 || strlen($kids) == 0 || !is_numeric($kids) || intval($kids) < 0) {
+                $responseArray[] = array(
+                    'result_message' => "Number of child guests length should be between 1 and 2 and should be a positive number",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
             $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId, 'status'=>1));
             foreach ($rooms as $room) {
                 if ($this->isRoomAvailable($room->getId(), $checkInDate, $checkOutDate)) {
