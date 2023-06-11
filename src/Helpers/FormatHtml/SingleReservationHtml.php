@@ -74,7 +74,8 @@ class SingleReservationHtml
         //guest name and reservation id and count of stays
         $stayCount = $guestApi->getGuestStaysCount($guest->getId());
         $htmlString .= '<div class="res-details"><div><div>
-						<h4 class="guest-name"><a target="_blank" href="/invoice?id=' . $reservationId . '">' . $guest->getName() . ' - ' . $reservationId . '</a>';
+						<h4 class="guest-name">
+						' . $guest->getName() . ' - ' . $reservationId;
 
         //reservation origin
         $this->logger->debug("HTML output - reservation origin " . $reservation->getId());

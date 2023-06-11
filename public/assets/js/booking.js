@@ -317,7 +317,7 @@ function getPropertyName() {
         contentType: "application/json; charset=UTF-8",
         success: function (response) {
             sessionStorage.setItem("PropertyName", response[0].name)
-            $('#hotel_name').html(response[0].name);
+            //$('#hotel_name').html(response[0].name);
         }
     });
 
