@@ -323,7 +323,7 @@ class AddOnsApi
             }
             if (strlen($addOnName) > 50 || strlen($addOnName) == 0 ) {
                 $responseArray[] = array(
-                    'result_message' => "Add-on name Length should be between 1 and 500",
+                    'result_message' => "Add-on name Length should be between 1 and 50",
                     'result_code' => 1
                 );
                 return $responseArray;
