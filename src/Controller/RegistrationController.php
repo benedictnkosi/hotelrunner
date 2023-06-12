@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Property;
 use App\Entity\User;
+use App\Service\DefectApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -20,6 +21,7 @@ class RegistrationController extends AbstractController
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        $defectApi = new DefectApi($entityManager, $logger);
         if (!$request->isMethod('post')) {
             return $this->render('signup.html', [
                 'error' => "Internal Server Error",
@@ -34,16 +36,20 @@ class RegistrationController extends AbstractController
 
             $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
 
-            if (!preg_match($pattern,$request->get("_username"))) {
-                return $this->render('signup.html', [
-                    'error' => "Username must be a valid email address",
-                ]);
+            if(!$defectApi->isDefectEnabled("security_1")){
+                if (!preg_match($pattern,$request->get("_username"))) {
+                    return $this->render('signup.html', [
+                        'error' => "Username must be a valid email address",
+                    ]);
+                }
             }
 
-            if(strcmp($request->get("_password"), $request->get("_confirm_password")) !== 0){
-                return $this->render('signup.html', [
-                    'error' => "Passwords are not the same",
-                ]);
+            if(!$defectApi->isDefectEnabled("security_2")){
+                if(strcmp($request->get("_password"), $request->get("_confirm_password")) !== 0){
+                    return $this->render('signup.html', [
+                        'error' => "Passwords are not the same",
+                    ]);
+                }
             }
 
             $passwordErrors = $this->validatePassword($request->get("_password"));

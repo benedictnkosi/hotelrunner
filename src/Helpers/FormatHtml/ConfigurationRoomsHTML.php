@@ -2,6 +2,7 @@
 
 namespace App\Helpers\FormatHtml;
 
+use App\Service\DefectApi;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -9,11 +10,14 @@ class ConfigurationRoomsHTML
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
     }
 
     public function formatLeftDivRoomsHtml($rooms): string
@@ -42,6 +46,9 @@ class ConfigurationRoomsHTML
         }
 
         $i = 0;
+        if($this->defectApi->isDefectEnabled("create_room_2")) {
+            $i++;
+        }
         foreach ($items as $item) {
             $i++;
             $htmlString .='<option value="'.$item->getId().'" >'.$item->getName().'</option>';

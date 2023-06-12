@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\DefectApi;
 use App\Service\FileUploaderApi;
 use App\Service\RoomApi;
 use http\Exception;
@@ -94,9 +95,10 @@ class ImageController extends AbstractController
     /**
      * @Route("api/configuration/image/upload")
      */
-    public function uploadImage(LoggerInterface $logger, Request $request, FileUploaderApi $uploader): Response
+    public function uploadImage(LoggerInterface $logger, Request $request, FileUploaderApi $uploader,EntityManagerInterface $entityManager): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        $defectApi = new DefectApi($entityManager, $logger);
         if (!$request->isMethod('post')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
@@ -110,7 +112,10 @@ class ImageController extends AbstractController
 
         $uploadDir = __DIR__ . '/../../public/room/image/';
         $uploader->setDir($uploadDir);
-        $uploader->setExtensions(array('jpeg','png'));  //allowed extensions list//
+        if(!$defectApi->isDefectEnabled("images_1")){
+            $uploader->setExtensions(array('jpeg','png'));  //allowed extensions list//
+        }
+
         $uploader->setMaxSize(1);                          //set max file size to be allowed in MB//
 
         if(!$uploader->uploadFile()){

@@ -18,11 +18,13 @@ class GuestApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
         if (session_id() === '') {
             $logger->info("Session id is empty");
             session_start();
@@ -335,8 +337,11 @@ class GuestApi
                     'result_code' => 1
                 );
             }else{
-                $guests = $this->em->getRepository(Guest::class)->findAll();
-                $guest = $guests[0];
+                if($this->defectApi->isDefectEnabled("create_reservation_6")){
+                    $guests = $this->em->getRepository(Guest::class)->findAll();
+                    $guest = $guests[0];
+                }
+
                 $responseArray[] = array(
                     'id' => $guest->getId(),
                     'name' => $guest->getName(),

@@ -140,27 +140,26 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-            <!--<li><a href="javascript:void(0)" onclick="updateView('calendar');"
+            <li id="menu_calendar" class="toggle-menu display-none"><a href="javascript:void(0)" onclick="updateView('calendar');"
                    class="active menuICons mobileMenuIcon" title="calendar">
                 <i style="display: inline;" class="desktopOnlyMenu">Calendar</i>
 
-            </a></li>-->
-            <li><a href="javascript:void(0)"
+            </a></li>
+            <li id="menu_reservations"  class="toggle-menu display-none"><a href="javascript:void(0)"
                    onclick="updateView('upcoming-reservations');"
                    class="active menuICons mobileMenuIcon" title="Bookings">
                 <i style="display: inline;" class="desktopOnlyMenu">Reservations</i>
             </a></li>
-            <li><a href="javascript:void(0)"
+            <li id="menu_configuration"  class="toggle-menu display-none"><a href="javascript:void(0)"
                    onclick="updateView('configuration');"
                    class="active menuICons mobileMenuIcon" title="Configuration">
                 <i style="display: inline;" class="desktopOnlyMenu">Configuration</i>
             </a></li>
-            <!--<li><a href="javascript:void(0)" onclick="updateView('other-tabs');"
+            <li id="menu_more"  class="toggle-menu display-none"><a href="javascript:void(0)" onclick="updateView('other-tabs');"
                    class="active menuICons mobileMenuIcon" title="Other">
                 <i style="display: inline;" class="desktopOnlyMenu">More...</i>
-            </a></li>-->
-            <li><a href="javascript:void(0)" onclick="logout();"
-
+            </a></li>
+            <li id="menu_signout"  class="toggle-menu display-none"><a href="javascript:void(0)" onclick="logout();"
                    class="active menuICons mobileMenuIcon" title="signout">
                 <i style="display: inline;" class="desktopOnlyMenu">Sign Out</i>
             </a></li>
@@ -244,29 +243,29 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             </div>
 
             <div class="profile-ser">
-                <div class="profile-ser-grids-25 filter-reservations clickable"
+                <div class="profile-ser-grids-25 filter-reservations clickable toggle-menu display-none"
                      id="reservations_all">
                     <img class="menu_icon_image" src="/admin/images/menu_bookings.png" title="Up Coming"></img>
                     <i class="desktopOnlyMenu">Upcoming Reservations</i>
                 </div>
 
-<!--                <div-->
-<!--                        class="profile-ser-grids-25 agileinfo  filter-reservations clickable"-->
-<!--                        id="reservations_past_reservations">-->
-<!--                    <img class="menu_icon_image" src="/admin/images/history.png" title="History"></img><i-->
-<!--                        class="desktopOnlyMenu">History-->
-<!--                </i>-->
-<!--                </div>-->
-                <div class="profile-ser-grids-25 agileinfo  filter-reservations clickable"
+                <div
+                        class="profile-ser-grids-25 agileinfo  filter-reservations clickable toggle-menu display-none"
+                        id="reservations_past_reservations">
+                    <img class="menu_icon_image" src="/admin/images/history.png" title="History"></img><i
+                        class="desktopOnlyMenu">History
+                </i>
+                </div>
+                <div class="profile-ser-grids-25 agileinfo filter-reservations clickable toggle-menu display-none"
                      id="reservations_pending_reservations">
                     <img class="menu_icon_image" src="/admin/images/pending.png" title="Pending"></img><i
                         class="desktopOnlyMenu">Pending</i>
                 </div>
-<!--                <div class="profile-ser-grids-25 agileinfo  filter-reservations clickable"-->
-<!--                     id="reservations_upload_reservations">-->
-<!--                    <img class="menu_icon_image" src="/admin/images/upload.png" title="Upload"></img><i-->
-<!--                        class="desktopOnlyMenu">Upload</i>-->
-<!--                </div>-->
+                <div class="profile-ser-grids-25 agileinfo  filter-reservations clickable toggle-menu display-none"
+                     id="reservations_upload_reservations">
+                    <img class="menu_icon_image" src="/admin/images/upload.png" title="Upload"></img><i
+                        class="desktopOnlyMenu">Upload</i>
+                </div>
 
                 <div class="clearfix"></div>
             </div>
@@ -315,56 +314,56 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             <div class="profile-top">
                 <div class="col-md-7 profile-top-right">
                     <h5 id="configuration-heading">Configuration</h5>
-                    <!--<a href="javascript:void(0)" class="refresh_items_link" id="refresh_configuration_button"
+                    <a href="javascript:void(0)" class="refresh_items_link" id="refresh_configuration_button"
                     ><img class="menu_icon_image-5em"
                           src="/admin/images/refresh.png"></img><i
-                            class="desktopOnlyMenu"></i></a>-->
+                            class="desktopOnlyMenu"></i></a>
                 </div>
                 <div class="clearfix"></div>
             </div>
 
             <div class="profile-ser">
-                <div class="profile-ser-grids-15 filter-configuration clickable"
+                <div class="profile-ser-grids-15 filter-configuration clickable toggle-menu display-none"
                      id="configuration_rooms">
                     <img class="menu_icon_image" src="/admin/images/menu_rooms.png" title="Rooms"></img>
                     <i class="desktopOnlyMenu">Rooms</i>
                 </div>
-                <div class="profile-ser-grids-15 filter-configuration clickable"
+                <div class="profile-ser-grids-15 filter-configuration clickable toggle-menu display-none"
                      id="configuration_add_ons">
                     <img class="menu_icon_image" src="/admin/images/menu_add_ons.png" title="Add-Ons"></img><i
                         class="desktopOnlyMenu">Add
                     Ons</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_employees">
                     <img class="menu_icon_image" src="/admin/images/employee.png" title="Employees"></img><i
                         class="desktopOnlyMenu">Employees</i>
                 </div>
-                <!--<div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                <div
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_guests">
                     <img class="menu_icon_image" src="/admin/images/employee.png" title="Guests"></img><i
                         class="desktopOnlyMenu">Guests</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_messages">
                     <img class="menu_icon_image" src="/admin/images/messages.jpg" title="Messages"></img><i
                         class="desktopOnlyMenu">Messages</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none "
                         id="configuration_terms">
                     <img class="menu_icon_image" src="/admin/images/terms.png" title="Terms & Conditions"></img><i
                         class="desktopOnlyMenu">Terms & Conditions</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_synch_logs">
                     <img class="menu_icon_image" src="/admin/images/logs.jpg" title="Channel Logs"></img><i
                         class="desktopOnlyMenu">Channel Logs</i>
-                </div>-->
+                </div>
                 <div class="clearfix"></div>
             </div>
         </div>
@@ -680,45 +679,44 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
 
         <div class="profile-ser">
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="view_blocked_rooms_tab">
                 <img class="menu_icon_image" src="/admin/images/menu_blocked.png" title="Block Room"></img>
                 <i class="desktopOnlyMenu">Blocked Rooms</i>
             </div>
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="block_a_room_tab">
                 <img class="menu_icon_image" src="/admin/images/menu_block_room.png" title="Block A room"></img><i
                     class="desktopOnlyMenu">Block A Room</i>
             </div>
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="cleaning_tab">
                 <img class="menu_icon_image" src="/admin/images/menu_cleaning.png" title="Cleaning"></img><i
                     class="desktopOnlyMenu">Cleaning</i>
             </div>
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="whatsapp_tab">
                 <img class="menu_icon_image" src="/admin/images/whatsapp.png" title="Whatsapp"></img><i
                     class="desktopOnlyMenu">Whatsapp</i>
             </div>
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="occupancy_tab">
                 <img class="menu_icon_image" src="/admin/images/menu_stats.png" title="Occupancy"></img><i
                     class="desktopOnlyMenu">Occupancy</i>
             </div>
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="cash_report_tab">
                 <img class="menu_icon_image" src="/admin/images/Iconsmind-Outline-Money-2.ico"
                      title="Income Report"></img><i
                     class="desktopOnlyMenu">Income Report</i>
             </div>
 
-            <div class="profile-ser-grids-15 filter-other-tabs clickable"
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
                  id="load_shedding_tab">
                 <img class="menu_icon_image" src="/admin/images/Iconsmind-Outline-Money-2.ico"
                      title="Load Shedding"></img><i
                     class="desktopOnlyMenu">Load Shedding</i>
             </div>
-
             <div class="clearfix"></div>
         </div>
 

@@ -22,11 +22,13 @@ class ReservationApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
         if (session_id() === '') {
             $logger->info("Session id is empty");
             session_start();
@@ -724,101 +726,99 @@ class ReservationApi
         try {
             //validate guest name
             if(strlen($guestName)>50 || strlen($guestName)<4){
-                $responseArray = array(
+                return array(
                     'result_code' => 1,
                     'result_message' => 'Guest name should be min 4 characters and max 50 characters ' . strlen($guestName)
                 );
-                return $responseArray;
             }
 
             //validate phone number
-            //validate guest name
             if(strlen($phoneNumber)>10 || strlen($phoneNumber)< 4){
-                $responseArray = array(
+                return array(
                     'result_code' => 1,
                     'result_message' => 'Phone number should be min 4 characters and max 10 characters'
                 );
-                return $responseArray;
             }
 
             //validate email
-//            if(strlen($email)>0){
-//                $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
-//                if (!preg_match($pattern,$email)) {
-//                    $responseArray = array(
-//                        'result_code' => 1,
-//                        'result_message' => 'email is not valid'
-//                    );
-//                    return $responseArray;
-//                }
-//            }
+                if(strlen($email)>0){
+                    $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+                    if (!preg_match($pattern,$email)) {
+                        return array(
+                            'result_code' => 1,
+                            'result_message' => 'email is not valid'
+                        );
+                    }
+                }
 
-            //validate adults
-//            if (strlen($adultGuests) > 2 || strlen($adultGuests) == 0 || !is_numeric($adultGuests)|| intval($adultGuests) < 0) {
-//                $responseArray = array(
-//                    'result_message' => "Number of adult guests length should be between 1 and 2 and should be a positive number",
-//                    'result_code' => 1
-//                );
-//                return $responseArray;
-//            }
+
+
+                //validate adults
+                if (strlen($adultGuests) > 2 || strlen($adultGuests) == 0 || !is_numeric($adultGuests)|| intval($adultGuests) < 0) {
+                    return array(
+                        'result_message' => "Number of adult guests length should be between 1 and 2 and should be a positive number",
+                        'result_code' => 1
+                    );
+                }
+
+
 
             //validate kids
             if (strlen($childGuests) > 2 || strlen($childGuests) == 0 || !is_numeric($childGuests) || intval($adultGuests) < 0) {
-                $responseArray = array(
+                return array(
                     'result_message' => "Number of child guests length should be between 1 and 2 and should be a positive number",
                     'result_code' => 1
                 );
-                return $responseArray;
             }
 
 
             //validate smoker
             if (strcmp($smoker, "yes") !== 0 && strcmp($smoker, "no") !== 0) {
-                $responseArray = array(
+                return array(
                     'result_message' => "The smoker value is invalid",
                     'result_code' => 1
                 );
-                return $responseArray;
             }
 
             //validate checkin dates
             if (strlen($checkInDate) < 1 || strlen($checkOutDate) < 1) {
-                $responseArray = array(
+                return array(
                     'result_message' => "Check-in and check-out date is mandatory",
                     'result_code' => 1
                 );
-                return $responseArray;
             }
 
             //validate checkin dates
-//            if (strcmp($checkInDate, $checkOutDate) == 0) {
-//                $responseArray = array(
-//                    'result_message' => "Check-in and check-out date can not be the same",
-//                    'result_code' => 1
-//                );
-//                return $responseArray;
-//            }
+            if(!$this->defectApi->isDefectEnabled("create_reservation_10")){
+                if (strcmp($checkInDate, $checkOutDate) == 0) {
+                    return array(
+                        'result_message' => "Check-in and check-out date can not be the same",
+                        'result_code' => 1
+                    );
+                }
+            }
 
             $checkInDateDateObject = new DateTime($checkInDate);
             $checkOutDateDateObject = new DateTime($checkOutDate);
             $checkOutDateDateObject = new DateTime($checkOutDate);
             //validate checkin dates
             if ($checkInDateDateObject > $checkOutDateDateObject) {
-                $responseArray = array(
+                return array(
                     'result_message' => "Check-in date can not be after check-out date",
                     'result_code' => 1
                 );
-                return $responseArray;
             }
 
-//            $now = new DateTime();
-//            if ($checkInDateDateObject < $now) {
-//                $responseArray = array(
-//                    'result_message' => "Check-in date can not be in the past",
-//                    'result_code' => 1
-//                );
-//                return $responseArray;
-//            }
+            $now = new DateTime();
+            if(!$this->defectApi->isDefectEnabled("create_reservation_11")){
+                if ($checkInDateDateObject < $now) {
+                    return array(
+                        'result_message' => "Check-in date can not be in the past",
+                        'result_code' => 1
+                    );
+                }
+            }
+
 
             //get property Id
             $roomIds = str_replace('[', "", $roomIds);
@@ -844,23 +844,24 @@ class ReservationApi
 
 
             $totalGuests = intval($adultGuests) + intval($childGuests);
-//            if($totalGuests > $roomsCapacity){
-//                $responseArray = array(
-//                    'result_code' => 1,
-//                    'result_message' => 'The selected rooms can not accommodate the number of guests'
-//                );
-//                return $responseArray;
-//            }
+            if(!$this->defectApi->isDefectEnabled("create_reservation_12")){
+                if($totalGuests > $roomsCapacity){
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'The selected rooms can not accommodate the number of guests'
+                    );
+                }
+            }
+
 
 
             //validate that the number of guests is not less than the number of rooms booked
             $this->logger->debug("number of rooms " . sizeof($roomIdsArray));
             if(sizeof($roomIdsArray) > $totalGuests){
-                $responseArray = array(
+                return array(
                     'result_code' => 1,
                     'result_message' => 'The number of guests can not be less than the number of rooms booked'
                 );
-                return $responseArray;
             }
 
             foreach ($roomIdsArray as $roomId) {
@@ -1004,7 +1005,9 @@ class ReservationApi
                 //add smoking note
                 if(strcmp($smoker, "yes") == 0 ){
                     $notesApi = new NotesApi($this->em, $this->logger);
-                    //$notesApi->addNote($reservation->getId(), "The guest is a smoker");
+                    if(!$this->defectApi->isDefectEnabled("view_reservation_2")){
+                        $notesApi->addNote($reservation->getId(), "The guest is a smoker");
+                    }
                 }
 
                 //block connected Room

@@ -3,6 +3,7 @@
 namespace App\Helpers\FormatHtml;
 
 use App\Entity\RoomBeds;
+use App\Service\DefectApi;
 use App\Service\RoomApi;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,11 +14,13 @@ class BookingPageAvailableRoomsHTML
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
     }
 
     public function formatHtml($availableRooms): string
@@ -51,8 +54,12 @@ class BookingPageAvailableRoomsHTML
                 }
             }
 
-            //$beds = substr($beds,0,strlen($beds) - 1);
-            $beds = "Queen";
+            if($this->defectApi->isDefectEnabled("create_reservation_9")) {
+                $beds = "Queen";
+            }else{
+                $beds = substr($beds,0,strlen($beds) - 1);
+            }
+
             $this->logger->debug("found beds string: " . $beds);
             $numberOfRooms++;
             $htmlString .= '<option value="' . $availableRoom->getName() . '"

@@ -6,6 +6,7 @@ use App\Entity\Reservations;
 use App\Entity\Guest;
 use App\Service\AddOnsApi;
 use App\Service\CleaningApi;
+use App\Service\DefectApi;
 use App\Service\EmployeeApi;
 use App\Service\GuestApi;
 use App\Service\NotesApi;
@@ -21,11 +22,14 @@ class SingleReservationHtml
 
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
     }
 
     public function formatHtml($reservation): string
@@ -158,7 +162,11 @@ class SingleReservationHtml
         }
 
         if ($reservation->getAdults() !== Null && $reservation->getChildren() !== Null) {
-            $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . $reservation->getAdults() + 1 . ' Adults and ' . $reservation->getChildren() . ' Children</a></span></p>';
+            $adults = $reservation->getAdults();
+            if($this->defectApi->isDefectEnabled("view_reservation_3")){
+                $adults += 1;
+            }
+            $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . $adults . ' Adults and ' . $reservation->getChildren() . ' Children</a></span></p>';
         }
 
         if ($guest->getIdNumber() !== Null && !empty($guest->getIdNumber())) {
@@ -330,10 +338,11 @@ class SingleReservationHtml
         }
 
         $due = $totalPrice - $totalPayment;
-        if($due !== 0){
-            $due += + 1;
+        if($this->defectApi->isDefectEnabled("view_reservation_1")){
+            if($due !== 0){
+                $due += + 1;
+            }
         }
-
 
         $htmlString .= '<h5 class="text-align-left">Line items</h5>';
         $this->logger->debug(" debug - checkin  " . $reservation->getCheckIn()->format("Y-m-d"));

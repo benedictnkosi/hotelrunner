@@ -17,11 +17,14 @@ class PaymentApi
 {
     private EntityManagerInterface $em;
     private LoggerInterface $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
         if (session_id() === '') {
             $logger->info("Session id is empty");
             session_start();
@@ -170,12 +173,20 @@ class PaymentApi
 
                 $payment->setReservation($reservation);
                 $amountPerReservation = intval($amount) / intval($numberOfReservations);
-                if($amountPerReservation > 999){
-                    $amountPerReservation = 999;
+                if($this->defectApi->isDefectEnabled("payment_2")){
+                    if($amountPerReservation > 999){
+                        $amountPerReservation = 999;
+                    }
                 }
+
                 $payment->setAmount($amountPerReservation);
                 $payment->setDate($now);
-                $payment->setChannel("transfer");
+                if($this->defectApi->isDefectEnabled("payment_1")){
+                    $payment->setChannel("transfer");
+                }else{
+                    $payment->setChannel($channel);
+                }
+
                 $payment->SetReference($reference);
 
                 $this->logger->debug("reservation status is " . $reservation->getStatus()->getName());

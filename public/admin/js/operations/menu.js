@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    onlyShowEnabledFunctionalityMenus();
     window.setTimeout(hideLoader, 3000);
     if (sessionStorage.getItem("current_page") === null) {
         updateView('configuration');
@@ -37,6 +38,35 @@ $(document).ready(function () {
         $(".headcol").css("position", "absolute");
     });
 });
+
+function onlyShowEnabledFunctionalityMenus(){
+    $(".toggle-menu").addClass("display-none");
+    let enabledFunctionality = getEnabledFunctionality();
+
+}
+
+
+function getEnabledFunctionality() {
+    isUserLoggedIn();
+    let url = "/no_auth/getEnabledFuntionality";
+
+    $.ajax({
+        url : url,
+        type: "get",
+        success: function(data)
+        {
+            for (let i = 0; i < data.length; i++){
+                console.log(data[i].name)
+                $("#" + data[i].name).removeClass("display-none");
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            console.log(errorThrown);
+        }
+    });
+
+}
 
 function hideLoader() {
     $("body").removeClass("startup-loading");

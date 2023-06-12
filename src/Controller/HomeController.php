@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 
+use App\Entity\Functionality;
+use App\Service\DefectApi;
 use App\Service\GuestApi;
 use App\Service\PropertyApi;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializerBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -117,6 +120,13 @@ class HomeController extends AbstractController
         return $this->render("room.html");
     }
 
+    #[Route('/manage_functionality038a753a-08e3-11ee-be56-0242ac120002', name: 'manage_functionality')]
+    public function manage_functionality(): Response
+    {
+        return $this->render("manage_functionality038a753a-08e3-11ee-be56-0242ac120002.html");
+    }
+
+
     /**
      * @Route("no_auth/userloggedin")
      */
@@ -137,5 +147,94 @@ class HomeController extends AbstractController
         $response->setCallback($callback);
         return $response;
     }
+
+    /**
+     * @Route("no_auth/getEnabledFuntionality")
+     */
+    public function getEnabledFunctionality(LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $enabledFunctionality = $entityManager->getRepository(Functionality::class)->findBy(array('enabled' => true, 'type'=>'menu'));
+        $serializer = SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize($enabledFunctionality, 'json');
+
+        $logger->info($jsonContent);
+        return new JsonResponse($jsonContent , 200, array(), true);
+        return $response;
+    }
+
+    /**
+     * @Route("no_auth/getFunctionality")
+     */
+    public function getFunctionality(LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, DefectApi $defectApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $html = $defectApi->getFunctionality();
+
+        $response = array(
+            'html' => $html,
+        );
+        $callback = $request->get('callback');
+        $response = new JsonResponse($response , 200, array());
+        $response->setCallback($callback);
+        return $response;
+    }
+
+
+    /**
+     * @Route("no_auth/getDefects")
+     */
+    public function getDefects(LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, DefectApi $defectApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $html = $defectApi->getDefects();
+
+        $response = array(
+            'html' => $html,
+        );
+        $callback = $request->get('callback');
+        $response = new JsonResponse($response , 200, array());
+        $response->setCallback($callback);
+        return $response;
+    }
+
+    /**
+     * @Route("no_auth/defect/update/{id}/{enabled}")
+     */
+    public function updateDefect($id, $enabled, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, DefectApi $defectApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $response = $defectApi->updateDefectEnabled($id, $enabled);
+        return new JsonResponse($response , 200, array());
+    }
+
+    /**
+     * @Route("no_auth/functionality/update/{id}/{enabled}")
+     */
+    public function updateFunctionality($id, $enabled, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, DefectApi $defectApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('put')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $response = $defectApi->updateFunctionalityEnabled($id, $enabled);
+        return new JsonResponse($response , 200, array());
+    }
+
 
 }

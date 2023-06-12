@@ -19,11 +19,14 @@ class AddOnsApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
         if (session_id() === '') {
             $logger->info("Session id is empty" . __METHOD__);
             session_start();
@@ -231,7 +234,12 @@ class AddOnsApi
                         );
                         return $responseArray;
                     }
-                    $addOn->setQuantity(intval($newValue) + 1);
+                    if($this->defectApi->isDefectEnabled("configuration_1")){
+                        $addOn->setQuantity(intval($newValue) + 1);
+                    }else{
+                        $addOn->setQuantity(intval($newValue));
+                    }
+
                     break;
                 default:
                     $responseArray[] = array(
@@ -329,7 +337,12 @@ class AddOnsApi
 
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
             $addOn = new AddOns();
-            $addOn->setPrice($addOnPrice + 10);
+            if($this->defectApi->isDefectEnabled("configuration_2")){
+                $addOn->setPrice($addOnPrice + 10);
+            }else{
+                $addOn->setPrice($addOnPrice);
+            }
+
             $addOn->setName($addOnName);
             $addOn->setProperty($property);
             $this->em->persist($addOn);
