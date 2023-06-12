@@ -221,6 +221,15 @@ class AddOnsApi
                         );
                         return $responseArray;
                     }
+                    $existingAddOn = $this->em->getRepository(AddOns::class)->findBy(array('name' => $newValue, 'status' => 'live'));
+                    if ($existingAddOn != null) {
+                        $responseArray[] = array(
+                            'result_message' => "Add on with the same name already exists",
+                            'result_code' => 1
+                        );
+                        return $responseArray;
+                    }
+
                     $addOn->setName($newValue);
                     break;
                 case "quantity":
@@ -231,6 +240,7 @@ class AddOnsApi
                         );
                         return $responseArray;
                     }
+                    //validate unique name
                     $addOn->setQuantity(intval($newValue) + 1);
                     break;
                 default:
