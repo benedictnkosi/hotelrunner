@@ -95,9 +95,12 @@ class SingleReservationHtml
 
         //room name
 
-
+        $rooms_disabled = "disabled";
+        if($this->defectApi->isFunctionalityEnabled("update_reservation_room")){
+            $rooms_disabled = "";
+        }
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-home glyphicon-small-icon" > 
-<select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input" disabled>';
+<select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input">';
         foreach ($rooms as $roomEntity) {
             if ($roomEntity->getId() === $room->getId()) {
                 $htmlString .= '<option value="' . $roomEntity->getId() . '" selected>' . $roomEntity->getName() . '</option>';
@@ -110,9 +113,14 @@ class SingleReservationHtml
         //check in\out date
 
         $checkInDateDisabled = "";
-        //if ($reservation->getCheckOut() < $now || (strcasecmp($reservation->getOrigin(), "website") != 0)) {
+        if($this->defectApi->isFunctionalityEnabled("update_reservation_dates")){
+            if ($reservation->getCheckOut() < $now || (strcasecmp($reservation->getOrigin(), "website") != 0)) {
+                $checkInDateDisabled = "Disabled";
+            }
+        }else{
             $checkInDateDisabled = "Disabled";
-        //}
+        }
+
 
         $this->logger->debug(" debug1 - checkin  " . $reservation->getCheckIn()->format("Y-m-d"));
         $this->logger->debug(" debug1 - checkout  " . $reservation->getCheckOut()->format("Y-m-d"));

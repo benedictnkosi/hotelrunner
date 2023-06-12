@@ -60,7 +60,7 @@ function updateDefectEnabled(defectId, enabled){
         {
             $("body").removeClass("loading");
             if (response.result_code === 0) {
-                showResSuccessMessage("functionality", response.result_message);
+                //showResSuccessMessage("functionality", response.result_message);
             } else {
                 showResErrorMessage("functionality", response.result_message);
             }
@@ -85,7 +85,7 @@ function updateFunctionalityEnabled(functionalityId, enabled){
         {
             $("body").removeClass("loading");
             if (response.result_code === 0) {
-                showResSuccessMessage("functionality", response.result_message);
+                //showResSuccessMessage("functionality", response.result_message);
             } else {
                 showResErrorMessage("functionality", response.result_message);
             }
