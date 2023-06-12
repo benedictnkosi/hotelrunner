@@ -347,7 +347,7 @@ class AddOnsApi
             $responseArray[] = array(
                 'result_message' => "Successfully created add on",
                 'result_code' => 0,
-                'add_on_id' => $addOn->getId()
+                'id' => $addOn->getId()
             );
 
 
