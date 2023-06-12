@@ -204,9 +204,9 @@ class AddOnsApi
 
             switch ($field) {
                 case "price":
-                    if (strlen($newValue) > 4 || strlen($newValue) == 0) {
+                    if(strlen($newValue) > 4 || !is_numeric($newValue) || intval($newValue) < 1){
                         $responseArray[] = array(
-                            'result_message' => "Add-on price Length should be between 1 and 4",
+                            'result_message' => "Price must be a positive number and maximum length of 4",
                             'result_code' => 1
                         );
                         return $responseArray;
@@ -224,9 +224,9 @@ class AddOnsApi
                     $addOn->setName($newValue);
                     break;
                 case "quantity":
-                    if (strlen($newValue) > 2 || strlen($newValue) == 0) {
+                    if(strlen($newValue) > 2 || !is_numeric($newValue) || intval($newValue) < 1){
                         $responseArray[] = array(
-                            'result_message' => "Add-on quantity Length should be between 1 and 2",
+                            'result_message' => "Quality must be a positive number and maximum length of 2",
                             'result_code' => 1
                         );
                         return $responseArray;
