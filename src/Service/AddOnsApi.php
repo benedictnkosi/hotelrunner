@@ -190,7 +190,7 @@ class AddOnsApi
         return $responseArray;
     }
 
-    public function updateAddOn($addOnId, $field, $newValue)
+    public function updateAddOn($addOnId, $field, $newValue): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
@@ -207,9 +207,9 @@ class AddOnsApi
 
             switch ($field) {
                 case "price":
-                    if (strlen($newValue) > 4 || strlen($newValue) == 0) {
+                    if(strlen($newValue) > 4 || !is_numeric($newValue) || intval($newValue) < 1){
                         $responseArray[] = array(
-                            'result_message' => "Add-on price Length should be between 1 and 4",
+                            'result_message' => "Price must be a positive number and maximum length of 4",
                             'result_code' => 1
                         );
                         return $responseArray;
@@ -224,22 +224,31 @@ class AddOnsApi
                         );
                         return $responseArray;
                     }
-                    $addOn->setName($newValue);
-                    break;
-                case "quantity":
-                    if (strlen($newValue) > 2 || strlen($newValue) == 0) {
+                    $existingAddOn = $this->em->getRepository(AddOns::class)->findBy(array('name' => $newValue, 'status' => 'live'));
+                    if ($existingAddOn != null) {
                         $responseArray[] = array(
-                            'result_message' => "Add-on quantity Length should be between 1 and 2",
+                            'result_message' => "Add on with the same name already exists",
                             'result_code' => 1
                         );
                         return $responseArray;
                     }
+
+                    $addOn->setName($newValue);
+                    break;
+                case "quantity":
+                    if(strlen($newValue) > 2 || !is_numeric($newValue) || intval($newValue) < 1){
+                        $responseArray[] = array(
+                            'result_message' => "Quality must be a positive number and maximum length of 2",
+                            'result_code' => 1
+                        );
+                        return $responseArray;
+                    }
+                    //validate unique name
                     if($this->defectApi->isDefectEnabled("configuration_1")){
                         $addOn->setQuantity(intval($newValue) + 1);
                     }else{
                         $addOn->setQuantity(intval($newValue));
                     }
-
                     break;
                 default:
                     $responseArray[] = array(
