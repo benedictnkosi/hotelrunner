@@ -140,27 +140,34 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-            <li id="menu_calendar" class="toggle-menu display-none"><a href="javascript:void(0)" onclick="updateView('calendar');"
-                   class="active menuICons mobileMenuIcon" title="calendar">
+            <li id="menu_calendar" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                       onclick="updateView('calendar');"
+                                                                       class="active menuICons mobileMenuIcon"
+                                                                       title="calendar">
                 <i style="display: inline;" class="desktopOnlyMenu">Calendar</i>
 
             </a></li>
-            <li id="menu_reservations"  class="toggle-menu display-none"><a href="javascript:void(0)"
-                   onclick="updateView('upcoming-reservations');"
-                   class="active menuICons mobileMenuIcon" title="Bookings">
+            <li id="menu_reservations" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                           onclick="updateView('upcoming-reservations');"
+                                                                           class="active menuICons mobileMenuIcon"
+                                                                           title="Bookings">
                 <i style="display: inline;" class="desktopOnlyMenu">Reservations</i>
             </a></li>
-            <li id="menu_configuration"  class="toggle-menu display-none"><a href="javascript:void(0)"
-                   onclick="updateView('configuration');"
-                   class="active menuICons mobileMenuIcon" title="Configuration">
+            <li id="menu_configuration" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                            onclick="updateView('configuration');"
+                                                                            class="active menuICons mobileMenuIcon"
+                                                                            title="Configuration">
                 <i style="display: inline;" class="desktopOnlyMenu">Configuration</i>
             </a></li>
-            <li id="menu_more"  class="toggle-menu display-none"><a href="javascript:void(0)" onclick="updateView('other-tabs');"
-                   class="active menuICons mobileMenuIcon" title="Other">
+            <li id="menu_more" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                   onclick="updateView('other-tabs');"
+                                                                   class="active menuICons mobileMenuIcon"
+                                                                   title="Other">
                 <i style="display: inline;" class="desktopOnlyMenu">More...</i>
             </a></li>
-            <li id="menu_signout"  class="toggle-menu display-none"><a href="javascript:void(0)" onclick="logout();"
-                   class="active menuICons mobileMenuIcon" title="signout">
+            <li id="menu_signout" class="toggle-menu display-none"><a href="javascript:void(0)" onclick="logout();"
+                                                                      class="active menuICons mobileMenuIcon"
+                                                                      title="signout">
                 <i style="display: inline;" class="desktopOnlyMenu">Sign Out</i>
             </a></li>
         </div>
@@ -366,300 +373,301 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                 </div>
                 <div class="clearfix"></div>
             </div>
-        </div>
 
-        <div class="flexible">
-            <div class="flex-bottom">
-                <div id="configuration_success_message_div"
-                     class="flex1 display-none">
-                    <h5 id="configuration_success_message"></h5>
-                </div>
-                <div id="configuration_error_message_div" class="flex2 display-none">
-                    <h5 id="configuration_error_message"></h5>
+
+            <div class="flexible">
+                <div class="flex-bottom">
+                    <div id="configuration_success_message_div"
+                         class="flex1 display-none">
+                        <h5 id="configuration_success_message"></h5>
+                    </div>
+                    <div id="configuration_error_message_div" class="flex2 display-none">
+                        <h5 id="configuration_error_message"></h5>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="configuration-rooms-list" class='configuration_tabs display-none'>
-            <h3>Manage Rooms</h3>
-            <div class="configuration-left-div">
-                <div id="config_rooms_list">
+            <div id="configuration-rooms-list" class='configuration_tabs display-none'>
+                <h3>Manage Rooms</h3>
+                <div class="configuration-left-div">
+                    <div id="config_rooms_list">
+                    </div>
+
                 </div>
+                <div class="configuration-right-div">
 
-            </div>
-            <div class="configuration-right-div">
-
-                <form class="contact-form" id="config_room_form" action="#">
-                    <h5 id="manage_room_h3">Create A New Room</h5>
-                    <label>Room Name</label>
-                    <div>
-                        <input type="text" name="room_id" id="room_id" class="display-none" value="0"/>
-                        <input type="text" name="room_name" id="room_name" maxlength="30"
-                               required/>
-                    </div>
-
-                    <label>Description (use {} around the words you want bold e.g {WIFI}</label>
-                    <div>
-                        <textarea type="text" name="room_description" id="room_description" rows="20" minlength="50"
-                                  maxlength="500"
-                                  required></textarea>
-                    </div>
-
-                    <label>Price</label>
-
-                    <div>
-                        <input type="text" name="room_price" id="room_price" maxlength="4"
-                               required/>
-                    </div>
-
-                    <label>Kids Policy</label>
-                    <div>
-                        <input type="radio" id="yes_kids_radio" name="kids_allowed" value="1">
-                        <label for="yes_kids_radio">Kids Allowed</label><br>
-                        <input type="radio" id="no_kids" name="kids_allowed" value="0">
-                        <label for="no_kids">Kids Not Allowed</label><br>
-                    </div>
-
-                    <label>Sleeps</label>
-                    <div>
-                        <input type="number" value="2" id="room_sleeps" maxlength="2">
-                    </div>
-
-                    <label>Status</label>
-                    <div>
-                        <select id="select_room_status">
-
-                        </select>
-                    </div>
-
-
-                    <label>Linked Room</label>
-                    <div>
-                        <select id="select_linked_room">
-
-                        </select>
-                    </div>
-
-                    <label>Room Size (sqm)</label>
-                    <div>
-                        <input type="text" name="room_size" id="room_size" maxlength="3"
-                               required/>
-                    </div>
-
-                    <label>Beds</label>
-                    <div>
-                        <input type="text" class="form-control" id="beds_tokenfield" maxlength="1"/>
-                    </div>
-
-                    <label>TV</label>
-                    <div>
-                        <select id="select_tv">
-                        </select>
-                    </div>
-
-                    <label>Stairs</label>
-                    <div>
-                        <select id="select_Stairs">
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </select>
-                    </div>
-
-                    <label>Other Amenities</label>
-                    <div>
-                        <input type="checkbox" id="ch_swimming_pool" name="amenities" value="Swimming Pool">
-                        <label for="ch_swimming_pool">Swimming Pool</label><br>
-                        <input type="checkbox" id="ch_braai" name="amenities" value="Braai Area">
-                        <label for="ch_braai">Braai Area</label><br>
-                        <input type="checkbox" id="ch_gym" name="amenities" value="Gym">
-                        <label for="ch_gym">Gym</label><br>
-                    </div>
-
-
-                    <div>
-                        <span><input type="submit" value="Submit" id="config_room_submit" class="button-50"></span>
-                    </div>
-                </form>
-
-                <div id="icalDiv" class="display-none">
-                    <h5>Manage Calendar Sync</h5>
-                    <!--<a href="javascript:void(0)" class="refresh_items_link" id="refresh_ical_button"
-                    ><img class="menu_icon_image-5em"
-                          src="/admin/images/refresh.png" title="Import Calendar"></img><i
-                            class="desktopOnlyMenu"></i></a>-->
-                    <h5 id="room_export_link"></h5>
-
-                    <div id="links_div"></div>
-
-                    <form class="contact-form" id="ical_form" action="#">
-                        <h5>Add A New Channel</h5>
-
-                        <label>Channel Ical Link</label>
+                    <form class="contact-form" id="config_room_form" action="#">
+                        <h5 id="manage_room_h3">Create A New Room</h5>
+                        <label>Room Name</label>
                         <div>
-                            <input type="text" name="icalLink" id="icalLink" maxlength="200"
+                            <input type="text" name="room_id" id="room_id" class="display-none" value="0"/>
+                            <input type="text" name="room_name" id="room_name" maxlength="30"
                                    required/>
                         </div>
 
+                        <label>Description (use {} around the words you want bold e.g {WIFI}</label>
                         <div>
-                                <span><input type="submit" value="Add Channel" id="ical_submit"
-                                             class="button-50"></span>
+                        <textarea type="text" name="room_description" id="room_description" rows="20" minlength="50"
+                                  maxlength="500"
+                                  required></textarea>
+                        </div>
+
+                        <label>Price</label>
+
+                        <div>
+                            <input type="text" name="room_price" id="room_price" maxlength="4"
+                                   required/>
+                        </div>
+
+                        <label>Kids Policy</label>
+                        <div>
+                            <input type="radio" id="yes_kids_radio" name="kids_allowed" value="1">
+                            <label for="yes_kids_radio">Kids Allowed</label><br>
+                            <input type="radio" id="no_kids" name="kids_allowed" value="0">
+                            <label for="no_kids">Kids Not Allowed</label><br>
+                        </div>
+
+                        <label>Sleeps</label>
+                        <div>
+                            <input type="number" value="2" id="room_sleeps" maxlength="2">
+                        </div>
+
+                        <label>Status</label>
+                        <div>
+                            <select id="select_room_status">
+
+                            </select>
+                        </div>
+
+
+                        <label>Linked Room</label>
+                        <div>
+                            <select id="select_linked_room">
+
+                            </select>
+                        </div>
+
+                        <label>Room Size (sqm)</label>
+                        <div>
+                            <input type="text" name="room_size" id="room_size" maxlength="3"
+                                   required/>
+                        </div>
+
+                        <label>Beds</label>
+                        <div>
+                            <input type="text" class="form-control" id="beds_tokenfield" maxlength="1"/>
+                        </div>
+
+                        <label>TV</label>
+                        <div>
+                            <select id="select_tv">
+                            </select>
+                        </div>
+
+                        <label>Stairs</label>
+                        <div>
+                            <select id="select_Stairs">
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+
+                        <label>Other Amenities</label>
+                        <div>
+                            <input type="checkbox" id="ch_swimming_pool" name="amenities" value="Swimming Pool">
+                            <label for="ch_swimming_pool">Swimming Pool</label><br>
+                            <input type="checkbox" id="ch_braai" name="amenities" value="Braai Area">
+                            <label for="ch_braai">Braai Area</label><br>
+                            <input type="checkbox" id="ch_gym" name="amenities" value="Gym">
+                            <label for="ch_gym">Gym</label><br>
+                        </div>
+
+
+                        <div>
+                            <span><input type="submit" value="Submit" id="config_room_submit" class="button-50"></span>
                         </div>
                     </form>
-                </div>
 
-                <div id="imageUploaderDiv" class="display-none">
-                    <h5>Upload New Images (1mb max)</h5>
-                    <p>*Landscape images recommended</p>
-                    <p>*Click on image to mark it as the default image</p>
-                </div>
-            </div>
-        </div>
-        <div id="configuration-add_on-list" class='configuration_tabs display-none reservations_div'>
-            <form class="contact-form" id="config_addOn_form" action="#">
-                <h3>Manage Add-ons</h3>
+                    <div id="icalDiv" class="display-none">
+                        <h5>Manage Calendar Sync</h5>
+                        <!--<a href="javascript:void(0)" class="refresh_items_link" id="refresh_ical_button"
+                        ><img class="menu_icon_image-5em"
+                              src="/admin/images/refresh.png" title="Import Calendar"></img><i
+                                class="desktopOnlyMenu"></i></a>-->
+                        <h5 id="room_export_link"></h5>
 
-                <div id="add_ons_div"></div>
+                        <div id="links_div"></div>
 
-                <hr>
-                <h3>Create New Add-ons</h3>
-                <div class="addon-left-div">
-                    <label>Name</label>
-                    <input type="text" id="addon_name" name="addon_name" placeholder="e.g. laundry" maxlength="50"
-                           required/>
-                </div>
-                <div class="addon-right-div">
-                    <label>Price</label>
-                    <input type="text" id="addon_price" name="addon_price" placeholder="e.g. 180" maxlength="4"
-                           required/>
-                </div>
+                        <form class="contact-form" id="ical_form" action="#">
+                            <h5>Add A New Channel</h5>
 
-                <div>
-                    <span><input type="submit" value="Submit" id="config_addon_submit" class="button-50"></span>
-                </div>
-            </form>
-        </div>
-        <div id="configuration-employees-list" class='configuration_tabs display-none reservations_div'>
-            <form class="contact-form" id="config_employee_form" action="#">
+                            <label>Channel Ical Link</label>
+                            <div>
+                                <input type="text" name="icalLink" id="icalLink" maxlength="200"
+                                       required/>
+                            </div>
 
-                <h3>Create New Employee</h3>
-                <div class="addon-left-div">
-                    <label>Name</label>
-                    <input type="text" id="employee_name" name="employee_name" placeholder="e.g. Benedict"
-                           maxlength="50"
-                           required/>
-
-                    <label>Gender</label>
-                    <div>
-                        <input type="radio" id="male_radio" name="gender" value="male">
-                        <label for="male_radio">Male</label>
-                        <input type="radio" id="female_radio" name="gender" value="female">
-                        <label for="female_radio">Female</label>
-                        <input type="radio" id="other_radio" name="gender" value="other">
-                        <label for="other_radio">Other</label>
+                            <div>
+                                <span><input type="submit" value="Add Channel" id="ical_submit"
+                                             class="button-50"></span>
+                            </div>
+                        </form>
                     </div>
 
+                    <div id="imageUploaderDiv" class="display-none">
+                        <h5>Upload New Images (1mb max)</h5>
+                        <p>*Landscape images recommended</p>
+                        <p>*Click on image to mark it as the default image</p>
+                    </div>
                 </div>
-                <div>
-                    <span><input type="submit" value="Submit" id="config_employee_submit" class="button-50"></span>
-                </div>
+            </div>
+            <div id="configuration-add_on-list" class='configuration_tabs display-none reservations_div'>
+                <form class="contact-form" id="config_addOn_form" action="#">
+                    <h3>Manage Add-ons</h3>
 
-                <hr>
+                    <div id="add_ons_div"></div>
 
-                <h3>Manage Employees</h3>
+                    <hr>
+                    <h3>Create New Add-ons</h3>
+                    <div class="addon-left-div">
+                        <label>Name</label>
+                        <input type="text" id="addon_name" name="addon_name" placeholder="e.g. laundry" maxlength="50"
+                               required/>
+                    </div>
+                    <div class="addon-right-div">
+                        <label>Price</label>
+                        <input type="text" id="addon_price" name="addon_price" placeholder="e.g. 180" maxlength="4"
+                               required/>
+                    </div>
 
-                <div id="employee_div"></div>
+                    <div>
+                        <span><input type="submit" value="Submit" id="config_addon_submit" class="button-50"></span>
+                    </div>
+                </form>
+            </div>
+            <div id="configuration-employees-list" class='configuration_tabs display-none reservations_div'>
+                <form class="contact-form" id="config_employee_form" action="#">
+
+                    <h3>Create New Employee</h3>
+                    <div class="addon-left-div">
+                        <label>Name</label>
+                        <input type="text" id="employee_name" name="employee_name" placeholder="e.g. Benedict"
+                               maxlength="50"
+                               required/>
+
+                        <label>Gender</label>
+                        <div>
+                            <input type="radio" id="male_radio" name="gender" value="male">
+                            <label for="male_radio">Male</label>
+                            <input type="radio" id="female_radio" name="gender" value="female">
+                            <label for="female_radio">Female</label>
+                            <input type="radio" id="other_radio" name="gender" value="other">
+                            <label for="other_radio">Other</label>
+                        </div>
+
+                    </div>
+                    <div>
+                        <span><input type="submit" value="Submit" id="config_employee_submit" class="button-50"></span>
+                    </div>
+
+                    <hr>
+
+                    <h3>Manage Employees</h3>
+
+                    <div id="employee_div"></div>
 
 
-            </form>
-
-        </div>
-        <div id="configuration-guests-list" class='configuration_tabs display-none reservations_div'>
-            <form class="contact-form" id="config_guest_form" action="#">
-                <h3>Manage Guests</h3>
-
-                <h4>Search for Guest</h4>
-                <div class="addon-left-div">
-                    <label>Guest Name</label>
-                    <input type="text" id="guest_name" name="guest_name" placeholder="e.g. Benedict"
-                           maxlength="50"
-                           required/>
-                </div>
-                <div>
-                    <span><input type="submit" value="Search" id="config_guest_submit" class="button-50"></span>
-                </div>
-
-                <div id="guest_div"></div>
-                <hr>
-
-            </form>
-
-        </div>
-        <div id="configuration-messages" class='configuration_tabs display-none reservations_div'>
-
-            <h3>Scheduled Messages</h3>
-
-            <div id="messages_div">
+                </form>
 
             </div>
+            <div id="configuration-guests-list" class='configuration_tabs display-none reservations_div'>
+                <form class="contact-form" id="config_guest_form" action="#">
+                    <h3>Manage Guests</h3>
 
-            <hr>
-            <form class="contact-form" id="config_createMessageTemplate_form" action="#">
-                <h5>Create a new template</h5>
-                <p id="message_variables"></p>
+                    <h4>Search for Guest</h4>
+                    <div class="addon-left-div">
+                        <label>Guest Name</label>
+                        <input type="text" id="guest_name" name="guest_name" placeholder="e.g. Benedict"
+                               maxlength="50"
+                               required/>
+                    </div>
+                    <div>
+                        <span><input type="submit" value="Search" id="config_guest_submit" class="button-50"></span>
+                    </div>
 
-                <label>Template Name</label>
+                    <div id="guest_div"></div>
+                    <hr>
 
-                <input type="text" id="template_name_input" placeholder="e.g. Load shedding" maxlength="50">
+                </form>
 
-                <label>Message</label>
-                <textarea id="template_message" name="template_message" maxlength="500" rows="5">Hi guest_name, ....
+            </div>
+            <div id="configuration-messages" class='configuration_tabs display-none reservations_div'>
+
+                <h3>Scheduled Messages</h3>
+
+                <div id="messages_div">
+
+                </div>
+
+                <hr>
+                <form class="contact-form" id="config_createMessageTemplate_form" action="#">
+                    <h5>Create a new template</h5>
+                    <p id="message_variables"></p>
+
+                    <label>Template Name</label>
+
+                    <input type="text" id="template_name_input" placeholder="e.g. Load shedding" maxlength="50">
+
+                    <label>Message</label>
+                    <textarea id="template_message" name="template_message" maxlength="500" rows="5">Hi guest_name, ....
                     </textarea>
-                <div>
+                    <div>
                         <span><input type="submit" value="Create Template" id="create_template_submit"
                                      class="button-50"></span>
-                </div>
-            </form>
-            <hr>
-            <form class="contact-form" id="config_createScheduleMessage_form" action="#">
-                <h5>Schedule a new message</h5>
+                    </div>
+                </form>
+                <hr>
+                <form class="contact-form" id="config_createScheduleMessage_form" action="#">
+                    <h5>Schedule a new message</h5>
 
-                <label>Template</label>
-                <select id="template_name_select" name="template_name_select" class="template_option">
-                </select>
+                    <label>Template</label>
+                    <select id="template_name_select" name="template_name_select" class="template_option">
+                    </select>
 
-                <pre id="template_message_text"></pre>
+                    <pre id="template_message_text"></pre>
 
-                <label>Schedule</label>
-                <select id="schedule_name" name="schedule_name">
-                </select>
+                    <label>Schedule</label>
+                    <select id="schedule_name" name="schedule_name">
+                    </select>
 
-                <div id="checkbox_rooms">
+                    <div id="checkbox_rooms">
 
-                </div>
+                    </div>
 
-                <div>
+                    <div>
                         <span><input type="submit" value="Schedule Message" id="messages_submit"
                                      class="button-50"></span>
-                </div>
-            </form>
-        </div>
-        <div id="configuration-terms" class='configuration_tabs display-none reservations_div'>
+                    </div>
+                </form>
+            </div>
+            <div id="configuration-terms" class='configuration_tabs display-none reservations_div'>
 
-            <h3>Terms & Conditions</h3>
-            <form class="contact-form" id="terms_form" action="#">
-                <label>Terms (use {} around the words you want bold e.g {WIFI}</label>
-                <textarea id="terms_text" name="terms_text" maxlength="5000">
+                <h3>Terms & Conditions</h3>
+                <form class="contact-form" id="terms_form" action="#">
+                    <label>Terms (use {} around the words you want bold e.g {WIFI}</label>
+                    <textarea id="terms_text" name="terms_text" maxlength="5000">
                     </textarea>
-                <div>
-                    <span><input type="submit" value="Save" id="terms_submit" class="button-50"></span>
-                </div>
-            </form>
+                    <div>
+                        <span><input type="submit" value="Save" id="terms_submit" class="button-50"></span>
+                    </div>
+                </form>
 
-        </div>
-        <div id="configuration-synch_logs" class='configuration_tabs display-none reservations_div'>
+            </div>
+            <div id="configuration-synch_logs" class='configuration_tabs display-none reservations_div'>
 
-            <h3>Channel Sync Logs</h3>
-            <div id="synch_logs_div"></div>
+                <h3>Channel Sync Logs</h3>
+                <div id="synch_logs_div"></div>
 
+            </div>
         </div>
     </div>
 

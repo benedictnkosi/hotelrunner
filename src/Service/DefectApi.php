@@ -82,6 +82,19 @@ class DefectApi
         return $html;
     }
 
+    public function isFunctionalityEnabled($name): string
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+
+        try {
+            $functionality = $this->em->getRepository(Functionality::class)->findOneBy(array('name'=>$name));
+            return $functionality->isEnabled();
+        } catch (Exception $ex) {
+            $this->logger->error($ex->getMessage());
+            return false;
+        }
+    }
+
     public function getFunctionality(): string
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
