@@ -1,7 +1,4 @@
 id,room_name,check_in,check_out,guest_name,phone_number,amount
-758,Upstairs+King+Room,2023-06-10,2023-06-12,sasasas,34343434,1000
-758,Upstairs+King+Room,2023-06-10,2023-06-12,sasasas,34343434,869.57
-758,Upstairs+King+Room,2023-06-10,2023-06-12,sasasas,34343434,130.43
 777,Upstairs+King+Room,2023-06-12,2023-06-18,Benedicts,08379174311,3000
 777,Upstairs+King+Room,2023-06-12,2023-06-18,Benedicts,08379174311,2608.7
 777,Upstairs+King+Room,2023-06-12,2023-06-18,Benedicts,08379174311,391.3

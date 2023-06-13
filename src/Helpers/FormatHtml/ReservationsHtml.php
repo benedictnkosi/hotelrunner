@@ -60,9 +60,12 @@ class ReservationsHtml
 											</div>
 										</div>
 									</div>';
-									
-//									<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
-//<a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
+
+        if($this->defectApi->isFunctionalityEnabled("download_reservations")) {
+            $htmlString .= '<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
+            <a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
+        }
+
 
         if (strcmp($period, 'past') === 0) {
             $numberOfDays = 180;
