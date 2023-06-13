@@ -361,8 +361,6 @@ class AddOnsApi
                 'result_code' => 0,
                 'id' => $addOn->getId()
             );
-
-
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
