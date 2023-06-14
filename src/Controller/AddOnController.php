@@ -118,7 +118,7 @@ class AddOnController extends AbstractController
             return new JsonResponse($response , 200, array());
         }
     }
-d
+
     /**
      * @Route("admin_api/addon/update")
      */
