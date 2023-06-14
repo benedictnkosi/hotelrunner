@@ -54,7 +54,7 @@ class AddOnController extends AbstractController
 
 
     /**
-     * @Route("api/json/addons")
+     * @Route("api/json/addons/")
      */
     public function getJsonAddOns(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
