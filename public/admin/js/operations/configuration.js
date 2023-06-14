@@ -636,12 +636,12 @@ function deleteAddOn(event) {
         url : url,
         type: "DELETE",
         data : "",
-        complete: function(response)
+        success: function(response)
         {
             $("body").removeClass("loading");
-            if (response.status === 204) {
+            if (response[0].result_code === 0) {
                 getAddOns();
-                showResSuccessMessage("configuration", "Successfully removed add-on");
+                showResSuccessMessage("configuration", response[0].result_message);
             } else {
                 showResErrorMessage("configuration", response[0].result_message);
             }
