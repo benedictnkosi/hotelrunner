@@ -113,11 +113,7 @@ class AddOnController extends AbstractController
         }
 
         $response = $addOnsApi->deleteAddOn($addOnId);
-        if ($response[0]['result_code'] === 0) {
-            return new JsonResponse($response , 200, array());
-        }else{
-            return new JsonResponse($response , 200, array());
-        }
+        return new JsonResponse($response , 200, array());
     }
 
     /**
