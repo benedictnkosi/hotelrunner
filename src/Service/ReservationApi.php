@@ -813,7 +813,7 @@ class ReservationApi
                 );
             }
 
-            $now = new DateTime();
+            $now = new DateTime('today midnight');
             if(!$this->defectApi->isDefectEnabled("create_reservation_11")){
                 if ($checkInDateDateObject < $now) {
                     return array(
