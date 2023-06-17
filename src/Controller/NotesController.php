@@ -27,4 +27,20 @@ class NotesController extends AbstractController
         $response = new JsonResponse($response , 201, array());
         return $response;
     }
+
+    /**
+     * @Route("api/json/note/add")
+     */
+    public function addNoteJson(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, NotesApi $notesApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+
+        $response = $notesApi->addNote($parameters['id'], str_replace("+", "", $parameters['note']));
+        return new JsonResponse($response , 201, array());
+    }
+
 }

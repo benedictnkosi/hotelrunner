@@ -74,7 +74,7 @@ class BlockedRoomApi
             $responseArray[] = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully blocked room',
-                'block_id' => $blockRoom->getId()
+                'id' => $blockRoom->getId()
             );
             $this->logger->debug(print_r($responseArray, true));
         } catch (Exception $ex) {

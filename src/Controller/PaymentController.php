@@ -88,6 +88,22 @@ class PaymentController extends AbstractController
         $response->setCallback($callback);
         return $response;
     }
+
+    /**
+     * @Route("api/json/discount/add")
+     */
+    public function addDiscountJson(LoggerInterface $logger, Request $request, PaymentApi $paymentApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+        $response = $paymentApi->addDiscount($parameters['id'], $parameters['amount'], "discount");
+        return new JsonResponse($response , 201, array());
+    }
+
     /**
      * @Route("no_auth/payfast_notify")
      * @throws \Exception
@@ -150,6 +166,26 @@ class PaymentController extends AbstractController
         $response = new JsonResponse($response , 200, array());
         $response->setCallback($callback);
         return $response;
+    }
+
+    /**
+     * @Route("api/json/payment/total/transactions")
+     */
+    public function getTotalCashPaymentByDayJson(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+
+        if ($parameters['group']) {
+            $response = $paymentApi->getCashReportByDayJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
+        }else{
+            $response = $paymentApi->getCashReportAllTransactionsJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
+        }
+
+        return new JsonResponse($response , 200, array());
     }
 
     /**

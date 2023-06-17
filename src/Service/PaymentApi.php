@@ -326,8 +326,19 @@ class PaymentApi
         try {
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
             $payment = new Payments();
+            if($reservation == null){
+                return array(
+                    'result_message' => "Reservation not found" ,
+                    'result_code' => 1
+                );
+            }
 
             $payment->setReservation($reservation);
+
+            if($this->defectApi->isDefectEnabled("view_reservation_8")){
+                $amount *= -1;
+            }
+
             $payment->setAmount($amount);
             $payment->setDate(new DateTime());
             $payment->setChannel($channel);
@@ -338,12 +349,12 @@ class PaymentApi
             $this->em->persist($payment);
             $this->em->flush($payment);
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully added discount'
             );
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -570,6 +581,45 @@ order by date desc";
         return $htmlResponse;
     }
 
+    public function getCashReportByDayJson($startDate, $endDate,$channel): array
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        $responseArray = array();
+
+        try {
+
+            $sql = "SELECT SUM(amount) as totalCash, LEFT( date, 10 ) as day FROM `payments`
+            WHERE channel = '".$channel."'
+            and   DATE(`date`) >= '" . $startDate . "'
+            and  DATE(`date`) <= '" . $endDate . "'
+GROUP BY LEFT( date, 10 ) 
+order by date desc";
+
+            $this->logger->info($sql);
+
+            //echo $sql;
+            $databaseHelper = new DatabaseHelper($this->logger);
+            $result = $databaseHelper->queryDatabase($sql);
+
+            if ($result) {
+                while ($results = $result->fetch_assoc()) {
+                    $responseArray[] = array(
+                        'date' => $results["day"],
+                        'amount' => $results["totalCash"]
+                    );
+                }
+            }
+        } catch (Exception) {
+            $responseArray = array(
+                'result_code' => 1,
+                'result_message' => 'Exception occurred while getting payments'
+            );
+        }
+
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
+        return $responseArray;
+    }
+
     public function getCashReportAllTransactions($startDate, $endDate,$channel): string
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -603,6 +653,45 @@ order by date desc";
         return $htmlResponse;
     }
 
+    public function getCashReportAllTransactionsJson($startDate, $endDate,$channel): array
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        $responseArray = array();
+
+        try {
+
+            $sql = "SELECT amount, date, reservation_id, reference FROM `payments`
+            WHERE channel = '".$channel."'
+            and   DATE(`date`) >= '" . $startDate . "'
+            and  DATE(`date`) <= '" . $endDate . "'
+order by date desc";
+
+            $this->logger->info($sql);
+
+            //echo $sql;
+            $databaseHelper = new DatabaseHelper($this->logger);
+            $result = $databaseHelper->queryDatabase($sql);
+
+            if ($result) {
+                while ($results = $result->fetch_assoc()) {
+                    $responseArray[] = array(
+                        'date' => $results["date"],
+                        'amount' => $results["amount"],
+                        'reference' => $results["reference"],
+                        'reservation_id' => $results["reservation_id"],
+                    );
+                }
+            }
+        } catch (Exception) {
+            $responseArray = array(
+                'result_code' => 1,
+                'result_message' => 'Exception occurred while getting payments'
+            );
+        }
+
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
+        return $responseArray;
+    }
 
     public function removePayment($paymentId): array
     {

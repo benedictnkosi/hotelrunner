@@ -514,20 +514,19 @@ class ReservationApi
                 //update blocked room
                 $blockedRoomApi->updateBlockedRoomByReservation($reservation->getId(), $checkInDate, $checkOutDate);
             } else {
-                $responseArray[] = array(
+                return array(
                     'result_code' => 1,
                     'result_message' => 'Selected dates not available'
                 );
-                return $responseArray;
             }
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully updated reservation'
             );
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
                 'result_message' => $ex->getMessage() ,
             );
@@ -548,24 +547,29 @@ class ReservationApi
             $isRoomAvailable = $roomApi->isRoomAvailable($roomId, $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"), $reservation->getId());
             if ($isRoomAvailable) {
                 $room = $roomApi->getRoom($roomId);
+                if($room == null){
+                    return array(
+                        'result_message' => "Room not found" ,
+                        'result_code' => 1
+                    );
+                }
                 $reservation->setRoom($room);
                 $this->em->persist($reservation);
                 $this->em->flush($reservation);
             } else {
-                $responseArray[] = array(
+                return array(
                     'result_code' => 1,
                     'result_message' => 'Selected dates not available'
                 );
-                return $responseArray;
             }
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully updated reservation'
             );
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
                 'result_message' => $ex->getMessage() ,
             );

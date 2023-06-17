@@ -869,6 +869,11 @@ select:focus, .focus {
     font-weight: 500;
 }
 
+.new-months {
+    background-color: #1b73d9;
+    font-weight: 500;
+}
+
 .weekend {
     /*background-color: #1B74DA;
     color:white;*/

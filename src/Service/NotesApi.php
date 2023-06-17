@@ -31,19 +31,25 @@ class NotesApi
         try{
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id'=>$resId));
             $reservationNotes = new ReservationNotes();
-
+            if($reservation == null){
+                return array(
+                    'result_message' => "Reservation not found" ,
+                    'result_code' => 1
+                );
+            }
             $reservationNotes->setReservation($reservation);
             $reservationNotes->setNote($note);
             $reservationNotes->setDate(new DateTime());
             $this->em->persist($reservationNotes);
             $this->em->flush($reservationNotes);
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
-                'result_message' => 'Successfully added note'
+                'result_message' => 'Successfully added note',
+                'id' => $reservationNotes->getId()
             );
             $this->logger->debug("no errors adding note for reservation $resId. note $note");
         }catch(Exception $ex){
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
                 'result_code'=> 1
             );

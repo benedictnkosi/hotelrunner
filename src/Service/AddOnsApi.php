@@ -141,16 +141,25 @@ class AddOnsApi
         try {
             $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array('id' => intval($adOnId)));
             if ($addOn == null) {
-                $responseArray[] = array(
-                    'result_message' => "Please select a valid add on item",
+                return array(
+                    'result_message' => "Add-on not found",
                     'result_code' => 1
                 );
-                return $responseArray;
             }
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => intval($resId)));
-
+            if ($reservation == null) {
+                return array(
+                    'result_message' => "Reservation not found",
+                    'result_code' => 1
+                );
+            }
             $resAddOn = new ReservationAddOns();
             $resAddOn->setAddOn($addOn);
+            if($this->defectApi->isDefectEnabled("view_reservation_10")) {
+                if($quantity > 9){
+                    $quantity = 9;
+                }
+            }
             $resAddOn->setQuantity(intval($quantity));
             $resAddOn->setReservation($reservation);
             $resAddOn->setDate(new DateTime());
@@ -162,6 +171,9 @@ class AddOnsApi
             if ($addOn->getQuantity() !== 0) {
                 $currentQuantity = $addOn->getQuantity();
                 $newQuantity = $currentQuantity - intval($quantity);
+                if($this->defectApi->isDefectEnabled("view_reservation_12")) {
+                    $newQuantity = $addOn->getQuantity();
+                }
                 $addOn->setQuantity($newQuantity);
                 $this->em->persist($addOn);
                 $this->em->flush($addOn);
@@ -173,13 +185,13 @@ class AddOnsApi
                 }
             }
 
-
-            $responseArray[] = array(
-                'result_message' => 'Successfully added add on to the reservation',
-                'result_code' => 0
+            $responseArray = array(
+                'result_message' => 'Successfully added add-on to the reservation',
+                'result_code' => 0,
+                'id' => $resAddOn->getId()
             );
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
@@ -422,6 +434,13 @@ class AddOnsApi
         $responseArray = array();
         try {
             $reservationAddOn = $this->em->getRepository(ReservationAddOns::class)->findOneBy(array('id' => $addOnId));
+            if($reservationAddOn == null){
+                $responseArray[] = array(
+                    'result_message' => "Reservation add-on not found",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
             $this->em->remove($reservationAddOn);
             $this->em->flush($reservationAddOn);
 

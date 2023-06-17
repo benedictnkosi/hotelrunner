@@ -11,6 +11,7 @@ use App\Helpers\FormatHtml\ReservationsHtml;
 use App\Helpers\FormatHtml\SingleReservationHtml;
 use App\Service\AddOnsApi;
 use App\Service\BlockedRoomApi;
+use App\Service\DefectApi;
 use App\Service\GuestApi;
 use App\Service\NotesApi;
 use App\Service\PaymentApi;
@@ -181,7 +182,7 @@ class ReservationController extends AbstractController
     /**
      * @Route("api/reservations/{reservationId}/update/{field}/{newValue}")
      */
-    public function updateReservation($reservationId, $field, $newValue, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi,  NotesApi $notesApi): Response
+    public function updateReservation($reservationId, $field, $newValue, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi,  NotesApi $notesApi, DefectApi $defectApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
 
@@ -235,7 +236,8 @@ class ReservationController extends AbstractController
                 } else if (strcmp($newValue, "checked_out") == 0) {
                     $logger->info("checked_out");
                     $due = $reservationApi->getAmountDue($reservation);
-                    if ($due == 0) {
+
+                    if ($due == 0 || $defectApi->isDefectEnabled("view_reservation_11")) {
                         $reservation->setCheckInStatus($newValue);
                         $reservation->setCheckOutTime($now->format("H:i"));
                         $notesApi->addNote($reservation->getId(), "Checked-out at " . $now->format("H:i"));
@@ -284,6 +286,107 @@ class ReservationController extends AbstractController
         return $response;
     }
 
+
+    /**
+     * @Route("api/json/reservations/update")
+     */
+    public function updateReservationJson(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi,  NotesApi $notesApi, DefectApi $defectApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $parameters = json_decode($request->getContent(), true);
+        $reservation = $reservationApi->getReservation($parameters['id']);
+        if(is_array($reservation)){
+            $responseArray[] = array(
+                'result_message' => "Reservation not found",
+                'result_code' => 1
+            );
+            return new JsonResponse($responseArray, 200 , array());
+        }
+
+        $newValue = $parameters['value'];
+        $field = $parameters['field'];
+
+        $responseArray = array();
+        $now = new DateTime();
+        switch ($field) {
+            case "status":
+                if(is_numeric($newValue)){
+                    $status = $entityManager->getRepository(ReservationStatus::class)->findOneBy(array('id' => $newValue));
+                }else{
+                    $status = $entityManager->getRepository(ReservationStatus::class)->findOneBy(array('name' => $newValue));
+                }
+                if($status == null){
+                    $responseArray[] = array(
+                        'result_message' => "Status not valid",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+                $reservation->SetStatus($status);
+                $notesApi->addNote($reservation->getId(), "Status Changed to " .$newValue. " at " . $now->format("Y-m-d H:i"));
+
+                if(strcmp($status->getName(), 'cancelled')===0){
+                    $blockedRoomApi->deleteBlockedRoomByReservation($reservation->getId());
+                }
+                break;
+            case "check_in_status":
+                if (strcmp($newValue, "checked_in") == 0) {
+                    $logger->info("checked_in");
+                    if ($reservationApi->isEligibleForCheckIn($reservation)) {
+                        $reservation->setCheckInStatus($newValue);
+                        $reservation->setCheckInTime($now->format("H:i"));
+                        $notesApi->addNote($reservation->getId(), "Checked-in at " . $now->format("H:i"));
+                    } else {
+                        $responseArray[] = array(
+                            'result_message' => "Please make sure the guest Id and phone number is captured",
+                            'result_code' => 1
+                        );
+                        $logger->info(print_r($responseArray, true));
+                        return new JsonResponse($responseArray, 200 , array());
+                    }
+
+                } else if (strcmp($newValue, "checked_out") == 0) {
+                    $logger->info("checked_out");
+                    $due = $reservationApi->getAmountDue($reservation);
+
+                    if ($due == 0 || $defectApi->isDefectEnabled("view_reservation_11")) {
+                        $reservation->setCheckInStatus($newValue);
+                        $reservation->setCheckOutTime($now->format("H:i"));
+                        $notesApi->addNote($reservation->getId(), "Checked-out at " . $now->format("H:i"));
+                    } else {
+                        $responseArray[] = array(
+                            'result_message' => "Please make sure the guest has settled their balance",
+                            'result_code' => 1
+                        );
+                        $logger->info(print_r($responseArray, true));
+                        return new JsonResponse($responseArray, 200, array());
+                    }
+                } else {
+                    $responseArray[] = array(
+                        'result_message' => "incorrect check-in status provided",
+                        'result_code' => 1
+                    );
+                    $logger->info(print_r($responseArray, true));
+                    return new JsonResponse($responseArray, 200, array());
+                }
+                break;
+            default:
+                $responseArray[] = array(
+                    'result_message' => "Incorrect update field provided",
+                    'result_code' => 1
+                );
+                $logger->info(print_r($responseArray, true));
+                return new JsonResponse($responseArray, 200, array());
+        }
+        $response = $reservationApi->updateReservation($reservation);
+        return new JsonResponse($response, 200, array());
+    }
+
     /**
      * @Route("api/reservations/{reservationId}/update_checkin_time/{checkInTime}/{checkOutTime}")
      */
@@ -324,6 +427,26 @@ class ReservationController extends AbstractController
     }
 
     /**
+     * @Route("api/json/reservations/update/dates")
+     */
+    public function updateReservationDatesJson(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $parameters = json_decode($request->getContent(), true);
+        $reservation = $reservationApi->getReservation($parameters["id"]);
+        if(is_array($reservation)){
+            return new JsonResponse($reservation, 200, array());
+        }
+        $response = $reservationApi->updateReservationDate($reservation, $parameters["check_in_date"], $parameters["check_out_date"], $blockedRoomApi);
+
+        return new JsonResponse($response, 200, array());
+    }
+
+    /**
      * @Route("api/reservations/{reservationId}/update_room/{roomId}")
      */
     public function updateReservationRoom($reservationId, $roomId, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
@@ -338,6 +461,25 @@ class ReservationController extends AbstractController
         $response = new JsonResponse($response, 200, array());
         $response->setCallback($callback);
         return $response;
+    }
+
+    /**
+     * @Route("api/json/reservations/update_room")
+     */
+    public function updateReservationRoomJson(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+
+        $reservation = $reservationApi->getReservation($parameters['reservation_id']);
+        if(is_array($reservation)){
+            return new JsonResponse($reservation, 200, array());
+        }
+        $response = $reservationApi->updateReservationRoom($reservation, $parameters['room_id']);
+        return new JsonResponse($response, 200, array());
     }
 
     /**
@@ -604,6 +746,20 @@ class ReservationController extends AbstractController
     }
 
     /**
+     * @Route("admin_api/json/reservations/blockguest")
+     */
+    public function blockGuestJson(LoggerInterface $logger, Request $request,GuestApi $guestApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+        $response = $guestApi->blockGuest($parameters['reservations_id'], $parameters['reason']);
+        return new JsonResponse($response , 200, array());
+    }
+
+    /**
      * @Route("admin_api/reservation_addon/{addOnId}/delete")
      */
     public function removeAddOnFromReservation($addOnId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
@@ -617,6 +773,29 @@ class ReservationController extends AbstractController
         $response = new JsonResponse($response , 204, array());
         $response->setCallback($callback);
         return $response;
+    }
+
+    /**
+     * @Route("admin_api/json/reservation_addon/delete")
+     */
+    public function removeAddOnFromReservationJson(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('delete')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+
+        $response = $addOnsApi->removeAddOnFromReservation($parameters['add_on_id']);
+        if ($response[0]['result_code'] === 0) {
+            return new JsonResponse($response , 204, array());
+        }else{
+            $responseArray[] = array(
+                'result_message' => $response[0]['result_message'],
+                'result_code' => 1
+            );
+            return new JsonResponse($responseArray , 200, array());
+        }
     }
 
     /**

@@ -41,12 +41,6 @@ $(document).ready(function () {
 
 function onlyShowEnabledFunctionalityMenus(){
     $(".toggle-menu").addClass("display-none");
-    let enabledFunctionality = getEnabledFunctionality();
-
-}
-
-
-function getEnabledFunctionality() {
     isUserLoggedIn();
     let url = "/no_auth/getEnabledFuntionality";
 
@@ -65,8 +59,32 @@ function getEnabledFunctionality() {
             console.log(errorThrown);
         }
     });
-
 }
+
+function enableFunction(functionName, elementID){
+    isUserLoggedIn();
+    let url = "/no_auth/isFunctionalityEnabled/" + functionName;
+    $.ajax({
+        url : url,
+        type: "get",
+        success: function(data)
+        {
+            if(data.enabled === true){
+                console.log("function is enabled " + data.enabled);
+                $('#' + elementID).removeClass("display-none");
+            }else{
+                console.log("function not enabled " + data.enabled);
+
+                $('#' + elementID).addClass("display-none");
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            console.log(errorThrown);
+        }
+    });
+}
+
 
 function hideLoader() {
     $("body").removeClass("startup-loading");

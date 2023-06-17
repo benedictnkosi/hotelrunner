@@ -119,7 +119,7 @@ function bindConfigElements() {
     $("#config_guest_form").validate({
         // Specify validation rules
         rules: {
-            guest_name: "required",
+
         }, submitHandler: function () {
             getGuests($('#guest_name').val().trim());
         }
@@ -173,6 +173,7 @@ function bindConfigElements() {
             createMessageTemplate();
         }
     });
+
 }
 
 function createUpdateRoom() {
@@ -519,8 +520,7 @@ function populateFormWithRoom(event) {
                 //show uploaded images
                 $("#uploaded_images_div").html(response[0].uploaded_images);
                 $('#imageUploaderDiv').removeClass("display-none");
-                //$('#icalDiv').removeClass("display-none");
-
+                enableFunction("room_channels", "icalDiv");
                 $(".remove_link_button").click(function (event) {
                     event.stopImmediatePropagation();
                     removeChannel(event);
@@ -728,6 +728,9 @@ function getEmployees() {
 }
 
 function getGuests(filter = "*") {
+    if(filter.length === 0){
+        filter = "*";
+    }
     isUserLoggedIn();
     let url = "/api/config/guests/" + filter;
     $("body").addClass("loading");
@@ -741,7 +744,7 @@ function getGuests(filter = "*") {
         contentType: "application/json; charset=UTF-8",
         success: function (data) {
             $("body").removeClass("loading");
-            $("#guest_div").html(data.html);
+            $("#guests_table").html(data.html);
             $('.guest_field').unbind('click')
             $(".guest_field").change(function (event) {
                 updateGuest(event);
@@ -814,12 +817,12 @@ function updateGuest(event) {
         success: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
+            if (response.result_code === 0) {
                 getGuests();
-                showResSuccessMessage("configuration", response[0].result_message);
+                showResSuccessMessage("configuration", response.result_message);
             } else {
 
-                showResErrorMessage("configuration", response[0].result_message);
+                showResErrorMessage("configuration", response.result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -898,34 +901,6 @@ function deleteEmployee(event) {
     });
 }
 
-function deleteGuest(event) {
-    let guestId = event.target.getAttribute("data-guest-id");
-    $("body").addClass("loading");
-    isUserLoggedIn();
-    let url = "/admin_api/guest/delete/" + guestId;
-
-    $.ajax({
-        type: "get",
-        url: url,
-        crossDomain: true,
-        cache: false,
-        dataType: "jsonp",
-        contentType: "application/json; charset=UTF-8",
-        success: function (data) {
-            $("body").removeClass("loading");
-            showResSuccessMessage("configuration", data[0].result_message);
-            getGuests();
-        },
-        error: function (xhr) {
-            $("body").removeClass("loading");
-            if (xhr.status === 403) {
-                showResErrorMessage("configuration", "Unauthorised to use this function");
-            }else{
-                showResErrorMessage("configuration", "Server Error");
-            }
-        }
-    });
-}
 
 function getMessageTemplates() {
     isUserLoggedIn();
@@ -1307,6 +1282,34 @@ function removeChannel(event) {
             }else{
                 showResErrorMessage("configuration", "Server Error");
             }
+        }
+    });
+}
+
+function deleteGuest(event) {
+    let guestId = event.target.getAttribute("data-guest-id");
+    $("body").addClass("loading");
+    isUserLoggedIn();
+    let url = "/admin_api/guest/delete/" + guestId;
+
+    $.ajax({
+        url : url,
+        type: "DELETE",
+        data : "",
+        complete: function(response)
+        {
+            $("body").removeClass("loading");
+            if (response.status === 204) {
+                getGuests($('#guest_name').val().trim());
+                showResSuccessMessage("configuration", "Successfully removed guest");
+            } else {
+                showResErrorMessage("configuration", response.result_message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            $("body").removeClass("loading");
+            showResErrorMessage("configuration", errorThrown);
         }
     });
 }

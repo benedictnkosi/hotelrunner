@@ -149,6 +149,31 @@ class HomeController extends AbstractController
     }
 
     /**
+     * @Route("no_auth/isFunctionalityEnabled/{functionName}")
+     */
+    public function isFunctionalityEnabled($functionName, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__ );
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        $functionality = $entityManager->getRepository(Functionality::class)->findOneBy(array('name' => $functionName));
+        if($functionality !== null){
+            $response = array(
+                'enabled' => $functionality->isEnabled(),
+                'result_code' => 0,
+            );
+        }else{
+            $response = array(
+                'enabled' => false,
+                'result_code' => 1,
+            );
+        }
+        return new JsonResponse($response , 200, array());
+    }
+
+    /**
      * @Route("no_auth/getEnabledFuntionality")
      */
     public function getEnabledFunctionality(LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager): Response
@@ -164,7 +189,6 @@ class HomeController extends AbstractController
 
         $logger->info($jsonContent);
         return new JsonResponse($jsonContent , 200, array(), true);
-        return $response;
     }
 
     /**
