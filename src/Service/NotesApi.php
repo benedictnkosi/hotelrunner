@@ -60,7 +60,7 @@ class NotesApi
         return $responseArray;
     }
 
-    public function getReservationNotes($resId)
+    public function getReservationNotes($resId): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__ );
         $responseArray = array();

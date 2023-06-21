@@ -39,7 +39,7 @@ class DatabaseHelper
     }
 
 
-    public function execute($sql)
+    public function execute($sql): void
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
 

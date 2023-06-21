@@ -209,6 +209,44 @@ class GuestApi
             }
 
             $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+
+
+            //validate SOuth african ID number
+            if (is_numeric($IdNumber) && strlen($IdNumber) === 13) {
+                $num_array = str_split($IdNumber);
+
+                // Validate the day and month
+
+                $id_month = $num_array[2] . $num_array[3];
+
+                $id_day = $num_array[4] . $num_array[5];
+
+                if ( $id_month < 1 || $id_month > 12) {
+                    $errors = true;
+                }
+
+                if ( $id_day < 1 || $id_day > 31) {
+                    $errors = true;
+                }
+
+                // Validate gender
+                $id_gender = $num_array[6] >= 5 ? 'male' : 'female';
+                if ($guest->getName() && strtolower($guest->getName()) !== $id_gender) {
+                    $errors = true;
+                }
+
+                // citizenship as per id number
+                $id_foreigner = $num_array[10];
+
+                // citizenship as per submission
+                if ( ( $guest->getName() || $id_foreigner ) && (int)$guest->getName() !== (int)$id_foreigner ) {
+                    $errors = true;
+                }
+            }else{
+                $errors = true;
+            }
+
+
             if ($guest === null) {
                 $responseArray = array(
                     'result_code' => 1,

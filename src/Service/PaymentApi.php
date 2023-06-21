@@ -120,6 +120,15 @@ class PaymentApi
             $reservationIdsArray = explode(",", $resId);
             $numberOfReservations = count($reservationIdsArray);
 
+            //validate the amount is positive
+            if(!is_numeric($amount) || intval($amount) < 1){
+                $responseArray[] = array(
+                    'result_code' => 1,
+                    'result_message' => 'Amount must be numeric and can not be less than 1'
+                );
+                return $responseArray;
+            }
+
             foreach ($reservationIdsArray as $resId) {
                 $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
                 if($reservation == null){
@@ -153,6 +162,17 @@ class PaymentApi
                         $responseArray[] = array(
                             'result_code' => 1,
                             'result_message' => 'Card payment reference format incorrect'
+                        );
+                        return $responseArray;
+                    }
+                }
+
+                //validate that the ref is not longer than 30 characters
+                if(strcmp($channel, "transfer") == 0){
+                    if (strlen($reference) > 30 || strlen($reference) < 4){
+                        $responseArray[] = array(
+                            'result_code' => 1,
+                            'result_message' => 'Payment reference for transfer must be between 4 and 30 characters'
                         );
                         return $responseArray;
                     }
@@ -198,7 +218,7 @@ class PaymentApi
                     //is amount 50% or more of the nightly price
                     $halfRoomPrice = intval($reservation->getRoom()->getPrice())/2;
 
-                    if($halfRoomPrice > intval($amount)){
+                    if($halfRoomPrice > intval($amountPerReservation)){
                         $responseArray[] = array(
                             'result_code' => 1,
                             'result_message' => 'Amount must be at least 50% of the room price'
@@ -226,7 +246,7 @@ class PaymentApi
                         $now = new DateTime();
                         if (strcmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) === 0) {
                             $notificationApi = new NotificationApi($this->em, $this->logger);
-                            $notificationApi->updateAdsNotification($reservation->getRoom()->getProperty()->getId());
+                            //$notificationApi->updateAdsNotification($reservation->getRoom()->getProperty()->getId());
                         }
 
 
@@ -244,7 +264,7 @@ class PaymentApi
                             //send email to guest house
                             $emailBody = file_get_contents(__DIR__ . '/../email_template/failed_payment_to_host.html');
                             $emailBody = str_replace("reservation_id", $reservation->getId(), $emailBody);
-                            $emailBody = str_replace("amount_paid", $amount, $emailBody);
+                            $emailBody = str_replace("amount_paid", $amountPerReservation, $emailBody);
                             $emailBody = str_replace("property_name", $reservation->getRoom()->getProperty()->getName(), $emailBody);
 
                             $communicationApi->sendEmailViaGmail(ALUVEAPP_ADMIN_EMAIL, $reservation->getRoom()->getProperty()->getEmailAddress(), $emailBody, 'Aluve App - Adding payment failed');
@@ -252,7 +272,7 @@ class PaymentApi
                             //send email to guest
                             $emailBody = file_get_contents(__DIR__ . '/../email_template/failed_payment_to_guest.html');
                             $emailBody = str_replace("reservation_id", $reservation->getId(), $emailBody);
-                            $emailBody = str_replace("amount_paid", $amount, $emailBody);
+                            $emailBody = str_replace("amount_paid", $amountPerReservation, $emailBody);
                             $emailBody = str_replace("property_name", $reservation->getRoom()->getProperty()->getName(), $emailBody);
                             $emailBody = str_replace("property_email", $reservation->getRoom()->getProperty()->getEmailAddress(), $emailBody);
                             $emailBody = str_replace("property_number", $reservation->getRoom()->getProperty()->getPhoneNumber(), $emailBody);

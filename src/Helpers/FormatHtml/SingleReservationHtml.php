@@ -79,7 +79,7 @@ class SingleReservationHtml
         $stayCount = $guestApi->getGuestStaysCount($guest->getId());
 
         $htmlString .= '<div class="res-details"><div><div>
-						<h4 class="guest-name">' . $guest->getName() .'</h4>';
+						<h4 class="guest-name">' . $guest->getName();
 
         //reservation origin
         $this->logger->debug("HTML output - reservation origin " . $reservation->getId());
@@ -89,6 +89,7 @@ class SingleReservationHtml
         } else {
             $htmlString .= '<img title="' . $reservation->getOrigin() . '" src="/admin/images/' . $reservation->getOrigin() . '.png" class="icon-small-image"></img>';
         }
+        
 
         if (strcasecmp($reservation->getOrigin(), "website") === 0) {
             if ($this->defectApi->isDefectEnabled("view_reservation_5")) {
@@ -107,7 +108,8 @@ class SingleReservationHtml
             $rooms_disabled = "";
         }
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-home glyphicon-small-icon" > 
-<select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input">';
+<select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input" '.$rooms_disabled.'>';
+
         foreach ($rooms as $roomEntity) {
             if ($roomEntity->getId() === $room->getId()) {
                 if ($this->defectApi->isDefectEnabled("view_reservation_6")) {
@@ -334,6 +336,7 @@ class SingleReservationHtml
             $addOnsHTml .= '<p class="small-font-italic">' . $addOn->getDate()->format("d-M") . " - " . $addOn->getQuantity() . " x " . $addOn->getAddOn()->getName() . " @ R " . $addOn->getAddOn()->getPrice() . ' <a href="javascript:void(0)" data-addon-id="' . $addOn->getId() . '" class="delete_addon_link">delete</a></p>';
             $totalPriceForAllAdOns += (intVal($addOn->getAddOn()->getPrice()) * intval($addOn->getQuantity()));
         }
+
         //add addOn for the weekend nights
         $numberOfWeekendNights = $this->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
         $addOnsHTml .= '<p class="small-font-italic">' . $now->format("d-M") . " - " . $numberOfWeekendNights . " x Weekend nights @ R " . "50.00" . '</p>';
@@ -460,7 +463,7 @@ class SingleReservationHtml
                 $htmlString .= '
                 <div class="right-side-action-block">
                 <input id="guest_id_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
-										 class="textbox  display-none block-display reservation_input" placeholder="Passport\ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID\Passport</div></div>';
+										 class="textbox  display-none block-display reservation_input" placeholder="South African ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID Number</div></div>';
             }
         }
 

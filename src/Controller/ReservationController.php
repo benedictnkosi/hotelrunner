@@ -604,12 +604,14 @@ class ReservationController extends AbstractController
      * @Route("/no_auth/import/queue")
      * @throws \Exception
      */
-    public function importQueueReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi, RoomApi $roomApi): Response
+    public function processQueueMessage( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, PaymentApi $paymentApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Methods: " . __METHOD__);
-        if (!$request->isMethod('get')) {
+        if (!$request->isMethod('POST')) {
+
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
+
         $logger->info("queue message" . $request->get("message"));
 
         //get uuid from the message
@@ -627,7 +629,8 @@ class ReservationController extends AbstractController
                 'result_message' => "guid length is not 36",
             );
         }else{
-            if(strlen($message) == 421){
+            $logger->info("message length  " . strlen($message));
+            if(strlen($message) == 431){
                 $response = $reservationApi->uploadReservations($message, $request);
             }else if(strlen($message) == 36){
                 $response = $paymentApi->uploadPayment($message);
