@@ -27,6 +27,10 @@ function showBackToReservationsLink() {
         }
     });
 }
+function hideMessages(divName){
+    $("#"+divName+"_error_message_div").addClass("display-none");
+    $("#"+divName+"_success_message_div").addClass("display-none");
+}
 
 function showResErrorMessage(divName, message){
     $("body").removeClass("loading");

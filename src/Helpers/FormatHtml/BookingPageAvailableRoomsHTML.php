@@ -3,6 +3,7 @@
 namespace App\Helpers\FormatHtml;
 
 use App\Entity\RoomBeds;
+use App\Service\DefectApi;
 use App\Service\RoomApi;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,11 +14,13 @@ class BookingPageAvailableRoomsHTML
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
     }
 
     public function formatHtml($availableRooms): string
@@ -28,7 +31,7 @@ class BookingPageAvailableRoomsHTML
         $numberOfRooms = 0;
         if($availableRooms === null){
             $htmlString .='<option value="No Rooms Available for Selected Dates"
-                                                data-thumbnail="'.PROTOCOL.'://'.SERVER_NAME.'/public/room/image/noroom.jpg" data-price="0" data-roomId="0"  data-sleeps="0" data-beds="">No Rooms Available for Selected Dates
+                                                data-thumbnail="/room/image/noroom.jpg" data-price="0" data-roomId="0"  data-sleeps="0" data-beds="">No Rooms Available for Selected Dates
                                         </option>';
             return $htmlString;
         }
@@ -51,12 +54,16 @@ class BookingPageAvailableRoomsHTML
                 }
             }
 
-            $beds = substr($beds,0,strlen($beds) - 1);
+            if($this->defectApi->isDefectEnabled("create_reservation_9")) {
+                $beds = "Queen";
+            }else{
+                $beds = substr($beds,0,strlen($beds) - 1);
+            }
 
             $this->logger->debug("found beds string: " . $beds);
             $numberOfRooms++;
             $htmlString .= '<option value="' . $availableRoom->getName() . '"
-                                                data-thumbnail="'.PROTOCOL.'://'.SERVER_NAME.'/public/room/image/thumb' . $roomDefaultImage . '" data-sleeps="' . $availableRoom->getSleeps() . '" data-price="' . $availableRoom->getPrice() . '" data-roomId="' . $availableRoom->getId() . '" data-beds="' . $beds . '">' . $availableRoom->getName() . '
+                                                data-thumbnail="/room/image/thumb' . $roomDefaultImage . '" data-sleeps="' . $availableRoom->getSleeps() . '" data-price="' . $availableRoom->getPrice() . '" data-roomId="' . $availableRoom->getId() . '" data-beds="' . $beds . '">' . $availableRoom->getName() . '
                                         </option>';
 
         }

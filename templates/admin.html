@@ -121,14 +121,15 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 </head>
 <body>
 <div id="dialog-confirm" title="Are you sure you want to perform this action" class="display-none">
-    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure sure sure?</p>
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Are you sure sure sure?
+    </p>
 </div>
 <div id="notifications-div"></div>
 
 <nav class="navbar">
     <!-- LOGO -->
     <div class="logo"><a href="#" onclick="void(0)" class="active menuICons mobileMenuIcon" title="calendar">
-        <i style="display: inline;" >Hotel Runner</i>
+        <i style="display: inline;">Hotel Runner</i>
 
     </a></div>
 
@@ -139,28 +140,34 @@ License URL: http://creativecommons.org/licenses/by/3.0/
         <label for="checkbox_toggle" class="hamburger">&#9776;</label>
         <!-- NAVIGATION MENUS -->
         <div class="menu">
-            <!--<li><a href="javascript:void(0)" onclick="updateView('calendar');"
-                   class="active menuICons mobileMenuIcon" title="calendar">
+            <li id="menu_calendar" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                       onclick="updateView('calendar');"
+                                                                       class="active menuICons mobileMenuIcon"
+                                                                       title="calendar">
                 <i style="display: inline;" class="desktopOnlyMenu">Calendar</i>
 
             </a></li>
-            <li><a href="javascript:void(0)"
-                   onclick="updateView('upcoming-reservations');"
-                   class="active menuICons mobileMenuIcon" title="Bookings">
+            <li id="menu_reservations" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                           onclick="updateView('upcoming-reservations');"
+                                                                           class="active menuICons mobileMenuIcon"
+                                                                           title="Bookings">
                 <i style="display: inline;" class="desktopOnlyMenu">Reservations</i>
-            </a></li>-->
-            <li><a href="javascript:void(0)"
-                   onclick="updateView('configuration');"
-                   class="active menuICons mobileMenuIcon" title="Configuration">
+            </a></li>
+            <li id="menu_configuration" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                            onclick="updateView('configuration');"
+                                                                            class="active menuICons mobileMenuIcon"
+                                                                            title="Configuration">
                 <i style="display: inline;" class="desktopOnlyMenu">Configuration</i>
             </a></li>
-            <!--<li><a href="javascript:void(0)" onclick="updateView('other-tabs');"
-                   class="active menuICons mobileMenuIcon" title="Other">
+            <li id="menu_more" class="toggle-menu display-none"><a href="javascript:void(0)"
+                                                                   onclick="updateView('other-tabs');"
+                                                                   class="active menuICons mobileMenuIcon"
+                                                                   title="Other">
                 <i style="display: inline;" class="desktopOnlyMenu">More...</i>
-            </a></li>-->
-            <li><a href="javascript:void(0)" onclick="logout();"
-
-                   class="active menuICons mobileMenuIcon" title="signout">
+            </a></li>
+            <li id="menu_signout" class="toggle-menu display-none"><a href="javascript:void(0)" onclick="logout();"
+                                                                      class="active menuICons mobileMenuIcon"
+                                                                      title="signout">
                 <i style="display: inline;" class="desktopOnlyMenu">Sign Out</i>
             </a></li>
         </div>
@@ -243,25 +250,25 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             </div>
 
             <div class="profile-ser">
-                <div class="profile-ser-grids-25 filter-reservations clickable"
+                <div class="profile-ser-grids-25 filter-reservations clickable toggle-menu display-none"
                      id="reservations_all">
                     <img class="menu_icon_image" src="/admin/images/menu_bookings.png" title="Up Coming"></img>
                     <i class="desktopOnlyMenu">Upcoming Reservations</i>
                 </div>
 
                 <div
-                        class="profile-ser-grids-25 agileinfo  filter-reservations clickable"
+                        class="profile-ser-grids-25 agileinfo  filter-reservations clickable toggle-menu display-none"
                         id="reservations_past_reservations">
                     <img class="menu_icon_image" src="/admin/images/history.png" title="History"></img><i
                         class="desktopOnlyMenu">History
                 </i>
                 </div>
-                <div class="profile-ser-grids-25 agileinfo  filter-reservations clickable"
+                <div class="profile-ser-grids-25 agileinfo filter-reservations clickable toggle-menu display-none"
                      id="reservations_pending_reservations">
                     <img class="menu_icon_image" src="/admin/images/pending.png" title="Pending"></img><i
                         class="desktopOnlyMenu">Pending</i>
                 </div>
-                <div class="profile-ser-grids-25 agileinfo  filter-reservations clickable"
+                <div class="profile-ser-grids-25 agileinfo  filter-reservations clickable toggle-menu display-none"
                      id="reservations_upload_reservations">
                     <img class="menu_icon_image" src="/admin/images/upload.png" title="Upload"></img><i
                         class="desktopOnlyMenu">Upload</i>
@@ -273,9 +280,9 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                 <div class="flex-bottom">
                     <div id="reservation_success_message_div"
                          class="flex1 display-none">
-                        <h5 id="reservation_success_message"  style="white-space: pre-wrap;"></h5>
+                        <h5 id="reservation_success_message" style="white-space: pre-wrap;"></h5>
                     </div>
-                    <div id="reservation_error_message_div" class="flex2 display-none" >
+                    <div id="reservation_error_message_div" class="flex2 display-none">
                         <h5 id="reservation_error_message" style="white-space: pre-wrap;"></h5>
                     </div>
                 </div>
@@ -314,59 +321,59 @@ License URL: http://creativecommons.org/licenses/by/3.0/
             <div class="profile-top">
                 <div class="col-md-7 profile-top-right">
                     <h5 id="configuration-heading">Configuration</h5>
-                    <!--<a href="javascript:void(0)" class="refresh_items_link" id="refresh_configuration_button"
+                    <a href="javascript:void(0)" class="refresh_items_link" id="refresh_configuration_button"
                     ><img class="menu_icon_image-5em"
                           src="/admin/images/refresh.png"></img><i
-                            class="desktopOnlyMenu"></i></a>-->
+                            class="desktopOnlyMenu"></i></a>
                 </div>
                 <div class="clearfix"></div>
             </div>
 
             <div class="profile-ser">
-                <div class="profile-ser-grids-15 filter-configuration clickable"
+                <div class="profile-ser-grids-15 filter-configuration clickable toggle-menu display-none"
                      id="configuration_rooms">
                     <img class="menu_icon_image" src="/admin/images/menu_rooms.png" title="Rooms"></img>
                     <i class="desktopOnlyMenu">Rooms</i>
                 </div>
-                <div class="profile-ser-grids-15 filter-configuration clickable"
+                <div class="profile-ser-grids-15 filter-configuration clickable toggle-menu display-none"
                      id="configuration_add_ons">
                     <img class="menu_icon_image" src="/admin/images/menu_add_ons.png" title="Add-Ons"></img><i
                         class="desktopOnlyMenu">Add
                     Ons</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_employees">
                     <img class="menu_icon_image" src="/admin/images/employee.png" title="Employees"></img><i
                         class="desktopOnlyMenu">Employees</i>
                 </div>
-                <!--<div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                <div
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_guests">
                     <img class="menu_icon_image" src="/admin/images/employee.png" title="Guests"></img><i
                         class="desktopOnlyMenu">Guests</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_messages">
                     <img class="menu_icon_image" src="/admin/images/messages.jpg" title="Messages"></img><i
                         class="desktopOnlyMenu">Messages</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none "
                         id="configuration_terms">
                     <img class="menu_icon_image" src="/admin/images/terms.png" title="Terms & Conditions"></img><i
                         class="desktopOnlyMenu">Terms & Conditions</i>
                 </div>
                 <div
-                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable"
+                        class="profile-ser-grids-15 agileinfo  filter-configuration clickable toggle-menu display-none"
                         id="configuration_synch_logs">
                     <img class="menu_icon_image" src="/admin/images/logs.jpg" title="Channel Logs"></img><i
                         class="desktopOnlyMenu">Channel Logs</i>
-                </div>-->
+                </div>
                 <div class="clearfix"></div>
             </div>
-            </div>
+
 
             <div class="flexible">
                 <div class="flex-bottom">
@@ -399,7 +406,8 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
                         <label>Description (use {} around the words you want bold e.g {WIFI}</label>
                         <div>
-                        <textarea type="text" name="room_description" id="room_description" rows="20" minlength="50" maxlength="500"
+                        <textarea type="text" name="room_description" id="room_description" rows="20" minlength="50"
+                                  maxlength="500"
                                   required></textarea>
                         </div>
 
@@ -481,10 +489,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
                     <div id="icalDiv" class="display-none">
                         <h5>Manage Calendar Sync</h5>
-                        <!--<a href="javascript:void(0)" class="refresh_items_link" id="refresh_ical_button"
+                        <a href="javascript:void(0)" class="refresh_items_link" id="refresh_ical_button"
                         ><img class="menu_icon_image-5em"
                               src="/admin/images/refresh.png" title="Import Calendar"></img><i
-                                class="desktopOnlyMenu"></i></a>-->
+                                class="desktopOnlyMenu"></i></a>
                         <h5 id="room_export_link"></h5>
 
                         <div id="links_div"></div>
@@ -568,7 +576,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                     <div id="employee_div"></div>
 
 
-
                 </form>
 
             </div>
@@ -577,17 +584,20 @@ License URL: http://creativecommons.org/licenses/by/3.0/
                     <h3>Manage Guests</h3>
 
                     <h4>Search for Guest</h4>
-                    <div class="addon-left-div">
+                    <div>
                         <label>Guest Name</label>
                         <input type="text" id="guest_name" name="guest_name" placeholder="e.g. Benedict"
                                maxlength="50"
-                               required/>
+                               />
                     </div>
                     <div>
                         <span><input type="submit" value="Search" id="config_guest_submit" class="button-50"></span>
                     </div>
 
-                    <div id="guest_div"></div>
+                    <table id="guests_table" style="width: 100%">
+                    </table>
+
+
                     <hr>
 
                 </form>
@@ -662,317 +672,319 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
             </div>
         </div>
+    </div>
 
 
-        <div class="profile-w3layouts toggleable display-none"
-             id="div-other-tabs">
+    <div class="profile-w3layouts toggleable display-none"
+         id="div-other-tabs">
+        <div class="profile-top">
+            <div class="col-md-7 profile-top-right">
+                <h5>More Features</h5>
+                <a href="javascript:void(0)" class="refresh_items_link" id="refresh_more_tab_button"
+                ><img class="menu_icon_image-5em"
+                      src="/admin/images/refresh.png"></img><i
+                        class="desktopOnlyMenu"></i></a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+
+        <div class="profile-ser">
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="view_blocked_rooms_tab">
+                <img class="menu_icon_image" src="/admin/images/menu_blocked.png" title="Block Room"></img>
+                <i class="desktopOnlyMenu">Blocked Rooms</i>
+            </div>
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="block_a_room_tab">
+                <img class="menu_icon_image" src="/admin/images/menu_block_room.png" title="Block A room"></img><i
+                    class="desktopOnlyMenu">Block A Room</i>
+            </div>
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="cleaning_tab">
+                <img class="menu_icon_image" src="/admin/images/menu_cleaning.png" title="Cleaning"></img><i
+                    class="desktopOnlyMenu">Cleaning</i>
+            </div>
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="whatsapp_tab">
+                <img class="menu_icon_image" src="/admin/images/whatsapp.png" title="Whatsapp"></img><i
+                    class="desktopOnlyMenu">Whatsapp</i>
+            </div>
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="occupancy_tab">
+                <img class="menu_icon_image" src="/admin/images/menu_stats.png" title="Occupancy"></img><i
+                    class="desktopOnlyMenu">Occupancy</i>
+            </div>
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="cash_report_tab">
+                <img class="menu_icon_image" src="/admin/images/Iconsmind-Outline-Money-2.ico"
+                     title="Income Report"></img><i
+                    class="desktopOnlyMenu">Income Report</i>
+            </div>
+
+            <div class="profile-ser-grids-15 filter-other-tabs clickable  toggle-menu display-none"
+                 id="load_shedding_tab">
+                <img class="menu_icon_image" src="/admin/images/Iconsmind-Outline-Money-2.ico"
+                     title="Load Shedding"></img><i
+                    class="desktopOnlyMenu">Load Shedding</i>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+
+        <div class="flexible">
+            <div class="flex-bottom">
+                <div id="block_success_message_div"
+                     class="flex1 display-none">
+                    <h5 id="block_success_message"></h5>
+                </div>
+                <div id="block_error_message_div" class="flex2 display-none">
+                    <h5 id="block_error_message"></h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-cash-report">
             <div class="profile-top">
                 <div class="col-md-7 profile-top-right">
-                    <h5>More Features</h5>
-                    <a href="javascript:void(0)" class="refresh_items_link" id="refresh_more_tab_button"
-                    ><img class="menu_icon_image-5em"
-                          src="/admin/images/refresh.png"></img><i
-                            class="desktopOnlyMenu"></i></a>
+                    <h5>
+                        Income Report
+                    </h5>
                 </div>
                 <div class="clearfix"></div>
             </div>
 
 
-            <div class="profile-ser">
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="view_blocked_rooms_tab">
-                    <img class="menu_icon_image" src="/admin/images/menu_blocked.png" title="Block Room"></img>
-                    <i class="desktopOnlyMenu">Blocked Rooms</i>
-                </div>
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="block_a_room_tab">
-                    <img class="menu_icon_image" src="/admin/images/menu_block_room.png" title="Block A room"></img><i
-                        class="desktopOnlyMenu">Block A Room</i>
-                </div>
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="cleaning_tab">
-                    <img class="menu_icon_image" src="/admin/images/menu_cleaning.png" title="Cleaning"></img><i
-                        class="desktopOnlyMenu">Cleaning</i>
-                </div>
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="whatsapp_tab">
-                    <img class="menu_icon_image" src="/admin/images/whatsapp.png" title="Whatsapp"></img><i
-                        class="desktopOnlyMenu">Whatsapp</i>
-                </div>
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="occupancy_tab">
-                    <img class="menu_icon_image" src="/admin/images/menu_stats.png" title="Occupancy"></img><i
-                        class="desktopOnlyMenu">Occupancy</i>
-                </div>
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="cash_report_tab">
-                    <img class="menu_icon_image" src="/admin/images/Iconsmind-Outline-Money-2.ico"
-                         title="Income Report"></img><i
-                        class="desktopOnlyMenu">Income Report</i>
+            <div class="profile-ser " id="cash_report_div">
+
+                <div>
+                    <h5>Select payment Channel</h5>
+                    <select name="select-payment-channel" id="select-payment-channel">
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="payfast">Payfast</option>
+                    </select>
                 </div>
 
-                <div class="profile-ser-grids-15 filter-other-tabs clickable"
-                     id="load_shedding_tab">
-                    <img class="menu_icon_image" src="/admin/images/Iconsmind-Outline-Money-2.ico"
-                         title="Load Shedding"></img><i
-                        class="desktopOnlyMenu">Load Shedding</i>
-                </div>
-
-                <div class="clearfix"></div>
-            </div>
-
-
-            <div class="flexible">
-                <div class="flex-bottom">
-                    <div id="block_success_message_div"
-                         class="flex1 display-none">
-                        <h5 id="block_success_message"></h5>
-                    </div>
-                    <div id="block_error_message_div" class="flex2 display-none">
-                        <h5 id="block_error_message"></h5>
-                    </div>
-                </div>
-            </div>
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-cash-report">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            Income Report
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-
-                <div class="profile-ser " id="cash_report_div">
-
-                    <div>
-                        <h5>Select payment Channel</h5>
-                        <select name="select-payment-channel" id="select-payment-channel">
-                            <option value="cash">Cash</option>
-                            <option value="card">Card</option>
-                            <option value="transfer">Transfer</option>
-                            <option value="payfast">Payfast</option>
-                        </select>
-                    </div>
-
-                    <h5>Start and End Date</h5>
-                    <span class="glyphicon glyphicon-calendar glyphicon-small-icon">
+                <h5>Start and End Date</h5>
+                <span class="glyphicon glyphicon-calendar glyphicon-small-icon">
 						                <input id="cashReportDate" type="text" name="cashReportDate"
                                                class="input-as-text date-picker check_in_date_input">
 						            </span>
-                    <h1 id="total_cash_amount_h1">R0.00</h1>
+                <h1 id="total_cash_amount_h1">R0.00</h1>
 
-                    <input type="checkbox" id="groupPayments" name="groupPayments" value="groupPayments">
-                    <label for="groupPayments"> Group Payments?</label><br>
+                <input type="checkbox" id="groupPayments" name="groupPayments" value="groupPayments">
+                <label for="groupPayments"> Group Payments?</label><br>
 
-                    <table id="cash-report-by-day" style="width: 100%">
-                    </table>
+                <table id="cash-report-by-day" style="width: 100%">
+                </table>
 
+            </div>
+        </div>
+
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-occupancy">
+            <div class="profile-top">
+                <div class="col-md-7 profile-top-right">
+                    <h5>
+                        Ocupancy
+                    </h5>
                 </div>
+                <div class="clearfix"></div>
             </div>
 
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-occupancy">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            Ocupancy
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
+            <div class="profile-ser ">
+                <div class="profile-ser-grids-50 agileinfo">
+                    <a href="javascript:void(0)">
+                        <h5>Last <input name="occupancy_days"
+                                        id="occupancy_days" class="input-as-text" value="30">
+                        </input> Days</h5>
+                        <h2 id="overall-30-occupancy"></h2>
+                    </a>
                 </div>
+                <div class="profile-ser-grids-50 agileinfo">
+                    <a href="javascript:void(0)"
+                       onclick="getOccupancyPerRoomForMonth();">
+                        <h5>This Month</h5>
+                        <h2 id="overall-month-occupancy"></h2>
+                    </a>
+                </div>
+                <div class="clearfix"></div>
 
-                <div class="profile-ser ">
-                    <div class="profile-ser-grids-50 agileinfo">
-                        <a href="javascript:void(0)">
-                            <h5>Last <input name="occupancy_days"
-                                            id="occupancy_days" class="input-as-text" value="30">
-                            </input> Days</h5>
-                            <h2 id="overall-30-occupancy"></h2>
-                        </a>
+                <div class=" bar-grids">
+                    <div class="skills-top">
+                        <h5>Per Room</h5>
                     </div>
-                    <div class="profile-ser-grids-50 agileinfo">
-                        <a href="javascript:void(0)"
-                           onclick="getOccupancyPerRoomForMonth();">
-                            <h5>This Month</h5>
-                            <h2 id="overall-month-occupancy"></h2>
-                        </a>
-                    </div>
-                    <div class="clearfix"></div>
+                    <div class="skills-btm" id="occupancy-div"></div>
+                </div>
+            </div>
+        </div>
 
-                    <div class=" bar-grids">
-                        <div class="skills-top">
-                            <h5>Per Room</h5>
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-blocked-rooms">
+            <div class="profile-top">
+                <div class="col-md-7 profile-top-right">
+                    <h5>
+                        Blocked Rooms
+                    </h5>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="profile-ser ">
+                <div id="block-list"></div>
+
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-load-shedding">
+            <div class="profile-top">
+                <div class="col-md-7 profile-top-right">
+                    <h5>
+                        Load Shedding
+                    </h5>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="profile-ser ">
+
+                <a class="twitter-timeline" href="https://twitter.com/CityPowerJhb?ref_src=twsrc%5Etfw">Tweets by
+                    CityPowerJhb</a>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            </div>
+        </div>
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-block-room">
+            <div class="profile-top">
+                <div class="col-md-7 profile-top-right">
+                    <h5>
+                        Block A Room
+                    </h5>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="profile-ser ">
+                <div class="contact-form">
+                    <form action="#" autocomplete="off"
+                          id="block-form" action="#">
+                        <div>
+                            <select name="block_rooms_select" id="block_rooms_select" required>
+                            </select>
                         </div>
-                        <div class="skills-btm" id="occupancy-div"></div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-blocked-rooms">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            Blocked Rooms
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="profile-ser ">
-                    <div id="block-list"></div>
-
-                    <div class="clearfix"></div>
-                </div>
-            </div>
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-load-shedding">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            Load Shedding
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="profile-ser ">
-
-                    <a class="twitter-timeline" href="https://twitter.com/CityPowerJhb?ref_src=twsrc%5Etfw">Tweets by CityPowerJhb</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                </div>
-            </div>
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-block-room">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            Block A Room
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="profile-ser ">
-                    <div class="contact-form">
-                        <form action="#" autocomplete="off"
-                              id="block-form" action="#">
-                            <div>
-                                <select name="block_rooms_select" id="block_rooms_select" required>
-                                </select>
-                            </div>
-
-                            <div>
-                                <input type="text" autocomplete="off" name="block_date"
-                                       id="block_date" placeholder="Select Date"
-                                       class="datepicker" required>
-                            </div>
-
-                            Notes
-                            <div>
-											<textarea name="block_notes" id="block_notes" rows="2" maxlength="100"
-                                                      required> </textarea>
-                            </div>
-
-                            <div>
-                                <span><input type="submit" value="Submit" class="button-50"> </span>
-                            </div>
-                        </form>
-
-
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-cleaning">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            Select room to get cleanings</i>
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="profile-ser ">
-                    <select class="block-display" id="cleaning_rooms_select">
-                    </select>
-
-                    <div class="clearfix"></div>
-
-                    <div id="cleaning-list"></div>
-                </div>
-            </div>
-
-
-            <div class="profile-w3layouts other_feature_tab display-none reservations_div"
-                 id="div-whatapp-chat">
-                <div class="profile-top">
-                    <div class="col-md-7 profile-top-right">
-                        <h5>
-                            New Whatsapp Chat</i>
-                        </h5>
-                    </div>
-                    <div class="clearfix"></div>
-                </div>
-
-                <div class="profile-ser ">
-                    <form class="contact-form" action="#" autocomplete="off"
-                          method="post" id="formStartChat">
-                        <input name="whatapp_chat" type="text" id="whatapp_chat"
-                               placeholder="Phone Number" class="textbox" maxlength="50">
 
                         <div>
+                            <input type="text" autocomplete="off" name="block_date"
+                                   id="block_date" placeholder="Select Date"
+                                   class="datepicker" required>
+                        </div>
+
+                        Notes
+                        <div>
+											<textarea name="block_notes" id="block_notes" rows="2" maxlength="100"
+                                                      required> </textarea>
+                        </div>
+
+                        <div>
+                            <span><input type="submit" value="Submit" class="button-50"> </span>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-cleaning">
+            <div class="profile-top">
+                <div class="col-md-7 profile-top-right">
+                    <h5>
+                        Select room to get cleanings</i>
+                    </h5>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="profile-ser ">
+                <select class="block-display" id="cleaning_rooms_select">
+                </select>
+
+                <div class="clearfix"></div>
+
+                <div id="cleaning-list"></div>
+            </div>
+        </div>
+
+
+        <div class="profile-w3layouts other_feature_tab display-none reservations_div"
+             id="div-whatapp-chat">
+            <div class="profile-top">
+                <div class="col-md-7 profile-top-right">
+                    <h5>
+                        New Whatsapp Chat</i>
+                    </h5>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <div class="profile-ser ">
+                <form class="contact-form" action="#" autocomplete="off"
+                      method="post" id="formStartChat">
+                    <input name="whatapp_chat" type="text" id="whatapp_chat"
+                           placeholder="Phone Number" class="textbox" maxlength="50">
+
+                    <div>
                             <span>
                                 <input type="submit" value="Start Chat"
                                        id="cmdStartChat" class="button-50">
                             </span>
 
-                        </div>
-                    </form>
+                    </div>
+                </form>
 
-                    <div class="clearfix"></div>
-                </div>
+                <div class="clearfix"></div>
             </div>
+        </div>
+
+    </div>
+
+
+    <!--<div class="profile-w3layouts toggleable display-none"
+         id="div-notifications">
+        <div class="profile-top">
+            <div class="col-md-7 profile-top-right">
+                <h5>Notifications</h5>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="profile-ser">
+
+            <div class="clearfix"></div>
+
+            <div id="notifications-list"></div>
 
         </div>
 
+    </div>-->
 
-        <!--<div class="profile-w3layouts toggleable display-none"
-             id="div-notifications">
-            <div class="profile-top">
-                <div class="col-md-7 profile-top-right">
-                    <h5>Notifications</h5>
-                </div>
-                <div class="clearfix"></div>
-            </div>
-
-            <div class="profile-ser">
-
-                <div class="clearfix"></div>
-
-                <div id="notifications-list"></div>
-
-            </div>
-
-        </div>-->
-
-    </div>
-    <div class="clearfix"></div>
-    <div class="footer-agileits-w3layouts">
-        <p class="agileinfo">
-            &copy; 2023 Hotel Runner . All Rights Reserved.
-        </p>
-    </div>
+</div>
+<div class="clearfix"></div>
+<div class="footer-agileits-w3layouts">
+    <p class="agileinfo">
+        &copy; 2023 Hotel Runner . All Rights Reserved.
+    </p>
+</div>
 </div>
 <!--  player js -->
 

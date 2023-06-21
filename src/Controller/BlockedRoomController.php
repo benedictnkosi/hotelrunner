@@ -34,6 +34,21 @@ class BlockedRoomController extends AbstractController
     }
 
     /**
+     * @Route("/api/json/blockroom")
+     */
+    public function blockRoomJson(LoggerInterface $logger,Request $request,EntityManagerInterface $entityManager, BlockedRoomApi $blockedRoomApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+
+        $response = $blockedRoomApi->blockRoom($parameters['room_id'],  $parameters['start_date'], $parameters['end_date'], urldecode($parameters['note']));
+        return new JsonResponse($response , 201, array());
+    }
+
+    /**
      * @Route("/api/blockedroom/get")
      */
     public function getBlockedRooms( LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, BlockedRoomApi $blockedRoomApi): Response
@@ -52,6 +67,23 @@ class BlockedRoomController extends AbstractController
         $response = new JsonResponse($response , 200, array());
         $response->setCallback($callback);
         return $response;
+    }
+
+    /**
+     * @Route("/api/json/blockedroom/get")
+     */
+    public function getBlockedRoomsJson( LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager, BlockedRoomApi $blockedRoomApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $blockedRooms = $blockedRoomApi->getBlockedRoomsByProperty();
+        $serializer = SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize($blockedRooms, 'json');
+
+        $logger->info($jsonContent);
+        return new JsonResponse($jsonContent , 200, array(), true);
     }
 
     /**

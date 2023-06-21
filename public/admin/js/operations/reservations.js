@@ -660,7 +660,7 @@ function uploadReservations() {
             let isErrors = false;
             for (let i = 0; i < arr.length; i++){
                 let z = i +1;
-                message += "Row " + z + " : " + arr[i]["result_message"] + "\n";
+                message +=  arr[i]["result_message"] + "\n";
                 if(arr[i]["result_code"] === 1){
                     isErrors = true;
                 }

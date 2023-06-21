@@ -9,6 +9,40 @@
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
 
+.padded-h1 {
+  padding: 38px;
+  font-size: larger;
+  font-weight: 700;
+  text-align: center;
+}
+
+ .any-table {
+  font-family: Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+ .any-table td, .any-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.any-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.any-table tr:hover {
+  background-color: #ddd;
+}
+
+.any-table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #1B74DA;
+  color: white;
+}
+
 
 .flexible {
   position: relative;

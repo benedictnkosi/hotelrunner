@@ -17,11 +17,14 @@ class PaymentApi
 {
     private EntityManagerInterface $em;
     private LoggerInterface $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
         if (session_id() === '') {
             $logger->info("Session id is empty");
             session_start();
@@ -33,11 +36,19 @@ class PaymentApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
+            //validate id is a number
+            if(!is_numeric($resId)){
+                return array(
+                    'result_message' => "ID is not a number" ,
+                    'result_code' => 1
+                );
+            }
+
             $payments = $this->em->getRepository(Payments::class)->findBy(array('reservation' => $resId));
             $this->logger->debug("no errors finding payments for reservation $resId. payment count " . count($payments));
             return $payments;
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -54,9 +65,16 @@ class PaymentApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
+            //validate id is a number
+            if(!is_numeric($paymentId)){
+                return array(
+                    'result_message' => "ID is not a number" ,
+                    'result_code' => 1
+                );
+            }
             return $this->em->getRepository(Payments::class)->findOneBy(array('id' => $paymentId));
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -102,16 +120,93 @@ class PaymentApi
             $reservationIdsArray = explode(",", $resId);
             $numberOfReservations = count($reservationIdsArray);
 
+            //validate the amount is positive
+            if(!is_numeric($amount) || intval($amount) < 1){
+                $responseArray[] = array(
+                    'result_code' => 1,
+                    'result_message' => 'Amount must be numeric and can not be less than 1'
+                );
+                return $responseArray;
+            }
+
             foreach ($reservationIdsArray as $resId) {
                 $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+                if($reservation == null){
+                    $responseArray[] = array(
+                        'result_code' => 1,
+                        'result_message' => 'Reservation not found'
+                    );
+
+                    return $responseArray;
+                }
                 $payment = new Payments();
                 $now = new DateTime();
 
+                //validate channel
+                if(strcmp(strtolower($channel), "cash") !== 0
+                && strcmp(strtolower($channel), "transfer") !== 0
+                        && strcmp(strtolower($channel), "payfast") !== 0
+                            && strcmp(strtolower($channel), "card") !== 0){
+                    $responseArray[] = array(
+                        'result_code' => 1,
+                        'result_message' => 'Channel not allowed'
+                    );
+                    return $responseArray;
+                }
+
+                //validate that the ref is correct for card
+                if(strcmp($channel, "card") == 0){
+                    if (strlen($reference) !== 14
+                        || strpos($reference, "/") !== 4
+                        || strrpos($reference, "/") !== 7) {
+                        $responseArray[] = array(
+                            'result_code' => 1,
+                            'result_message' => 'Card payment reference format incorrect'
+                        );
+                        return $responseArray;
+                    }
+                }
+
+                //validate that the ref is not longer than 30 characters
+                if(strcmp($channel, "transfer") == 0){
+                    if (strlen($reference) > 30 || strlen($reference) < 4){
+                        $responseArray[] = array(
+                            'result_code' => 1,
+                            'result_message' => 'Payment reference for transfer must be between 4 and 30 characters'
+                        );
+                        return $responseArray;
+                    }
+                }
+
+
+                //validate that first time guests do not pay by cash
+                $guestApi = new GuestApi($this->em, $this->logger);
+                $stayCount = $guestApi->getGuestStaysCount($reservation->getGuest()->getId());
+
+                if($stayCount == 0 && strcmp($channel, "cash") == 0){
+                    $responseArray[] = array(
+                        'result_code' => 1,
+                        'result_message' => 'First time guests are not allowed to pay by cash'
+                    );
+                    return $responseArray;
+                }
+
                 $payment->setReservation($reservation);
                 $amountPerReservation = intval($amount) / intval($numberOfReservations);
+                if($this->defectApi->isDefectEnabled("payment_2")){
+                    if($amountPerReservation > 999){
+                        $amountPerReservation = 999;
+                    }
+                }
+
                 $payment->setAmount($amountPerReservation);
                 $payment->setDate($now);
-                $payment->setChannel($channel);
+                if($this->defectApi->isDefectEnabled("payment_1")){
+                    $payment->setChannel("transfer");
+                }else{
+                    $payment->setChannel($channel);
+                }
+
                 $payment->SetReference($reference);
 
                 $this->logger->debug("reservation status is " . $reservation->getStatus()->getName());
@@ -120,6 +215,16 @@ class PaymentApi
                 if (strcmp($reservation->getStatus()->getName(), "pending") === 0) {
                     $roomApi = new RoomApi($this->em, $this->logger);
 
+                    //is amount 50% or more of the nightly price
+                    $halfRoomPrice = intval($reservation->getRoom()->getPrice())/2;
+
+                    if($halfRoomPrice > intval($amountPerReservation)){
+                        $responseArray[] = array(
+                            'result_code' => 1,
+                            'result_message' => 'Amount must be at least 50% of the room price'
+                        );
+                        return $responseArray;
+                    }
                     $isRoomAvailable = $roomApi->isRoomAvailable($reservation->getRoom()->getId(), $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"));
                     if ($isRoomAvailable) {
                         $this->logger->debug("room is available");
@@ -141,7 +246,7 @@ class PaymentApi
                         $now = new DateTime();
                         if (strcmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) === 0) {
                             $notificationApi = new NotificationApi($this->em, $this->logger);
-                            $notificationApi->updateAdsNotification($reservation->getRoom()->getProperty()->getId());
+                            //$notificationApi->updateAdsNotification($reservation->getRoom()->getProperty()->getId());
                         }
 
 
@@ -159,7 +264,7 @@ class PaymentApi
                             //send email to guest house
                             $emailBody = file_get_contents(__DIR__ . '/../email_template/failed_payment_to_host.html');
                             $emailBody = str_replace("reservation_id", $reservation->getId(), $emailBody);
-                            $emailBody = str_replace("amount_paid", $amount, $emailBody);
+                            $emailBody = str_replace("amount_paid", $amountPerReservation, $emailBody);
                             $emailBody = str_replace("property_name", $reservation->getRoom()->getProperty()->getName(), $emailBody);
 
                             $communicationApi->sendEmailViaGmail(ALUVEAPP_ADMIN_EMAIL, $reservation->getRoom()->getProperty()->getEmailAddress(), $emailBody, 'Aluve App - Adding payment failed');
@@ -167,7 +272,7 @@ class PaymentApi
                             //send email to guest
                             $emailBody = file_get_contents(__DIR__ . '/../email_template/failed_payment_to_guest.html');
                             $emailBody = str_replace("reservation_id", $reservation->getId(), $emailBody);
-                            $emailBody = str_replace("amount_paid", $amount, $emailBody);
+                            $emailBody = str_replace("amount_paid", $amountPerReservation, $emailBody);
                             $emailBody = str_replace("property_name", $reservation->getRoom()->getProperty()->getName(), $emailBody);
                             $emailBody = str_replace("property_email", $reservation->getRoom()->getProperty()->getEmailAddress(), $emailBody);
                             $emailBody = str_replace("property_number", $reservation->getRoom()->getProperty()->getPhoneNumber(), $emailBody);
@@ -188,7 +293,8 @@ class PaymentApi
                     $this->em->flush($payment);
                     $responseArray[] = array(
                         'result_code' => 0,
-                        'result_message' => 'Successfully added payment'
+                        'result_message' => 'Successfully added payment',
+                        'payment_id' => $payment->getId()
                     );
                     $this->sendEmailToGuest($reservation, $amountPerReservation);
                 }
@@ -240,8 +346,19 @@ class PaymentApi
         try {
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
             $payment = new Payments();
+            if($reservation == null){
+                return array(
+                    'result_message' => "Reservation not found" ,
+                    'result_code' => 1
+                );
+            }
 
             $payment->setReservation($reservation);
+
+            if($this->defectApi->isDefectEnabled("view_reservation_8")){
+                $amount *= -1;
+            }
+
             $payment->setAmount($amount);
             $payment->setDate(new DateTime());
             $payment->setChannel($channel);
@@ -252,12 +369,12 @@ class PaymentApi
             $this->em->persist($payment);
             $this->em->flush($payment);
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully added discount'
             );
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() ,
                 'result_code' => 1
             );
@@ -484,6 +601,45 @@ order by date desc";
         return $htmlResponse;
     }
 
+    public function getCashReportByDayJson($startDate, $endDate,$channel): array
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        $responseArray = array();
+
+        try {
+
+            $sql = "SELECT SUM(amount) as totalCash, LEFT( date, 10 ) as day FROM `payments`
+            WHERE channel = '".$channel."'
+            and   DATE(`date`) >= '" . $startDate . "'
+            and  DATE(`date`) <= '" . $endDate . "'
+GROUP BY LEFT( date, 10 ) 
+order by date desc";
+
+            $this->logger->info($sql);
+
+            //echo $sql;
+            $databaseHelper = new DatabaseHelper($this->logger);
+            $result = $databaseHelper->queryDatabase($sql);
+
+            if ($result) {
+                while ($results = $result->fetch_assoc()) {
+                    $responseArray[] = array(
+                        'date' => $results["day"],
+                        'amount' => $results["totalCash"]
+                    );
+                }
+            }
+        } catch (Exception) {
+            $responseArray = array(
+                'result_code' => 1,
+                'result_message' => 'Exception occurred while getting payments'
+            );
+        }
+
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
+        return $responseArray;
+    }
+
     public function getCashReportAllTransactions($startDate, $endDate,$channel): string
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -517,24 +673,68 @@ order by date desc";
         return $htmlResponse;
     }
 
+    public function getCashReportAllTransactionsJson($startDate, $endDate,$channel): array
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        $responseArray = array();
+
+        try {
+
+            $sql = "SELECT amount, date, reservation_id, reference FROM `payments`
+            WHERE channel = '".$channel."'
+            and   DATE(`date`) >= '" . $startDate . "'
+            and  DATE(`date`) <= '" . $endDate . "'
+order by date desc";
+
+            $this->logger->info($sql);
+
+            //echo $sql;
+            $databaseHelper = new DatabaseHelper($this->logger);
+            $result = $databaseHelper->queryDatabase($sql);
+
+            if ($result) {
+                while ($results = $result->fetch_assoc()) {
+                    $responseArray[] = array(
+                        'date' => $results["date"],
+                        'amount' => $results["amount"],
+                        'reference' => $results["reference"],
+                        'reservation_id' => $results["reservation_id"],
+                    );
+                }
+            }
+        } catch (Exception) {
+            $responseArray = array(
+                'result_code' => 1,
+                'result_message' => 'Exception occurred while getting payments'
+            );
+        }
+
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
+        return $responseArray;
+    }
 
     public function removePayment($paymentId): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             $payment = $this->em->getRepository(Payments::class)->findOneBy(array('id' => $paymentId));
+            if($payment == null){
+                return array(
+                    'result_message' => "Payment not found",
+                    'result_code' => 1
+                );
+            }
             $this->em->remove($payment);
             $this->em->flush($payment);
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => "Successfully removed payment",
                 'result_code' => 0
             );
 
         } catch (Exception $ex) {
             $this->logger->error($ex->getMessage());
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' =>$ex->getMessage(),
                 'result_code' => 1
             );

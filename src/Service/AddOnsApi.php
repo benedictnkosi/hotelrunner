@@ -19,11 +19,14 @@ class AddOnsApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
         if (session_id() === '') {
             $logger->info("Session id is empty" . __METHOD__);
             session_start();
@@ -138,16 +141,25 @@ class AddOnsApi
         try {
             $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array('id' => intval($adOnId)));
             if ($addOn == null) {
-                $responseArray[] = array(
-                    'result_message' => "Please select a valid add on item",
+                return array(
+                    'result_message' => "Add-on not found",
                     'result_code' => 1
                 );
-                return $responseArray;
             }
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => intval($resId)));
-
+            if ($reservation == null) {
+                return array(
+                    'result_message' => "Reservation not found",
+                    'result_code' => 1
+                );
+            }
             $resAddOn = new ReservationAddOns();
             $resAddOn->setAddOn($addOn);
+            if($this->defectApi->isDefectEnabled("view_reservation_10")) {
+                if($quantity > 9){
+                    $quantity = 9;
+                }
+            }
             $resAddOn->setQuantity(intval($quantity));
             $resAddOn->setReservation($reservation);
             $resAddOn->setDate(new DateTime());
@@ -159,6 +171,9 @@ class AddOnsApi
             if ($addOn->getQuantity() !== 0) {
                 $currentQuantity = $addOn->getQuantity();
                 $newQuantity = $currentQuantity - intval($quantity);
+                if($this->defectApi->isDefectEnabled("view_reservation_12")) {
+                    $newQuantity = $addOn->getQuantity();
+                }
                 $addOn->setQuantity($newQuantity);
                 $this->em->persist($addOn);
                 $this->em->flush($addOn);
@@ -170,13 +185,13 @@ class AddOnsApi
                 }
             }
 
-
-            $responseArray[] = array(
-                'result_message' => 'Successfully added add on to the reservation',
-                'result_code' => 0
+            $responseArray = array(
+                'result_message' => 'Successfully added add-on to the reservation',
+                'result_code' => 0,
+                'id' => $resAddOn->getId()
             );
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
@@ -187,7 +202,7 @@ class AddOnsApi
         return $responseArray;
     }
 
-    public function updateAddOn($addOnId, $field, $newValue)
+    public function updateAddOn($addOnId, $field, $newValue): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
@@ -241,7 +256,11 @@ class AddOnsApi
                         return $responseArray;
                     }
                     //validate unique name
-                    $addOn->setQuantity(intval($newValue) + 1);
+                    if($this->defectApi->isDefectEnabled("configuration_1")){
+                        $addOn->setQuantity(intval($newValue) + 1);
+                    }else{
+                        $addOn->setQuantity(intval($newValue));
+                    }
                     break;
                 default:
                     $responseArray[] = array(
@@ -339,7 +358,12 @@ class AddOnsApi
 
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
             $addOn = new AddOns();
-            $addOn->setPrice($addOnPrice + 10);
+            if($this->defectApi->isDefectEnabled("configuration_2")){
+                $addOn->setPrice($addOnPrice + 10);
+            }else{
+                $addOn->setPrice($addOnPrice);
+            }
+
             $addOn->setName($addOnName);
             $addOn->setProperty($property);
             $this->em->persist($addOn);
@@ -349,8 +373,6 @@ class AddOnsApi
                 'result_code' => 0,
                 'id' => $addOn->getId()
             );
-
-
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
@@ -412,6 +434,13 @@ class AddOnsApi
         $responseArray = array();
         try {
             $reservationAddOn = $this->em->getRepository(ReservationAddOns::class)->findOneBy(array('id' => $addOnId));
+            if($reservationAddOn == null){
+                $responseArray[] = array(
+                    'result_message' => "Reservation add-on not found",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
             $this->em->remove($reservationAddOn);
             $this->em->flush($reservationAddOn);
 

@@ -161,7 +161,7 @@ class ScheduleMessageApi
                 foreach ($scheduleMessages as $scheduleMessage) {
                     $html .= '<tr>
                                 <td>' . $scheduleMessage->getMessageTemplate()->getName() . '</td>
-                                <<td>' . $scheduleMessage->getMessageSchedule()->getName() . '</td>
+                                <td>' . $scheduleMessage->getMessageSchedule()->getName() . '</td>
                                 <td>' . $room->getName() . '</td>
                                 <td><input type="submit" value="Delete" class="deleteScheduledMessage" data-id="' . $scheduleMessage->getId() . '"></td>
                             </tr>

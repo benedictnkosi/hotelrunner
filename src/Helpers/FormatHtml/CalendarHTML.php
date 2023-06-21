@@ -5,6 +5,7 @@ namespace App\Helpers\FormatHtml;
 use App\Service\AddOnsApi;
 use App\Service\BlockedRoomApi;
 use App\Service\CleaningApi;
+use App\Service\DefectApi;
 use App\Service\GuestApi;
 use App\Service\NotesApi;
 use App\Service\PaymentApi;
@@ -19,11 +20,14 @@ class CalendarHTML
 {
     private $em;
     private $logger;
+    private DefectApi $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
     }
 
     public function formatHtml(): string
@@ -37,7 +41,12 @@ class CalendarHTML
         $cleaningApi = new CleaningApi($this->em, $this->logger);
         $paymentApi = new PaymentApi($this->em, $this->logger);
 
-        $numberOfDays = 180;
+        if($this->defectApi->isDefectEnabled("calendar_5")){
+            $numberOfDays = 150;
+        }else{
+            $numberOfDays = 180;
+        }
+
         $numberOfFirstOfMonth = 0;
 
         //headings
@@ -83,9 +92,14 @@ class CalendarHTML
                     $isCheckInDay = false;
 
                     if (strcmp($tempDate->format('d'), "01") === 0) {
-                        $htmlString .= '<td class="new-month"></td>';
+                        if(!$this->defectApi->isDefectEnabled("calendar_4")){
+                            $htmlString .= '<td class="new-months"></td>';
+                        }else{
+                            $htmlString .= '<td class="new-month"></td>';
+                        }
+
                     }
-                    if($reservations !== null){
+                    if(!is_array($reservations)){
                         foreach ($reservations as $reservation) {
                             $isCheckInDay = false;
                             if ($tempDate >= $reservation->getCheckIn() && $tempDate < $reservation->getCheckOut()) {
@@ -134,9 +148,10 @@ class CalendarHTML
                                     $this->logger->info("amount due is greater than half the price ");
                                 }
 
-                                if($totalDays < 2
+                                if($totalDays == 1
                                     && ($totalDiscount > 1)
-                                    && (strcasecmp($reservation->getOrigin(), "website") === 0)){
+                                    && (strcasecmp($reservation->getOrigin(), "website") === 0)
+                                && !$this->defectApi->isDefectEnabled("calendar_1")){
                                     $htmlString .= '<td  class="booked checked_in clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- IN" .'"><img  src="/admin/images/timer.png"  data-res-id="' . $resID . '" alt="checkin" class="image_checkin"></td>';
                                 }else{
                                     $htmlString .= '<td  class="booked checked_in clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- IN" .'"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkin" class="image_checkin"></td>';
@@ -144,12 +159,17 @@ class CalendarHTML
                             }else if (strcasecmp($reservation->getCheckInStatus(), "checked_out") === 0) {
                                 if($totalDays < 2
                                     && ($totalDiscount > 1)
-                                    && (strcasecmp($reservation->getOrigin(), "website") === 0)){
+                                    && (strcasecmp($reservation->getOrigin(), "website") === 0)
+                                    && !$this->defectApi->isDefectEnabled("calendar_1")){
                                     $htmlString .= '<td  class="booked checked_out clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- Out" .'"><img  src="/admin/images/timer.png"  data-res-id="' . $resID . '" alt="checkin" class="image_checkin"></td>';
                                 }else if (strcasecmp($reservation->getStatus()->getName(), "opened") === 0){
                                     $htmlString .= '<td  class="booked booked_opened_td checked_out clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- OUT" .'"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkedout" class="image_checkin opened_booking"></td>';
                                 }else{
-                                    $htmlString .= '<td  class="booked checked_out clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- OUT" .'"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkedout" class="image_checkin"></td>';
+                                    if($this->defectApi->isDefectEnabled("calendar_2")){
+                                        $htmlString .= '<td  class="booked clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- OUT" .'"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkedout" class="image_checkin"></td>';
+                                    }else{
+                                        $htmlString .= '<td  class="booked checked_out clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . "- OUT" .'"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkedout" class="image_checkin"></td>';
+                                    }
                                 }
                             }else {
                                 if (strcasecmp($reservation->getStatus()->getName(), "confirmed") === 0){

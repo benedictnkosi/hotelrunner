@@ -25,11 +25,13 @@ class RoomApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
 
         if (session_id() === '') {
             $logger->info("Session id is empty");
@@ -42,10 +44,10 @@ class RoomApi
     {
         $this->logger->info("Starting Method: " . __METHOD__);
         $responseArray = array();
-        $checkIn = trim(substr($availableRoomsString,0,10));
-        $checkOut = trim(substr($availableRoomsString,10,10));
-        $propertyUid = trim(substr($availableRoomsString,20,36));
-        $kids = trim(substr($availableRoomsString,56,2));
+        $checkIn = trim(substr($availableRoomsString, 0, 10));
+        $checkOut = trim(substr($availableRoomsString, 10, 10));
+        $propertyUid = trim(substr($availableRoomsString, 20, 36));
+        $kids = trim(substr($availableRoomsString, 56, 2));
 
         $this->logger->info("checkIn field: " . $checkIn);
         $this->logger->info("checkOut field: " . $checkOut);
@@ -61,33 +63,85 @@ class RoomApi
         $responseArray = array();
         try {
             $propertyApi = new PropertyApi($this->em, $this->logger);
-            if($propertyUid === 0){
+            if ($propertyUid === 0) {
                 $propertyId = $_SESSION['PROPERTY_ID'] ?? $propertyApi->getPropertyIdByHost($request);
-            }else{
+            } else {
                 $property = $this->em->getRepository(Property::class)->findOneBy(
-                    array("uid" =>$propertyUid));
-                if($property !== null){
+                    array("uid" => $propertyUid));
+                if ($property !== null) {
                     $propertyId = $property->getId();
-                }else{
+                } else {
                     $this->logger->error("Property id not found");
                     return null;
                 }
             }
 
-            $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId, 'status'=>1));
+            //validate dates
+            $defectAPi = new DefectApi($this->em, $this->logger);
+
+            if (strlen($checkInDate) < 1 || strlen($checkOutDate) < 1) {
+                $responseArray[] = array(
+                    'result_message' => "Check-in and check-out date is mandatory",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+
+            if (!$defectAPi->isDefectEnabled("create_reservation_5")) {
+                if (strcmp($checkInDate, $checkOutDate) == 0) {
+                    $responseArray[] = array(
+                        'result_message' => "Check-in and check-out date can not be the same",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
+            }
+
+
+            $checkInDateDateObject = new DateTime($checkInDate);
+            $checkOutDateDateObject = new DateTime($checkOutDate);
+            //validate checkin dates
+
+                if ($checkInDateDateObject > $checkOutDateDateObject) {
+                    $responseArray[] = array(
+                        'result_message' => "Check-in date can not be after check-out date",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
+
+
+
+            //validate kids
+
+                if (strlen($kids) > 2 || strlen($kids) == 0 || !is_numeric($kids) || intval($kids) < 0) {
+                    $responseArray[] = array(
+                        'result_message' => "Number of child guests length should be between 1 and 2 and should be a positive number",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
+
+
+
+            $rooms = $this->em->getRepository(Rooms::class)->findBy(array('property' => $propertyId, 'status' => 1));
             foreach ($rooms as $room) {
                 if ($this->isRoomAvailable($room->getId(), $checkInDate, $checkOutDate)) {
-                    if(!$room->isKids() && intval($kids) > 0){
-                        $this->logger->info("This room does not allow kids");
-                    }else{
+                    if (!$defectAPi->isDefectEnabled("create_reservation_4")) {
+                        if (!$room->isKids() && intval($kids) > 0) {
+                            $this->logger->info("This room does not allow kids");
+                        } else {
+                            $responseArray[] = $room;
+                        }
+                    } else {
                         $responseArray[] = $room;
                     }
-
                 }
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -96,11 +150,14 @@ class RoomApi
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
         if (empty($responseArray)) {
             $this->logger->debug("Rooms array empty ");
-            return null;
+            $responseArray[] = array(
+                'result_message' => "Rooms not found",
+                'result_code' => 1
+            );
         } else {
             $this->logger->debug("Rooms array not empty ");
-            return $responseArray;
         }
+        return $responseArray;
     }
 
     public function isRoomAvailable($roomId, $checkInDate, $checkOutDate, $reservationToExclude = 0): bool|array
@@ -143,7 +200,7 @@ class RoomApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->error(print_r($responseArray, true));
             return $responseArray;
@@ -228,7 +285,7 @@ class RoomApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -253,7 +310,7 @@ class RoomApi
             return $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $roomId));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -309,7 +366,7 @@ class RoomApi
             return $rooms;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -338,7 +395,7 @@ class RoomApi
             return $roomImages;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -376,7 +433,7 @@ class RoomApi
             return $responseArray;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -413,7 +470,7 @@ class RoomApi
             $this->logger->debug("Ending Method before the return: " . __METHOD__);
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -458,7 +515,7 @@ class RoomApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -491,7 +548,7 @@ class RoomApi
             return $roomStatuses;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -517,7 +574,7 @@ class RoomApi
             return $json;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -537,7 +594,7 @@ class RoomApi
             return $roomBedSizes;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -557,7 +614,7 @@ class RoomApi
             return $roomTvs;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -573,21 +630,21 @@ class RoomApi
         $responseArray = array();
         try {
             $room = $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $id));
-            if ($room == null && strcmp($id, "0") ==0) {
+            if ($room == null && strcmp($id, "0") == 0) {
                 $room = new Rooms();
                 $successMessage = "Successfully created room";
-            }elseif ($room == null && strcmp($id, "0") !==0) {
+            } elseif ($room == null && strcmp($id, "0") !== 0) {
                 $responseArray[] = array(
                     'result_message' => "Room with ID not found",
                     'result_code' => 1
                 );
                 return $responseArray;
-            }else{
+            } else {
                 $successMessage = "Successfully updated room";
             }
 
             //check if room name is available
-            if(!$this->isRoomNameAvailable($name, $id)){
+            if (!$this->isRoomNameAvailable($name, $id)) {
                 $responseArray[] = array(
                     'result_message' => "Name already used by another room",
                     'result_code' => 1
@@ -596,16 +653,16 @@ class RoomApi
             }
 
             //check description length
-            if(strlen($description) < 50 || strlen($description) > 500){
+            if (strlen($description) < 50 || strlen($description) > 500) {
                 $responseArray[] = array(
-                    'result_message' => "Description length should be between 50 and 500",
+                    'result_message' => "Description length should be between 50 and 50",
                     'result_code' => 1
                 );
                 return $responseArray;
             }
 
             //check name length
-            if(strlen($name) > 30){
+            if (strlen($name) > 30) {
                 $responseArray[] = array(
                     'result_message' => "Name length should have maximum of 30 characters",
                     'result_code' => 1
@@ -614,7 +671,7 @@ class RoomApi
             }
 
             //check price
-            if(strlen($price) > 3 || !is_numeric($price) || intval($price) < 1){
+            if (strlen($price) > 3 || !is_numeric($price) || intval($price) < 1) {
                 $responseArray[] = array(
                     'result_message' => "Price must be a number greater than 1 and maximum length of 3",
                     'result_code' => 1
@@ -624,16 +681,19 @@ class RoomApi
 
 
             //check sleeps
-            if(strlen($sleeps) > 2 || !is_numeric($sleeps) || intval($sleeps) < 1){
-                $responseArray[] = array(
-                    'result_message' => "Sleeps must be a number greater than 1 and maximum length of 2",
-                    'result_code' => 1
-                );
-                return $responseArray;
+            if (!$this->defectApi->isDefectEnabled("create_room_1")) {
+                if (strlen($sleeps) > 2 || !is_numeric($sleeps) || intval($sleeps) < 1) {
+                    $responseArray[] = array(
+                        'result_message' => "Sleeps must be a number greater than 1 and maximum length of 2",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
             }
 
+
             //check room size
-            if(strlen($size) > 3 || !is_numeric($size) || intval($size) < 1 ){
+            if (strlen($size) > 3 || !is_numeric($size) || intval($size) < 1) {
                 $responseArray[] = array(
                     'result_message' => "Room size must be a number greater than 1 and maximum length of 3",
                     'result_code' => 1
@@ -642,7 +702,7 @@ class RoomApi
             }
 
             //check kids policy
-            if(strlen($kidsPolicy) > 1 || !is_numeric($kidsPolicy) ){
+            if (strlen($kidsPolicy) > 1 || !is_numeric($kidsPolicy)) {
                 $responseArray[] = array(
                     'result_message' => "Kids policy must be a number between 0 and 1",
                     'result_code' => 1
@@ -651,7 +711,7 @@ class RoomApi
             }
 
             //check stairs policy
-            if(strlen($stairs) > 1 || !is_numeric($stairs) ){
+            if (strlen($stairs) > 1 || !is_numeric($stairs)) {
                 $responseArray[] = array(
                     'result_message' => "Stairs must be a number between 0 and 1",
                     'result_code' => 1
@@ -661,7 +721,7 @@ class RoomApi
 
             //check amenities
             $amenitiesArray = json_decode($amenities);
-            if($amenitiesArray === null){
+            if ($amenitiesArray === null) {
 
                 $responseArray[] = array(
                     'result_message' => "Amenities are required",
@@ -676,7 +736,7 @@ class RoomApi
 
             $this->logger->debug("selected beds: " . $beds);
             $tvType = $this->em->getRepository(RoomTv::class)->findOneBy(array('id' => $tv));
-            if($tvType == null){
+            if ($tvType == null) {
                 $responseArray[] = array(
                     'result_message' => "TV not found with id " . $tv,
                     'result_code' => 1,
@@ -685,7 +745,7 @@ class RoomApi
             }
 
             $roomStatus = $this->em->getRepository(RoomStatus::class)->findOneBy(array('id' => $status));
-            if($roomStatus == null){
+            if ($roomStatus == null) {
                 $responseArray[] = array(
                     'result_message' => "Room status not found with id " . $status,
                     'result_code' => 1,
@@ -695,7 +755,7 @@ class RoomApi
 
             if (strlen($linkedRoom) > 1) {
                 $linkRoom = $this->em->getRepository(Rooms::class)->findOneBy(array('id' => $linkedRoom));
-                if($linkRoom == null){
+                if ($linkRoom == null) {
                     $responseArray[] = array(
                         'result_message' => "Linked room id not found. " . $linkedRoom,
                         'result_code' => 1,
@@ -709,13 +769,24 @@ class RoomApi
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $propertyId));
 
             $room->setName($name);
-            $room->setPrice($price);
+            if ($this->defectApi->isDefectEnabled("create_room_4")) {
+                $room->setPrice($price + 100);
+            } else {
+                $room->setPrice($price);
+            }
+
             $room->setKids($kidsPolicy);
             $room->setSleeps($sleeps);
             $room->setStatus($roomStatus);
             $room->setLinkedRoom($linkedRoom);
             $room->setSize($size);
-            $room->setStairs($stairs);
+            if ($this->defectApi->isDefectEnabled("create_room_3")) {
+                $room->setStairs(true);
+            } else {
+                $room->setStairs($stairs);
+            }
+
+
             $room->setDescription(urldecode($description));
             $room->setProperty($property);
             $room->setTv($tvType);
@@ -731,8 +802,8 @@ class RoomApi
             $currentSelectedBeds = $this->em->getRepository(RoomBeds::class)->findBy(array('room' => $room->getId()));
 
             if ($currentSelectedBeds !== null) {
-                foreach ($currentSelectedBeds as $currentSelectedBed){
-                    $this->logger->debug("removing new Bed " .$currentSelectedBed->getBed()->getName() );
+                foreach ($currentSelectedBeds as $currentSelectedBed) {
+                    $this->logger->debug("removing new Bed " . $currentSelectedBed->getBed()->getName());
                     $this->em->remove($currentSelectedBed);
                     $this->em->flush($currentSelectedBed);
                 }
@@ -741,16 +812,16 @@ class RoomApi
             // add new selected beds
             //update beds
 
-            foreach ($bedsNameArray as $bedName){
+            foreach ($bedsNameArray as $bedName) {
                 $bed = $this->em->getRepository(RoomBedSize::class)->findOneBy(array('name' => trim($bedName)));
-                if($bed == null){
+                if ($bed == null) {
                     $responseArray[] = array(
                         'result_message' => "Failed to find bed",
                         'result_code' => 1
                     );
                     return $responseArray;
                 }
-                $this->logger->debug("creating new Bed " .$bed->getName() );
+                $this->logger->debug("creating new Bed " . $bed->getName());
                 $roomBeds = new RoomBeds();
                 $roomBeds->setRoom($room);
                 $roomBeds->setBed($bed);
@@ -766,7 +837,7 @@ class RoomApi
             );
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -800,8 +871,8 @@ class RoomApi
                     $this->em->persist($roomImage);
                     $this->em->flush($roomImage);
 
-                    $filePath = __DIR__ .'/../../public/room/image/' . $imageId;
-                    if(is_file($filePath)) {
+                    $filePath = __DIR__ . '/../../public/room/image/' . $imageId;
+                    if (is_file($filePath)) {
                         unlink($filePath); // delete file
                         $this->logger->info("file deleted");
                     }
@@ -814,7 +885,7 @@ class RoomApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -841,7 +912,10 @@ class RoomApi
                 //remove the current default
                 $roomDefaultImage = $this->em->getRepository(RoomImages::class)->findOneBy(array('status' => 'default', 'room' => $roomImage->getRoom()->getId()));
                 if ($roomDefaultImage != null) {
-                    $roomDefaultImage->setStatus("active");
+                    if (!$this->defectApi->isDefectEnabled("images_2")) {
+                        $roomDefaultImage->setStatus("active");
+                    }
+
                     $this->em->persist($roomDefaultImage);
                     $this->em->flush($roomDefaultImage);
                 }
@@ -857,7 +931,7 @@ class RoomApi
             }
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() ,
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -870,12 +944,12 @@ class RoomApi
     private function isRoomNameAvailable($name, $id)
     {
         $room = $this->em->getRepository(Rooms::class)->findOneBy(array('name' => $name));
-        if($room == null){
+        if ($room == null) {
             return true;
-        }else{
-            if($room->getId() == $id){
+        } else {
+            if ($room->getId() == $id) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }

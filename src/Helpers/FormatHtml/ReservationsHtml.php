@@ -6,6 +6,7 @@ use App\Entity\Reservations;
 use App\Entity\Guest;
 use App\Service\AddOnsApi;
 use App\Service\CleaningApi;
+use App\Service\DefectApi;
 use App\Service\EmployeeApi;
 use App\Service\GuestApi;
 use App\Service\NotesApi;
@@ -22,11 +23,14 @@ class ReservationsHtml
 
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
     }
 
     public function formatHtml($reservations, $period): string
@@ -55,11 +59,13 @@ class ReservationsHtml
 												<h5 id="res_div_error_message_' . $period . '"></h5>
 											</div>
 										</div>
-									</div>
-									
-									<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
-<a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>
-									';
+									</div>';
+
+        if($this->defectApi->isFunctionalityEnabled("download_reservations")) {
+            $htmlString .= '<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
+            <a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
+        }
+
 
         if (strcmp($period, 'past') === 0) {
             $numberOfDays = 180;
@@ -114,13 +120,19 @@ class ReservationsHtml
         }
 
         foreach ($todayCheckIns as $todayCheckIn) {
-            $htmlString .= '<div class="reservation-item" data-res-id="' . $todayCheckIn->getId() . '">
+            $roomName = $todayCheckIn->getRoom()->getName();
+            if($this->defectApi->isDefectEnabled("reservation_list_1")){
+                $roomName = "";
+            }
+
+
+                $htmlString .= '<div class="reservation-item" data-res-id="' . $todayCheckIn->getId() . '">
                          <div class="listing-description clickable open-reservation-details" data-res-id="' . $todayCheckIn->getId() . '">
                           <img class="listing-checkin-image listing-image" src="/admin/images/listing-checkin.png" data-res-id="' . $todayCheckIn->getId() . '"></img>
                         <img class="listing-image-origin" src="/admin/images/' . $todayCheckIn->getOrigin() . '.png" data-res-id="' . $todayCheckIn->getId() . '"></img>
                         <div class="listing-description-text" data-res-id="' . $todayCheckIn->getId() . '">'
                 . $todayCheckIn->getGuest()->getName() . ' is expected to check-in 
-                         <span class="listing-room-name" data-res-id="' . $todayCheckIn->getId() . '"> ' . $todayCheckIn->getRoom()->getName() . ' #' . $todayCheckIn->getId() . '</span>
+                         <span class="listing-room-name" data-res-id="' . $todayCheckIn->getId() . '"> ' . $roomName . ' #' . $todayCheckIn->getId() . '</span>
                         </div>
                         </div>
                     </div>';
@@ -128,13 +140,18 @@ class ReservationsHtml
 
         if ($outputCheckOuts) {
             foreach ($todayCheckOuts as $todayCheckOut) {
+                $roomName = $todayCheckOut->getRoom()->getName();
+                if($this->defectApi->isDefectEnabled("reservation_list_1")){
+                    $roomName = "";
+                }
+
                 $htmlString .= '<div class="reservation-item" data-res-id="' . $todayCheckOut->getId() . '">
                          <div class="listing-description clickable open-reservation-details" data-res-id="' . $todayCheckOut->getId() . '">
                           <img class="listing-checkin-image listing-image" src="/admin/images/listing-checkout.png" data-res-id="' . $todayCheckOut->getId() . '"></img>
                         <img class="listing-image-origin" src="/admin/images/' . $todayCheckOut->getOrigin() . '.png" data-res-id="' . $todayCheckOut->getId() . '"></img>
                         <div class="listing-description-text" data-res-id="' . $todayCheckOut->getId() . '">'
                     . $todayCheckOut->getGuest()->getName() . ' is expected to check-out 
-                         <span class="listing-room-name" data-res-id="' . $todayCheckOut->getId() . '"> ' . $todayCheckOut->getRoom()->getName() . ' #' . $todayCheckOut->getId() . ' </span>
+                         <span class="listing-room-name" data-res-id="' . $todayCheckOut->getId() . '"> ' . $roomName . ' #' . $todayCheckOut->getId() . ' </span>
                         </div>
                         </div>
                     </div>';

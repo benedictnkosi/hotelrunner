@@ -21,8 +21,8 @@ $(document).ready(function () {
         }
     });
 
-    $("#phoneNumber").blur(function () {
-        if (document.referrer.includes("admin")) {
+    $("#phoneNumber").blur(function (event) {
+        if(event.target.value.length > 3 && $("#guestName").val().length < 1){
             getCustomer();
         }
     });
@@ -64,21 +64,13 @@ $(document).ready(function () {
             });
 
             $('#checkindate').on('apply.daterangepicker', function (event, picker) {
+                hideMessages("reservation");
                 let checkInDate = new Date(picker.startDate.format("YYYY-MM-DD"));
                 let checkOutDate = new Date(picker.endDate.format("YYYY-MM-DD"))
                 let difference = checkOutDate - checkInDate;
                 let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
                 if (totalDays < 1) {
                     showResErrorMessage("reservation", "Check-in and check-out date can not be the same");
-                    $('#checkindate').daterangepicker({
-                        startDate: date,
-                        endDate: endDate,
-                        opens: 'left',
-                        autoApply: true,
-                        minDate: minDate
-                    }, function (start, end, label) {
-                        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                    });
                     return;
                 }
 
@@ -173,17 +165,17 @@ function getAvailableRooms(checkInDate, checkOutDate) {
             } else {
                 if (bedshtml.length > 1) {
                     var item = '<li>' +
-                        '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
+                        '<div class="div-select-room-name">' +
                         '<img src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div><button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
-                        '</a></li>';
+                        '</li>';
                 } else {
                     var item = '<li>' +
-                        '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
+                        '<div class="div-select-room-name">' +
                         '<img class="no_beds_image" src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div>' +
                         '<button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
-                        '</a></li>';
+                        '</li>';
                 }
 
             }
@@ -260,16 +252,6 @@ function createReservation() {
     isRoomSelected = sessionStorage.getItem("isRoomSelected");
 
     let guests = parseInt($('#adults').val()) + parseInt($('#children').val());
-    if(guests > sessionStorage.getItem('rooms_sleep')){
-        showResErrorMessage("reservation", "The selected rooms can not accommodate the number of guests");
-        return;
-    }
-
-    if(guests < parseInt(sessionStorage.getItem("total_rooms_selected"))){
-        showResErrorMessage("reservation", "The number of guests can not be less than the number of rooms booked");
-        return;
-    }
-
 
     if (isRoomSelected === null) {
         showResErrorMessage("reservation", "Please select a room");
@@ -306,12 +288,12 @@ function createReservation() {
         success: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                showResSuccessMessage("reservation", response[0].result_message);
+            if (response.result_code === 0) {
+                showResSuccessMessage("reservation", response.result_message);
                 sessionStorage.setItem("reservation_id", JSON.stringify(data[0].reservation_id));
                 window.location.href = "/confirmation";
             } else {
-                showResErrorMessage("reservation", response[0].result_message);
+                showResErrorMessage("reservation", response.result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -335,7 +317,7 @@ function getPropertyName() {
         contentType: "application/json; charset=UTF-8",
         success: function (response) {
             sessionStorage.setItem("PropertyName", response[0].name)
-            $('#hotel_name').html(response[0].name);
+            //$('#hotel_name').html(response[0].name);
         }
     });
 

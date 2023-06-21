@@ -1,1 +1,1 @@
-[{"result_code":1,"result_message":"Tried to create a reservation. Room not available for selected dates 23-03-14 - 23-03-20"},{"result_code":0,"result_message":"Successfully created reservation"}]
+{"result_code":1,"result_message":"No file found"}

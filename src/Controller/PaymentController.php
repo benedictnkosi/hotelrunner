@@ -34,6 +34,26 @@ class PaymentController extends AbstractController
     }
 
     /**
+     * @Route("api/payment/json/add")
+     */
+    public function addPaymentJson(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+        $response = $paymentApi->addPayment($parameters['reservation_id'], $parameters['amount'], str_replace("_","/",$parameters['reference']), $parameters['channel']);
+        if ($response[0]['result_code'] === 0) {
+            $response = new JsonResponse($response , 201, array());
+        }else{
+            $response = new JsonResponse($response , 200, array());
+        }
+
+        return $response;
+    }
+
+    /**
      * @Route("admin_api/payment/{paymentId}/delete")
      */
     public function removePayment($paymentId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
@@ -43,9 +63,11 @@ class PaymentController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $paymentApi->removePayment($paymentId);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response , 204, array());
-        $response->setCallback($callback);
+        if ($response['result_code'] === 0) {
+            $response = new JsonResponse($response , 204, array());
+        }else{
+            $response = new JsonResponse($response , 200, array());
+        }
         return $response;
     }
 
@@ -66,6 +88,22 @@ class PaymentController extends AbstractController
         $response->setCallback($callback);
         return $response;
     }
+
+    /**
+     * @Route("api/json/discount/add")
+     */
+    public function addDiscountJson(LoggerInterface $logger, Request $request, PaymentApi $paymentApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+        $response = $paymentApi->addDiscount($parameters['id'], $parameters['amount'], "discount");
+        return new JsonResponse($response , 201, array());
+    }
+
     /**
      * @Route("no_auth/payfast_notify")
      * @throws \Exception
@@ -131,6 +169,26 @@ class PaymentController extends AbstractController
     }
 
     /**
+     * @Route("api/json/payment/total/transactions")
+     */
+    public function getTotalCashPaymentByDayJson(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $parameters = json_decode($request->getContent(), true);
+
+        if ($parameters['group']) {
+            $response = $paymentApi->getCashReportByDayJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
+        }else{
+            $response = $paymentApi->getCashReportAllTransactionsJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
+        }
+
+        return new JsonResponse($response , 200, array());
+    }
+
+    /**
      * @Route("api/json/payment/{id}")
      */
     public function getPaymentJson( $id, LoggerInterface $logger, Request $request,PaymentApi $api): Response
@@ -141,6 +199,12 @@ class PaymentController extends AbstractController
         }
         $payment = $api->getPayment($id);
 
+        if($payment == null){
+            $payment = array(
+                'result_code' => 1,
+                'result_message' => 'Payment not found'
+            );
+        }
         $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize($payment, 'json');
 
@@ -149,4 +213,27 @@ class PaymentController extends AbstractController
     }
 
 
+    /**
+     * @Route("api/json/reservations/{id}/payments")
+     */
+    public function getReservationPayments( $id, LoggerInterface $logger, Request $request,PaymentApi $api): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $payment = $api->getReservationPayments($id);
+
+        if($payment == null){
+            $payment[] = array(
+                'result_code' => 1,
+                'result_message' => 'Payment not found'
+            );
+        }
+        $serializer = SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize($payment, 'json');
+
+        $logger->info($jsonContent);
+        return new JsonResponse($jsonContent , 200, array(), true);
+    }
 }

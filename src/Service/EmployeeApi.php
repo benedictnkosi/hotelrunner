@@ -13,11 +13,14 @@ class EmployeeApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
         if (session_id() === '') {
             $logger->info("Session id is empty" . __METHOD__);
             session_start();
@@ -140,6 +143,11 @@ class EmployeeApi
                 );
                 $this->logger->debug(print_r($responseArray, true));
             } else {
+                if($this->defectApi->isDefectEnabled("configuration_6")){
+                    $employees = $this->em->getRepository(Employee::class)->findAll();
+                    $employee = $employees[0];
+                }
+
                 $this->em->remove($employee);
                 $this->em->flush();
                 $responseArray[] = array(
@@ -175,14 +183,16 @@ class EmployeeApi
             }
 
             //validate gender
-            if (strcmp($gender, "male") !== 0 &&
-                strcmp($gender, "female") !== 0 &&
-                strcmp($gender, "other") !== 0) {
-                $responseArray[] = array(
-                    'result_message' => "Gender not recognised",
-                    'result_code' => 1
-                );
-                return $responseArray;
+            if(!$this->defectApi->isDefectEnabled("configuration_4")){
+                if (strcmp($gender, "male") !== 0 &&
+                    strcmp($gender, "female") !== 0 &&
+                    strcmp($gender, "other") !== 0) {
+                    $responseArray[] = array(
+                        'result_message' => "Gender not recognised",
+                        'result_code' => 1
+                    );
+                    return $responseArray;
+                }
             }
 
             //check if employee with the same name does not exist
@@ -198,9 +208,19 @@ class EmployeeApi
 
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $_SESSION['PROPERTY_ID']));
             $employee = new Employee();
-            $employee->setName($employeeName);
+            if($this->defectApi->isDefectEnabled("configuration_3")){
+                $employee->setName($employeeName . "a");
+            }else{
+                $employee->setName($employeeName);
+            }
+
             $employee->setProperty($property);
-            $employee->setGender($gender);
+            if($this->defectApi->isDefectEnabled("configuration_5")){
+                $employee->setGender("female");
+            }else{
+                $employee->setGender($gender);
+            }
+
             $this->em->persist($employee);
             $this->em->flush($employee);
             $responseArray[] = array(
