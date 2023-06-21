@@ -23,7 +23,7 @@ $(document).ready(function () {
 
     $("#phoneNumber").blur(function (event) {
         if(event.target.value.length > 3 && $("#guestName").val().length < 1){
-            getCustomer();
+            getGuest();
         }
     });
 
@@ -324,28 +324,30 @@ function getPropertyName() {
 }
 
 
-function getCustomer() {
+function getGuest() {
     if(sessionStorage.getItem('authenticated').localeCompare('true') === 0) {
         $("#phoneNumber").val($("#phoneNumber").val().replaceAll(" ", ""));
         $("body").addClass("loading");
         let url = "/api/guests/" + $("#phoneNumber").val();
+
         $.ajax({
+            url : url,
             type: "get",
-            url: url,
-            crossDomain: true,
-            cache: false,
-            dataType: "jsonp",
-            contentType: "application/json; charset=UTF-8",
-            success: function (response) {
+            success: function(response)
+            {
                 $("body").removeClass("loading");
-                if (response[0].result_code === 0) {
-                    $('#guestName').val(response[0].name);
-                    $('#email').val(response[0].email);
+                if (response.result_code === 0) {
+                    $('#guestName').val(response.name);
+                    $('#email').val(response.email);
                 }
             },
-            done: function (response) {
+            error: function (jqXHR, textStatus, errorThrown)
+            {
                 $("body").removeClass("loading");
+                showResErrorMessage("configuration", errorThrown);
             }
         });
+
+
     }
 }

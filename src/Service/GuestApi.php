@@ -353,7 +353,7 @@ class GuestApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         try {
-            if (strlen($filterValue) == 10) {
+            if (strlen($filterValue) == 12) {
                 $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => trim($filterValue),  'state' => 'Active'));
                 if ($guest == null) {
                     $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($filterValue))));

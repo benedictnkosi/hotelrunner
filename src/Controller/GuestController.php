@@ -31,10 +31,7 @@ class GuestController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $response = $guestApi->getGuest($filterValue);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
-        $response->setCallback($callback);
-        return $response;
+        return new JsonResponse($response , 200, array());
     }
 
     /**
