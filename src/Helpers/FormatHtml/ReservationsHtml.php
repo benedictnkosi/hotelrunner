@@ -122,9 +122,8 @@ class ReservationsHtml
         foreach ($todayCheckIns as $todayCheckIn) {
             $roomName = $todayCheckIn->getRoom()->getName();
             if($this->defectApi->isDefectEnabled("reservation_list_1")){
-                $roomName = "";
+                $roomName = $roomName . "-d1801";
             }
-
 
                 $htmlString .= '<div class="reservation-item" data-res-id="' . $todayCheckIn->getId() . '">
                          <div class="listing-description clickable open-reservation-details" data-res-id="' . $todayCheckIn->getId() . '">
@@ -142,7 +141,7 @@ class ReservationsHtml
             foreach ($todayCheckOuts as $todayCheckOut) {
                 $roomName = $todayCheckOut->getRoom()->getName();
                 if($this->defectApi->isDefectEnabled("reservation_list_1")){
-                    $roomName = "";
+                    $roomName = $roomName . "-d1801";
                 }
 
                 $htmlString .= '<div class="reservation-item" data-res-id="' . $todayCheckOut->getId() . '">

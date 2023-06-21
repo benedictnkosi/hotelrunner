@@ -79,7 +79,7 @@ class SingleReservationHtml
         $stayCount = $guestApi->getGuestStaysCount($guest->getId());
 
         $htmlString .= '<div class="res-details"><div><div>
-						<h4 class="guest-name">' . $guest->getName();
+						<h4 class="guest-name">' . $guest->getName() . ' - ' . $reservationId;
 
         //reservation origin
         $this->logger->debug("HTML output - reservation origin " . $reservation->getId());
