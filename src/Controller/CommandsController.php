@@ -303,6 +303,8 @@ class CommandsController extends AbstractController
             $databaseHelper->execute($sql);
             $sql = "delete from schedule_messages where id > 0;";
             $databaseHelper->execute($sql);
+            $sql = "delete from user where id > 0;";
+            $databaseHelper->execute($sql);
 
             //delete the images
             $files = glob(__DIR__ . '/../../public/room/image/*'); // get all file names
