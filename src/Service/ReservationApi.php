@@ -789,7 +789,7 @@ class ReservationApi
             }
 
             //validate adults
-            if (strlen($adultGuests) > 2 || strlen($adultGuests) == 0 || !is_numeric($adultGuests) || intval($adultGuests) < 0) {
+            if (strlen($adultGuests) > 2 || strlen($adultGuests) == 0 || !is_numeric($adultGuests) || intval($adultGuests) < 1) {
                 return array(
                     'result_message' => "Number of adult guests length should be between 1 and 2 and should be a positive number",
                     'result_code' => 1
@@ -812,6 +812,24 @@ class ReservationApi
                     'result_code' => 1
                 );
             }
+
+            //validate dates
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkOutDate)) {
+                return array(
+                    'result_message' => "Check-out date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkInDate)) {
+                return array(
+                    'result_message' => "Check-in date invalid",
+                    'result_code' => 1
+                );
+            }
+
+
 
             $checkInDateDateObject = new DateTime($checkInDate);
             $checkOutDateDateObject = new DateTime($checkOutDate);
@@ -861,6 +879,8 @@ class ReservationApi
                     );
                 }
             }
+
+
 
 
             //get property Id

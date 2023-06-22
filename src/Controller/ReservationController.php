@@ -511,6 +511,14 @@ class ReservationController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
 
+        if (!DateTime::createFromFormat('Y-m-d', $request->get('date'))) {
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Date note valid",
+            );
+            return new JsonResponse($response , 200, array());
+        }
+
         $nowDate = new DateTime($request->get('date'));
         $now = new DateTime();
 
@@ -521,6 +529,8 @@ class ReservationController extends AbstractController
             );
             return new JsonResponse($response , 200, array());
         }
+
+
 
         $response = $reservationApi->createReservation($request->get('room_ids'), $request->get('name'), $request->get('phone_number'),
             $request->get('email'), $request->get('check_in_date'), $request->get('check_out_date'), $request, $request->get('adult_guests'), $request->get('child_guests'), null, false, "website", "website", $request->get('smoking'));
@@ -545,6 +555,15 @@ class ReservationController extends AbstractController
 
         $parameters = json_decode($request->getContent(), true);
         $logger->info($parameters['name']);
+
+        if (!DateTime::createFromFormat('Y-m-d', $parameters['date'])) {
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Date note valid",
+            );
+            return new JsonResponse($response , 200, array());
+        }
+
         $nowDate = new DateTime($parameters['date']);
         $now = new DateTime();
 

@@ -121,10 +121,19 @@ class PaymentApi
             $numberOfReservations = count($reservationIdsArray);
 
             //validate the amount is positive
-            if(!is_numeric($amount) || intval($amount) < 1){
+            if(!is_numeric($amount) || intval($amount) < 1 ||  strlen($amount) < 1){
                 $responseArray[] = array(
                     'result_code' => 1,
                     'result_message' => 'Amount must be numeric and can not be less than 1'
+                );
+                return $responseArray;
+            }
+
+            //validate the amount is positive
+            if(strlen($amount) > 4){
+                $responseArray[] = array(
+                    'result_code' => 1,
+                    'result_message' => 'Amount number of characters should be a max of 4'
                 );
                 return $responseArray;
             }
