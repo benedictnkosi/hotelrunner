@@ -655,7 +655,7 @@ class RoomApi
             //check description length
             if (strlen($description) < 50 || strlen($description) > 500) {
                 $responseArray[] = array(
-                    'result_message' => "Description length should be between 50 and 50",
+                    'result_message' => "Description length should be between 50 and 500",
                     'result_code' => 1
                 );
                 return $responseArray;
