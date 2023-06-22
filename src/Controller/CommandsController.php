@@ -306,7 +306,7 @@ class CommandsController extends AbstractController
             $sql = "delete from user where id > 0;";
             $databaseHelper->execute($sql);
             $sql = "INSERT INTO `user` (`id`, `email`, `roles`, `password`, `property`) VALUES
-('admin@aluve.com', '[\"ROLE_ADMIN\"]', '$2y$13$6ffQ7/M.uHCi9L/XkrxNo.xODYabUQYwpXZRiUU0.qQOul6dvUnK6', 3);";
+(NULL,'admin@aluve.com', '[\"ROLE_ADMIN\"]', '$2y$13$6ffQ7/M.uHCi9L/XkrxNo.xODYabUQYwpXZRiUU0.qQOul6dvUnK6', 3);";
             $databaseHelper->execute($sql);
 
             //delete the images
