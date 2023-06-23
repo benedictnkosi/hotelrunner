@@ -409,7 +409,7 @@ class GuestApi
             if ($propertyId === null) {
                 $propertyId = $propertyApi->getPropertyIdByHost($request);
             }
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($phoneNumber)), 'property' => $propertyId, 'state' => 'Active'));
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => $phoneNumber,  'state' => 'Active'));
         } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),

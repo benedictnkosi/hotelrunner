@@ -952,7 +952,7 @@ class ReservationApi
                     if (!empty($phoneNumber)) {
                         $guest = $guestApi->getGuestByPhoneNumber($phoneNumber, $request, $room->getProperty()->getId());
                     }
-                } elseif (strlen($phoneNumber) > 1) {
+                } else {
                     $guest = $guestApi->getGuestByPhoneNumber($phoneNumber, $request, $room->getProperty()->getId());
                 }
 
