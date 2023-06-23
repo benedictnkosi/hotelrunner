@@ -982,6 +982,12 @@ class ReservationApi
                         $guest = $response[0]['guest'];
                     }
                 } else {
+                    //update guest details
+                    $guest->setName($guestName);
+                    $guest->setEmail($email);
+                    $this->em->persist($guest);
+                    $this->em->flush($guest);
+
                     if (strcmp($guest->getState(), "blocked") === 0) {
                         $responseArray = array(
                             'result_code' => 1,
