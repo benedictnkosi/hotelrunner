@@ -762,8 +762,8 @@ class ReservationApi
             }
 
             //validate phone number is numbers only
-            $phoneNumberWithPlus = str_replace("+", "", $phoneNumber);
-            if (!is_numeric($phoneNumberWithPlus)) {
+            $phoneNumberWithoutPlus = str_replace("+", "", $phoneNumber);
+            if (!is_numeric($phoneNumberWithoutPlus)) {
                 return array(
                     'result_code' => 1,
                     'result_message' => 'Phone number is not numeric'
