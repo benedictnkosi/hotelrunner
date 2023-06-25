@@ -8,6 +8,7 @@ use App\Helpers\FormatHtml\RoomImagesHTML;
 use App\Helpers\FormatHtml\RoomsPageHTML;
 use App\Service\AddOnsApi;
 use App\Service\PropertyApi;
+use App\Service\ReservationApi;
 use App\Service\RoomApi;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
@@ -335,5 +336,53 @@ class RoomController extends AbstractController
 
         $logger->info($jsonContent);
         return new JsonResponse($jsonContent, 200, array(), true);
+    }
+
+
+    /**
+     * @Route("/api/rooms/upload/")
+     * @throws \Exception
+     */
+    public function uploadRooms(Request $request, LoggerInterface $logger, RoomApi $roomApi): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Internal server errors" , 500, array());
+        }
+
+        $file = $request->files->get('file');
+        $logger->debug("File name is : " .$_FILES['file']['name'] );
+        $ext =  $this->getExtension($_FILES['file']['name']);
+
+        if (strcmp($ext, "dat")!== 0)
+        {
+            $logger->error("Invalid extension");
+            return new JsonResponse("Unsupported Media Type" , 415, array());
+        }
+
+        if (empty($file))
+        {
+            $logger->info("No file specified");
+            return new JsonResponse("No file specified" , 422, array());
+        }
+
+        $logger->info("File : " . file_get_contents($file));
+
+        $response = $roomApi->uploadRooms(file_get_contents($file));
+        $callback = $request->get('callback');
+        $response = new JsonResponse($response, 201, array());
+        $response->setCallback($callback);
+        return $response;
+    }
+
+    function getExtension($string): string
+    {
+        try {
+            $parts = explode(".", $string);
+            $ext = strtolower($parts[count($parts) - 1]);
+        } catch (Exception $c) {
+            $ext = "";
+        }
+        return $ext;
     }
 }

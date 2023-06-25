@@ -9,6 +9,7 @@ use App\Entity\ReservationStatus;
 use App\Helpers\SMSHelper;
 use DateTime;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use phpDocumentor\Reflection\Types\Void_;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -194,10 +195,10 @@ class GuestApi
         return $responseArray;
     }
 
+    #[ArrayShape(['result_code' => "int", 'result_message' => "string"])]
     public function updateGuestIdNumber($guestId, $IdNumber): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             //check if ID not linked to a blocked guest
             $blockedGuest = $this->em->getRepository(Guest::class)->findOneBy(array('idNumber' => $IdNumber, 'state' => 'blocked'));
@@ -209,69 +210,103 @@ class GuestApi
             }
 
             $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if ($guest === null) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Guest not found for id ' . $guestId
+                );
+            }
 
-
-            //validate SOuth african ID number
+            //validate South african ID number
             if (is_numeric($IdNumber) && strlen($IdNumber) === 13) {
                 $num_array = str_split($IdNumber);
 
                 // Validate the day and month
+                $currentYear = intval(date("Y"));
+                $id_year = intval( $num_array[0] . $num_array[1]);
+                //if id year is not older than 100 yrs and it is less than or equal to 99. add 19 infront. else i2000
+                if($id_year <= 99 && $id_year >  $currentYear - 100){
+                    $id_year = intval( "19" . $num_array[0] . $num_array[1]);
+                }else{
+                    $id_year = intval( "20" . $num_array[0] . $num_array[1]);
+                }
 
+                $guestAge = $currentYear - $id_year;
                 $id_month = $num_array[2] . $num_array[3];
 
                 $id_day = $num_array[4] . $num_array[5];
 
-                if ( $id_month < 1 || $id_month > 12) {
-                    $errors = true;
+                //validate year
+                if ($id_year > $currentYear) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number year invalid ' . $id_year . " , " . $currentYear
+                    );
                 }
 
-                if ( $id_day < 1 || $id_day > 31) {
-                    $errors = true;
+                //validate guest age from id
+                if ($guestAge < 18) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'Guest is too young to stay with us'
+                    );
+                }
+
+
+                if ($id_month < 1 || $id_month > 12) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number date invalid'
+                    );
+                }
+
+                if ($id_day < 1 || $id_day > 31) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number date invalid'
+                    );
                 }
 
                 // Validate gender
                 $id_gender = $num_array[6] >= 5 ? 'male' : 'female';
-                if ($guest->getName() && strtolower($guest->getName()) !== $id_gender) {
-                    $errors = true;
+                if ($guest->getGender() && strtolower($guest->getGender()) !== $id_gender && !$this->defectApi->isDefectEnabled("view_reservation_16")) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number gender invalid'
+                    );
                 }
 
                 // citizenship as per id number
                 $id_foreigner = $num_array[10];
 
                 // citizenship as per submission
-                if ( ( $guest->getName() || $id_foreigner ) && (int)$guest->getName() !== (int)$id_foreigner ) {
-                    $errors = true;
+                if (($guest->getCitizenship() || $id_foreigner) && (int)$guest->getCitizenship() !== (int)$id_foreigner) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number citizenship invalid'
+                    );
                 }
-            }else{
-                $errors = true;
-            }
-
-
-            if ($guest === null) {
-                $responseArray = array(
-                    'result_code' => 1,
-                    'result_message' => 'Guest not found for id ' . $guestId
-                );
             } else {
-                $guest->setIdNumber($IdNumber);
-                $this->em->persist($guest);
-                $this->em->flush($guest);
-                $responseArray = array(
-                    'result_code' => 0,
-                    'result_message' => 'Successfully updated guest ID number'
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'ID number must be numeric and 13 digits'
                 );
             }
+
+            $guest->setIdNumber($IdNumber);
+            $this->em->persist($guest);
+            $this->em->flush($guest);
+            return array(
+                'result_code' => 0,
+                'result_message' => 'Successfully updated guest ID number'
+            );
 
         } catch (Exception $ex) {
-            $responseArray = array(
+            return array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
-            $this->logger->error(print_r($responseArray, true));
         }
-
-        $this->logger->debug("Ending Method before the return: " . __METHOD__);
-        return $responseArray;
     }
 
     public function createAirbnbGuest($confirmationCode, $name): ?array
@@ -354,7 +389,7 @@ class GuestApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         try {
             if (strlen($filterValue) == 12) {
-                $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => trim($filterValue),  'state' => 'Active'));
+                $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => trim($filterValue), 'state' => 'Active'));
                 if ($guest == null) {
                     $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($filterValue))));
                 }
@@ -409,7 +444,7 @@ class GuestApi
             if ($propertyId === null) {
                 $propertyId = $propertyApi->getPropertyIdByHost($request);
             }
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => $phoneNumber,  'state' => 'Active'));
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => $phoneNumber, 'state' => 'Active'));
         } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),

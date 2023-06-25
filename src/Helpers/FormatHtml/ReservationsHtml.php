@@ -103,7 +103,9 @@ class ReservationsHtml
         $htmlString = '';
 
         foreach ($reservations as $reservation) {
-
+            if(is_array($reservation)){
+                return "";
+            }
             if (strcmp($reservation->getCheckIn()->format("Y-m-d"), $tempDate->format("Y-m-d")) == 0) {
                 $todayCheckIns[] = ($reservation);
             }
@@ -174,7 +176,9 @@ class ReservationsHtml
             $allReservations = array();
 
             foreach ($reservations as $reservation) {
-
+                if(is_array($reservation)){
+                    return;
+                }
                 $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
                 $totalPrice = intval($reservation->getRoom()->getPrice()) * $totalDays;
 
@@ -214,6 +218,9 @@ class ReservationsHtml
             $allReservations = array();
 
             foreach ($reservations as $reservation) {
+                if(is_array($reservation)){
+                    return;
+                }
                 $reservationId = str_pad($reservation->GetId(), 5, "0", STR_PAD_LEFT);
                 $roomName = str_pad($reservation->getRoom()->getName(), 36);
                 $roomPrice = str_pad($reservation->getRoom()->getPrice(), 9,"0", STR_PAD_LEFT);
@@ -229,6 +236,7 @@ class ReservationsHtml
                 $roomId = str_pad($reservation->getRoom()->getId(), 4, "0", STR_PAD_LEFT);
                 $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
                 $totalPrice = intval($reservation->getRoom()->getPrice()) * $totalDays;
+                $status = str_pad($reservation->getStatus()->getName(), 12);
 
                 $gl = $totalPrice / 1.15;
                 $vat = $totalPrice - $gl;
@@ -237,11 +245,12 @@ class ReservationsHtml
                 $gl = str_pad($gl, 9,"0", STR_PAD_LEFT);
                 $vat = str_pad($vat, 9,"0", STR_PAD_LEFT);
                 $totalPrice = str_pad($totalPrice, 9,"0", STR_PAD_LEFT);
-                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId . "TP" .$totalPrice .  "\n";
+
+                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId .$status. "TP" .$totalPrice .  "\n";
                 fwrite($cfile, $row);
-                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId . "GL" .$gl .  "\n";
+                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId .$status. "GL" .$gl .  "\n";
                 fwrite($cfile, $row);
-                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId . "VT" .$vat .  "\n";
+                $row = $reservationId. $roomName . $roomPrice . $checkIn . $checkOut. $guestName. $guestPhoneNumber . $origin . $originURL . $uid . $additionalInformation.  $receivedOn . $roomId .$status. "VT" .$vat .  "\n";
                 fwrite($cfile, $row);
             }
 

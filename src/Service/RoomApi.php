@@ -955,5 +955,50 @@ class RoomApi
         }
     }
 
+    public function uploadRooms($roomsString): array
+    {
+        $rooms = explode("\n", trim($roomsString));
+        $this->logger->info("array lines: " . sizeof($rooms));
+        $responseArray = array();
+        foreach ($rooms as $room) {
+            $id = intval(trim(substr($room,0 ,6 )));
+            $price = intval(trim(substr($room, 6, 4)));
+            $sleeps = intval(trim(substr($room, 10, 2)));
+            $status = intval(trim(substr($room, 12, 2)));
+            $linkedRoom = intval(trim(substr($room, 14, 6)));
+            $size = intval(trim(substr($room, 20, 2)));
+            $beds = trim(substr($room, 22, 18));
+            $stairs = intval(trim(substr($room, 40, 2)));
+            $tv = intval(trim(substr($room, 42, 2)));
+            $kidsPolicy = intval(trim(substr($room, 44, 2)));
+            $amenities  = trim(substr($room, 46, 50));
+            $name = trim(substr($room, 96, 50));
+            $description = trim(substr($room, 146, 500));
+            $amenitiesArray = explode(",", $amenities);
+
+            $this->logger->info("if field: " . $id);
+            $this->logger->info("price field: " . $price);
+            $this->logger->info("sleeps field: " . $sleeps);
+            $this->logger->info("status field: " . $status);
+            $this->logger->info("linked room field: " . $linkedRoom);
+            $this->logger->info("size field: " . $size);
+            $this->logger->info("beds field: " . $beds);
+            $this->logger->info("stairs field: " . $stairs);
+            $this->logger->info("tv: " . $tv);
+            $this->logger->info("kids: " . $kidsPolicy);
+            $this->logger->info("amenities: " . $amenities);
+            $this->logger->info("name: " . $name);
+            $this->logger->info("description: " . $description);
+
+            $response = $this->updateCreateRoom($id, $name, $price, $sleeps, $status, $linkedRoom, $size, $beds, $stairs, $tv, $description, $kidsPolicy, json_encode($amenitiesArray));
+            $responseArray[] = array(
+                'result_code' => $response[0]['result_code'],
+                'result_message' => $response[0]['result_message'],
+            );
+        }
+
+        return $responseArray;
+    }
+
 
 }

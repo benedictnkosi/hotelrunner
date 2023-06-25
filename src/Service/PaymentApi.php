@@ -148,6 +148,9 @@ class PaymentApi
 
                     return $responseArray;
                 }
+
+
+
                 $payment = new Payments();
                 $now = new DateTime();
 
@@ -197,6 +200,15 @@ class PaymentApi
                         'result_code' => 1,
                         'result_message' => 'First time guests are not allowed to pay by cash'
                     );
+                    return $responseArray;
+                }
+
+                //validate A user should not be able to pay beyond what is due
+                $due = $this->getTotalDue($reservation->getId());
+                if($amount > $due){
+                    $responseArray[] = array(
+                        'result_code' => 1,
+                        'result_message' => "You cannot pay more than the due amount of $due");
                     return $responseArray;
                 }
 
@@ -351,13 +363,30 @@ class PaymentApi
     public function addDiscount($resId, $amount, $channel = null): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
             $payment = new Payments();
             if($reservation == null){
                 return array(
                     'result_message' => "Reservation not found" ,
+                    'result_code' => 1
+                );
+            }
+
+            //validate reservation is for one night
+            $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
+            if($totalDays > 1){
+                return array(
+                    'result_message' => "Discount only allowed for one-night reservations" ,
+                    'result_code' => 1
+                );
+            }
+
+            //validate Discount cannot be more than 50% of the price of the reservation.
+            $halfRoomPrice = $reservation->getRoom()->getPrice() / 2;
+            if($amount > $halfRoomPrice){
+                return array(
+                    'result_message' => "Discount cannot be more than 50% of the price of the room" ,
                     'result_code' => 1
                 );
             }
@@ -418,7 +447,8 @@ class PaymentApi
             //apply discount based on loyalty rewards
             $guestApi = new GuestApi($this->em, $this->logger);
             $stayCount = $guestApi->getGuestStaysCount($guest->getId());
-            if($guest->isRewards()){
+
+            if($guest->isRewards() && $this->defectApi->isFunctionalityEnabled("loyalty_rewards")){
                 //apply discount based on number of stays
                 if($stayCount < 10){
                     $roomPrice = $roomPrice * 0.9;
@@ -429,7 +459,8 @@ class PaymentApi
                 }
             }
 
-
+            $numberOfWeekendNights = $this->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
+            $totalPriceForWeekends = 50 * $numberOfWeekendNights;
 
             $addOnsApi = new AddOnsApi($this->em, $this->logger);
             $addOns = $addOnsApi->getReservationAddOns($resId);
@@ -440,7 +471,7 @@ class PaymentApi
                 $totalPriceForAllAdOns += (intVal($addOn->getAddOn()->getPrice()) * intval($addOn->getQuantity()));
             }
             $totalPrice = intval($roomPrice) * $totalDays;
-            $totalPrice += $totalPriceForAllAdOns;
+            $totalPrice += $totalPriceForAllAdOns + $totalPriceForWeekends;
 
             //payments
             $this->logger->debug("calculating payments " . $resId);
@@ -469,6 +500,8 @@ class PaymentApi
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
+
+
 
     function sendEmailToGuest($reservation, $amountPaid): void
     {
@@ -752,4 +785,34 @@ order by date desc";
         return $responseArray;
     }
 
+    /**
+     * @throws \Exception
+     */
+    function getNumberOfWeekendNights($checkIn, $checkOut): int
+    {
+        $numberOfWeekendDays = 0;
+        $numberOfDays = 0;
+        $newCheckIn = new DateTime($checkIn->format("m/d/Y"));
+        while (strcmp($newCheckIn->format("m/d/Y"), $checkOut->format("m/d/Y")) !== 0 && $numberOfDays < 999) {
+            if ($this->isWeekend($checkOut)) {
+                $numberOfWeekendDays++;
+            }
+
+            $numberOfDays++;
+            $newCheckIn->modify('+1 day');
+            $this->logger->debug("new check in date" . $newCheckIn->format("m/d/Y"));
+            $this->logger->debug("checkout date" . $checkOut->format("m/d/Y"));
+
+        }
+
+        return $numberOfWeekendDays;
+    }
+
+    function isWeekend($date): bool
+    {
+        $weekDay = date('N', strtotime($date->format("m/d/Y")));
+        $this->logger->debug("weekday is " . $weekDay);
+
+        return ($weekDay == 6 || $weekDay == 7);
+    }
 }

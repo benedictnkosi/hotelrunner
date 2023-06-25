@@ -18,6 +18,7 @@ use App\Service\PaymentApi;
 use App\Service\ReservationApi;
 use App\Service\RoomApi;
 use DateTime;
+use Exception;
 use JMS\Serializer\SerializerBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -533,7 +534,7 @@ class ReservationController extends AbstractController
 
 
         $response = $reservationApi->createReservation($request->get('room_ids'), $request->get('name'), $request->get('phone_number'),
-            $request->get('email'), $request->get('check_in_date'), $request->get('check_out_date'), $request, $request->get('adult_guests'), $request->get('child_guests'), null, false, "website", "website", $request->get('smoking'));
+            $request->get('email'), $request->get('check_in_date'), $request->get('check_out_date'), $request, $request->get('adult_guests'), $request->get('child_guests'), null, false, "website", "website", $request->get('smoking'), $request->get('gender'), $request->get('citizenship'));
         $callback = $request->get('callback');
         $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
@@ -603,11 +604,19 @@ class ReservationController extends AbstractController
         }
 
         $file = $request->files->get('file');
+        $logger->debug("File name is : " .$_FILES['file']['name'] );
+        $ext =  $this->getExtension($_FILES['file']['name']);
+
+        if (strcmp($ext, "dat")!== 0)
+        {
+            $logger->error("Invalid extension");
+            return new JsonResponse("Unsupported Media Type" , 415, array());
+        }
+
         if (empty($file))
         {
             $logger->info("No file specified");
-            return new Response("No file specified",
-                Response::HTTP_UNPROCESSABLE_ENTITY, ['content-type' => 'text/plain']);
+            return new JsonResponse("No file specified" , 422, array());
         }
 
         $logger->info("File : " . file_get_contents($file));
@@ -619,6 +628,16 @@ class ReservationController extends AbstractController
         return $response;
     }
 
+    function getExtension($string)
+    {
+        try {
+            $parts = explode(".", $string);
+            $ext = strtolower($parts[count($parts) - 1]);
+        } catch (Exception $c) {
+            $ext = "";
+        }
+        return $ext;
+    }
     /**
      * @Route("/no_auth/import/queue")
      * @throws \Exception

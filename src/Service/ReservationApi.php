@@ -736,12 +736,11 @@ class ReservationApi
         }
     }
 
-    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "no"): array
+    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "no", $gender = "female", $citizenship = "0"): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $this->logger->debug("child" . $childGuests);
         $this->logger->debug("adult" . $adultGuests);
-        $responseArray = array();
         $blockRoomApi = new BlockedRoomApi($this->em, $this->logger);
         $room = null;
         try {
@@ -829,7 +828,22 @@ class ReservationApi
                 );
             }
 
+            //validate citizenship
+            if (!is_numeric($citizenship) ||
+                (intval($citizenship) !== 0 && intval($citizenship) !== 1)) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Citizenship is invalid'
+                );
+            }
 
+            //validate gender
+            if (strcmp($gender, "female") !== 0 && strcmp($gender, "male") !== 0) {
+                return array(
+                    'result_message' => "Gender value is invalid",
+                    'result_code' => 1
+                );
+            }
 
             $checkInDateDateObject = new DateTime($checkInDate);
             $checkOutDateDateObject = new DateTime($checkOutDate);
@@ -980,11 +994,17 @@ class ReservationApi
                         return $response;
                     } else {
                         $guest = $response[0]['guest'];
+                        $guest->setGender($gender);
+                        $guest->setCitizenship($citizenship);
+                        $this->em->persist($guest);
+                        $this->em->flush($guest);
                     }
                 } else {
                     //update guest details
                     $guest->setName($guestName);
                     $guest->setEmail($email);
+                    $guest->setGender($gender);
+                    $guest->setCitizenship($citizenship);
                     $this->em->persist($guest);
                     $this->em->flush($guest);
 

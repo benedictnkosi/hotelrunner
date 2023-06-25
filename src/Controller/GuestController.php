@@ -112,7 +112,7 @@ class GuestController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-        $response = $guestApi->updateGuestIdNumber($parameters['id'], $parameters['id_number']);
+        $response = $guestApi->updateGuestIdNumber($parameters['guest_id'], $parameters['id_number']);
         return new JsonResponse($response , 200, array());
     }
 

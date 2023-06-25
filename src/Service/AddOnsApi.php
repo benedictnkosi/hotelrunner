@@ -369,7 +369,7 @@ class AddOnsApi
             $this->em->persist($addOn);
             $this->em->flush($addOn);
             $responseArray[] = array(
-                'result_message' => "Successfully created add on",
+                'result_message' => "Successfully created add-on",
                 'result_code' => 0,
                 'id' => $addOn->getId()
             );
@@ -466,6 +466,28 @@ class AddOnsApi
             $responseArray[] = array(
                 'result_message' => $ex->getMessage(),
                 'result_code' => 1
+            );
+        }
+
+        return $responseArray;
+    }
+
+    public function uploadAddons($addonsString): array
+    {
+        $addons = explode("\n", trim($addonsString));
+        $this->logger->info("array lines: " . sizeof($addons));
+        $responseArray = array();
+        foreach ($addons as $addon) {
+            $name = trim(substr($addon, 0, 50));
+            $price = intval(trim(substr($addon,50 ,4 )));
+
+            $this->logger->info("name: " . $name);
+            $this->logger->info("price: " . $price);
+
+            $response = $this->createAddOn($name, $price);
+            $responseArray[] = array(
+                'result_code' => $response[0]['result_code'],
+                'result_message' => $response[0]['result_message'],
             );
         }
 

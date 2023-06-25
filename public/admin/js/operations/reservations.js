@@ -23,6 +23,8 @@ $(document).ready(function () {
         }
 
     });
+
+
 });
 
 function loadReservationsPageData() {
@@ -680,6 +682,9 @@ function uploadReservations() {
         }
     });
 }
+
+
+
 
 function addGuestPhone(event) {
     const id = $('#guest_phone_input').attr("data-guestid");
