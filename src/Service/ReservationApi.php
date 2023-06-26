@@ -797,7 +797,7 @@ class ReservationApi
             }
 
             //validate kids
-            if (strlen($childGuests) > 2 || strlen($childGuests) == 0 || !is_numeric($childGuests) || intval($adultGuests) < 0) {
+            if (strlen($childGuests) > 2 || strlen($childGuests) == 0 || !is_numeric($childGuests) || intval($childGuests) < 0) {
                 return array(
                     'result_message' => "Number of child guests length should be between 1 and 2 and should be a positive number",
                     'result_code' => 1
@@ -808,7 +808,7 @@ class ReservationApi
             //validate smoker
             if (strcmp($smoker, "yes") !== 0 && strcmp($smoker, "no") !== 0) {
                 return array(
-                    'result_message' => "The smoker value is invalid - " . $smoker,
+                    'result_message' => "The smoker value is invalid",
                     'result_code' => 1
                 );
             }

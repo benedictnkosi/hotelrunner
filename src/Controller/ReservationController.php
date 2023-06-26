@@ -514,7 +514,7 @@ class ReservationController extends AbstractController
         if (!DateTime::createFromFormat('Y-m-d', $request->get('date'))) {
             $response = array(
                 'result_code' => 1,
-                'result_message' => "Date note valid",
+                'result_message' => "Date not valid",
             );
             return new JsonResponse($response , 200, array());
         }
@@ -559,7 +559,7 @@ class ReservationController extends AbstractController
         if (!DateTime::createFromFormat('Y-m-d', $parameters['date'])) {
             $response = array(
                 'result_code' => 1,
-                'result_message' => "Date note valid",
+                'result_message' => "Date not valid",
             );
             return new JsonResponse($response , 200, array());
         }
