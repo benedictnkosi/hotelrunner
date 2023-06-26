@@ -68,7 +68,6 @@ class GuestApi
     public function updateGuestPhoneNumber($guestId, $phoneNumber): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
             if ($guest === null) {
@@ -213,7 +212,7 @@ class GuestApi
             if ($guest === null) {
                 return array(
                     'result_code' => 1,
-                    'result_message' => 'Guest not found for id ' . $guestId
+                    'result_message' => 'Guest not found'
                 );
             }
 
@@ -223,10 +222,14 @@ class GuestApi
 
                 // Validate the day and month
                 $currentYear = intval(date("Y"));
+
                 $id_year = intval( $num_array[0] . $num_array[1]);
                 //if id year is not older than 100 yrs and it is less than or equal to 99. add 19 infront. else i2000
-                if($id_year <= 99 && $id_year >  $currentYear - 100){
+                if($id_year <= 99){
                     $id_year = intval( "19" . $num_array[0] . $num_array[1]);
+                    if($id_year <  $currentYear - 100){
+                        $id_year = intval( "20" . $num_array[0] . $num_array[1]);
+                    }
                 }else{
                     $id_year = intval( "20" . $num_array[0] . $num_array[1]);
                 }
@@ -238,9 +241,11 @@ class GuestApi
 
                 //validate year
                 if ($id_year > $currentYear) {
+                    $this->logger->debug("id year is $id_year current year is $currentYear");
+
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number year invalid ' . $id_year . " , " . $currentYear
+                        'result_message' => 'ID number is invalid'
                     );
                 }
 
@@ -256,14 +261,14 @@ class GuestApi
                 if ($id_month < 1 || $id_month > 12) {
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number date invalid'
+                        'result_message' => 'ID number is invalid'
                     );
                 }
 
                 if ($id_day < 1 || $id_day > 31) {
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number date invalid'
+                        'result_message' => 'ID number is invalid'
                     );
                 }
 
@@ -272,7 +277,7 @@ class GuestApi
                 if ($guest->getGender() && strtolower($guest->getGender()) !== $id_gender && !$this->defectApi->isDefectEnabled("view_reservation_16")) {
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number gender invalid'
+                        'result_message' => 'ID number is invalid'
                     );
                 }
 
@@ -283,13 +288,13 @@ class GuestApi
                 if (($guest->getCitizenship() || $id_foreigner) && (int)$guest->getCitizenship() !== (int)$id_foreigner) {
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number citizenship invalid'
+                        'result_message' => 'ID number is invalid'
                     );
                 }
             } else {
                 return array(
                     'result_code' => 1,
-                    'result_message' => 'ID number must be numeric and 13 digits'
+                    'result_message' => 'ID number is invalid'
                 );
             }
 
@@ -362,7 +367,12 @@ class GuestApi
         $responseArray = array();
         try {
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $reservationId));
-
+            if($reservation == null){
+                return array(
+                    'result_code' => 1,
+                    'result_message' => "Reservation not found",
+                );
+            }
             $guest = $reservation->getGuest();
             $guest->setState("blocked");
             $guest->setComments($reason);

@@ -27,10 +27,19 @@ class NotesApi
     public function addNote($resId, $note)
     {
         $this->logger->debug("Starting Method: " . __METHOD__ );
-        $responseArray = array();
         try{
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id'=>$resId));
             $reservationNotes = new ReservationNotes();
+
+            //check note length
+            if (strlen($note) > 100) {
+                $responseArray[] = array(
+                    'result_message' => "Note is invalid",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
             if($reservation == null){
                 return array(
                     'result_message' => "Reservation not found" ,

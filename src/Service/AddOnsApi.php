@@ -137,7 +137,6 @@ class AddOnsApi
     public function addAdOnToReservation($resId, $adOnId, $quantity): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array('id' => intval($adOnId)));
             if ($addOn == null) {
@@ -149,10 +148,19 @@ class AddOnsApi
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => intval($resId)));
             if ($reservation == null) {
                 return array(
-                    'result_message' => "Reservation not found",
+                    'result_message' => "Reservation not founds",
                     'result_code' => 1
                 );
             }
+
+            //validate quantity
+            if (strlen($quantity) > 2 || strlen($quantity) == 0 || !is_numeric($quantity) || intval($quantity) < 1) {
+                return array(
+                    'result_message' => "Quantity is invalid",
+                    'result_code' => 1
+                );
+            }
+
             $resAddOn = new ReservationAddOns();
             $resAddOn->setAddOn($addOn);
             if($this->defectApi->isDefectEnabled("view_reservation_10")) {

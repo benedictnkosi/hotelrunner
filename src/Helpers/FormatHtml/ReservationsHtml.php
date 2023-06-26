@@ -231,6 +231,7 @@ class ReservationsHtml
                 $origin = str_pad($reservation->getOrigin(), 46);
                 $originURL = str_pad($reservation->getOriginUrl(), 46);
                 $uid = str_pad($reservation->getUid(), 72);
+                $additionalInformation = str_pad($reservation->getAdditionalInfo(), 108);
                 $receivedOn = str_pad($reservation->getReceivedOn()->format('Y-m-d'), 10);
                 $roomId = str_pad($reservation->getRoom()->getId(), 4, "0", STR_PAD_LEFT);
                 $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));

@@ -21,7 +21,7 @@ class AddOnController extends AbstractController
     /**
      * @Route("api/addon/{addonid}/reservation/{reservationId}/quantity/{quantity}")
      */
-    public function addAdOnToReservation($addonid, $reservationId, $quantity, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
+    public function addAddOnToReservation($addonid, $reservationId, $quantity, Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
@@ -49,11 +49,7 @@ class AddOnController extends AbstractController
         if ($response['result_code'] === 0) {
             return new JsonResponse($response, 201, array());
         } else {
-            $responseArray[] = array(
-                'result_message' => $response['result_message'],
-                'result_code' => 1
-            );
-            return new JsonResponse($responseArray, 200, array());
+            return new JsonResponse($response, 200, array());
         }
 
     }

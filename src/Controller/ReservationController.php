@@ -290,6 +290,7 @@ class ReservationController extends AbstractController
 
     /**
      * @Route("api/json/reservations/update")
+     * @throws Exception
      */
     public function updateReservationJson(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi,  NotesApi $notesApi, DefectApi $defectApi): Response
     {
@@ -328,6 +329,28 @@ class ReservationController extends AbstractController
                     );
                     return new JsonResponse($responseArray, 200 , array());
                 }
+
+                //validate current status is not pending for cancellations
+                if(strcmp($reservation->getStatus()->getName(), "pending") == 0
+                && strcmp($status->getName(), "cancelled") == 0){
+                    $responseArray[] = array(
+                        'result_message' => "Pending reservations cannot be cancelled",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+
+                //validate reservation is not in the past for cancellations
+                $checkOutDate = new DateTime($reservation->getCheckout());
+                $now = new DateTime('today midnight');
+                if($checkOutDate < $now){
+                    $responseArray[] = array(
+                        'result_message' => "Past reservations cannot be cancelled",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+
                 $reservation->SetStatus($status);
                 $notesApi->addNote($reservation->getId(), "Status Changed to " .$newValue. " at " . $now->format("Y-m-d H:i"));
 
@@ -419,6 +442,9 @@ class ReservationController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
+        if(is_array($reservation)){
+            return new JsonResponse($reservation, 200, array());
+        }
         $response = $reservationApi->updateReservationDate($reservation, $checkInDate, $checkOutDate, $blockedRoomApi);
 
         $callback = $request->get('callback');

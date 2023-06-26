@@ -121,19 +121,10 @@ class PaymentApi
             $numberOfReservations = count($reservationIdsArray);
 
             //validate the amount is positive
-            if(!is_numeric($amount) || intval($amount) < 1 ||  strlen($amount) < 1){
+            if(!is_numeric($amount) || intval($amount) < 1 ||  strlen($amount) < 1 || strlen($amount) > 4){
                 $responseArray[] = array(
                     'result_code' => 1,
-                    'result_message' => 'Amount must be numeric and can not be less than 1'
-                );
-                return $responseArray;
-            }
-
-            //validate the amount is positive
-            if(strlen($amount) > 4){
-                $responseArray[] = array(
-                    'result_code' => 1,
-                    'result_message' => 'Amount number of characters should be a max of 4'
+                    'result_message' => 'Amount is invalid'
                 );
                 return $responseArray;
             }
@@ -161,7 +152,7 @@ class PaymentApi
                             && strcmp(strtolower($channel), "card") !== 0){
                     $responseArray[] = array(
                         'result_code' => 1,
-                        'result_message' => 'Channel not allowed'
+                        'result_message' => 'Channel is invalid'
                     );
                     return $responseArray;
                 }
@@ -173,7 +164,7 @@ class PaymentApi
                         || strrpos($reference, "/") !== 7) {
                         $responseArray[] = array(
                             'result_code' => 1,
-                            'result_message' => 'Card payment reference format incorrect'
+                            'result_message' => 'Payment reference is invalid'
                         );
                         return $responseArray;
                     }
@@ -184,7 +175,7 @@ class PaymentApi
                     if (strlen($reference) > 30 || strlen($reference) < 4){
                         $responseArray[] = array(
                             'result_code' => 1,
-                            'result_message' => 'Payment reference for transfer must be between 4 and 30 characters'
+                            'result_message' => 'Payment reference is invalid'
                         );
                         return $responseArray;
                     }
@@ -371,6 +362,15 @@ class PaymentApi
                     'result_message' => "Reservation not found" ,
                     'result_code' => 1
                 );
+            }
+
+            //validate amount
+            if (strlen($amount) > 4 || !is_numeric($amount) || intval($amount) < 1) {
+                $responseArray[] = array(
+                    'result_message' => "Amount is invalid",
+                    'result_code' => 1
+                );
+                return $responseArray;
             }
 
             //validate reservation is for one night
