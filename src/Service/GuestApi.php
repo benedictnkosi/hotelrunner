@@ -39,7 +39,7 @@ class GuestApi
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $propertyId));
             $guest = new Guest();
             $guest->setName($name);
-            $guest->setPhoneNumber(str_replace("+27", "0", trim($phoneNumber)));
+            $guest->setPhoneNumber($phoneNumber);
             $guest->setEmail($email);
             $guest->setProperty($property);
             $guest->setComments($origin);
