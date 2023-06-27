@@ -43,7 +43,13 @@ class BlockedRoomController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $blockedRoomApi->blockRoom($parameters['room_id'],  $parameters['start_date'], $parameters['end_date'], urldecode($parameters['note']));
         return new JsonResponse($response , 201, array());
     }

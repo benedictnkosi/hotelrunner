@@ -299,6 +299,13 @@ class ReservationController extends AbstractController
         }
 
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $reservation = $reservationApi->getReservation($parameters['id']);
         if(is_array($reservation)){
             $responseArray[] = array(
@@ -437,6 +444,13 @@ class ReservationController extends AbstractController
         }
 
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $reservation = $reservationApi->getReservation($parameters["id"]);
         if(is_array($reservation)){
             return new JsonResponse($reservation, 200, array());
@@ -473,7 +487,13 @@ class ReservationController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $reservation = $reservationApi->getReservation($parameters['reservation_id']);
         if(is_array($reservation)){
             return new JsonResponse($reservation, 200, array());
@@ -554,6 +574,13 @@ class ReservationController extends AbstractController
         }
 
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $logger->info($parameters['name']);
 
         if (!DateTime::createFromFormat('Y-m-d', $parameters['date'])) {
@@ -777,6 +804,13 @@ class ReservationController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $guestApi->blockGuest($parameters['reservations_id'], $parameters['reason']);
         return new JsonResponse($response , 200, array());
     }
@@ -807,7 +841,13 @@ class ReservationController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $addOnsApi->removeAddOnFromReservation($parameters['add_on_id']);
         if ($response[0]['result_code'] === 0) {
             return new JsonResponse($response , 204, array());

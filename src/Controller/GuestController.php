@@ -112,6 +112,13 @@ class GuestController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $guestApi->updateGuestIdNumber($parameters['id'], $parameters['id_number']);
         return new JsonResponse($response , 200, array());
     }
@@ -142,7 +149,13 @@ class GuestController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $guests = $guestApi->getConfigGuests($parameters['name_filter']);
 
         $serializer = SerializerBuilder::create()->build();
@@ -212,7 +225,13 @@ class GuestController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = match ($parameters["field"]) {
             "name" => $guestApi->updateGuestName($parameters["guest_id"], $parameters["new_value"]),
             "rewards" => $guestApi->updateGuestRewards($parameters["guest_id"], $parameters["new_value"]),

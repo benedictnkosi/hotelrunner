@@ -44,7 +44,13 @@ class AddOnController extends AbstractController
             return new JsonResponse("Method Not Allowed", 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $addOnsApi->addAdOnToReservation($parameters['reservation_id'], $parameters['add_on_id'], $parameters['quantity']);
         if ($response['result_code'] === 0) {
             return new JsonResponse($response, 201, array());

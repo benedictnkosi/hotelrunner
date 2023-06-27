@@ -43,6 +43,13 @@ class PaymentController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $paymentApi->addPayment($parameters['reservation_id'], $parameters['amount'], str_replace("_","/",$parameters['reference']), $parameters['channel']);
         if ($response[0]['result_code'] === 0) {
             $response = new JsonResponse($response , 201, array());
@@ -100,6 +107,13 @@ class PaymentController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         $response = $paymentApi->addDiscount($parameters['id'], $parameters['amount'], "discount");
         return new JsonResponse($response , 201, array());
     }
@@ -178,7 +192,13 @@ class PaymentController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $parameters = json_decode($request->getContent(), true);
-
+        if($parameters == null){
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid body string",
+            );
+            return new JsonResponse($response , 200, array());
+        }
         if ($parameters['group']) {
             $response = $paymentApi->getCashReportByDayJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
         }else{
