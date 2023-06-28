@@ -100,6 +100,7 @@ class ReservationApi
                     'check_in_time' => $reservation->getCheckInTime(),
                     'check_out_time' => $reservation->getCheckOutTime(),
                     'checked_in_time' => $reservation->getCheckedInTime(),
+                    'received_on' => $reservation->getReceivedOn()->format('Y-m-d H:i:s'),
                     'room_id' => $reservation->getRoom()->getId(),
                     'room_name' => $reservation->getRoom()->getName(),
                     'total_paid' => $totalPayment,
