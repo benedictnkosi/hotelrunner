@@ -262,7 +262,8 @@ class PaymentApi
                         $this->sendEmailToGuest($reservation, $amountPerReservation);
                         $responseArray[] = array(
                             'result_code' => 0,
-                            'result_message' => 'Successfully added payment'
+                            'result_message' => 'Successfully added payment',
+                            'payment_id' => $payment->getId()
                         );
 
                         $this->logger->debug("no errors adding payment for reservation $resId. amount $amount");
