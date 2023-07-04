@@ -449,12 +449,18 @@ class GuestApi
         $responseArray = array();
         try {
             $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if($guest == null){
+                return array(
+                    'result_message' => "Guest not found",
+                    'result_code' => 1
+                );
+            }
         } catch (Exception $exception) {
-            $responseArray[] = array(
+            $this->logger->error(print_r($responseArray, true));
+            return array(
                 'result_message' => $exception->getMessage(),
                 'result_code' => 1
             );
-            $this->logger->error(print_r($responseArray, true));
         }
 
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
