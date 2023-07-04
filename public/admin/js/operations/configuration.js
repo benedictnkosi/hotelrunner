@@ -12,6 +12,24 @@ $(document).ready(function () {
         importCalendar();
     });
 
+    $("#upload_rooms_form").validate({
+        // Specify validation rules
+        rules: {
+
+        }, submitHandler: function () {
+            uploadRooms();
+        }
+    });
+
+    $("#upload_addons_form").validate({
+        // Specify validation rules
+        rules: {
+
+        }, submitHandler: function () {
+            uploadAddons();
+        }
+    });
+
     createBedsTokenField("");
 });
 
@@ -1329,6 +1347,102 @@ function importCalendar(event) {
     });
 }
 
+function uploadRooms() {
+    $("body").addClass("loading");
+    isUserLoggedIn();
+    let url = "/api/rooms/upload/";
+    const file_data = $("#rooms-fileUploader").prop("files")[0];
+    const form_data = new FormData();
+    form_data.append("file", file_data);
+
+    if ( file_data === undefined ) {
+        showResErrorMessage("configuration","Please upload file");
+        return;
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data:form_data ,
+        dataType: 'script',
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            $("body").removeClass("loading");
+            const arr = JSON.parse(response);
+            let message = "";
+            let isErrors = false;
+            for (let i = 0; i < arr.length; i++){
+                let z = i +1;
+                message +=  arr[i]["result_message"] + "\n";
+                if(arr[i]["result_code"] === 1){
+                    isErrors = true;
+                }
+            }
+
+            if (!isErrors) {
+                showResSuccessMessage("configuration", message);
+                getConfigRooms();
+            } else {
+                showResErrorMessage("configuration",message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $("body").removeClass("loading");
+            showResErrorMessage("configuration", errorThrown);
+        }
+    });
+}
+
+
+function uploadAddons() {
+    $("body").addClass("loading");
+    isUserLoggedIn();
+    let url = "/api/addons/upload/";
+    const file_data = $("#addons-fileUploader").prop("files")[0];
+    const form_data = new FormData();
+    form_data.append("file", file_data);
+
+    if ( file_data === undefined ) {
+        showResErrorMessage("configuration","Please upload file");
+        return;
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data:form_data ,
+        dataType: 'script',
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            $("body").removeClass("loading");
+            const arr = JSON.parse(response);
+            let message = "";
+            let isErrors = false;
+            for (let i = 0; i < arr.length; i++){
+                let z = i +1;
+                message +=  arr[i]["result_message"] + "\n";
+                if(arr[i]["result_code"] === 1){
+                    isErrors = true;
+                }
+            }
+
+            if (!isErrors) {
+                showResSuccessMessage("configuration", message);
+                getAddOns();
+            } else {
+                showResErrorMessage("configuration",message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $("body").removeClass("loading");
+            showResErrorMessage("configuration", errorThrown);
+        }
+    });
+}
 
 function initialiseImageUpload(roomId) {
 

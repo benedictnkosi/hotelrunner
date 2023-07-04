@@ -137,7 +137,6 @@ class AddOnsApi
     public function addAdOnToReservation($resId, $adOnId, $quantity): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             $addOn = $this->em->getRepository(AddOns::class)->findOneBy(array('id' => intval($adOnId)));
             if ($addOn == null) {
@@ -149,10 +148,19 @@ class AddOnsApi
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => intval($resId)));
             if ($reservation == null) {
                 return array(
-                    'result_message' => "Reservation not found",
+                    'result_message' => "Reservation not founds",
                     'result_code' => 1
                 );
             }
+
+            //validate quantity
+            if (strlen($quantity) > 2 || strlen($quantity) == 0 || !is_numeric($quantity) || intval($quantity) < 1) {
+                return array(
+                    'result_message' => "Quantity is invalid",
+                    'result_code' => 1
+                );
+            }
+
             $resAddOn = new ReservationAddOns();
             $resAddOn->setAddOn($addOn);
             if($this->defectApi->isDefectEnabled("view_reservation_10")) {
@@ -369,7 +377,7 @@ class AddOnsApi
             $this->em->persist($addOn);
             $this->em->flush($addOn);
             $responseArray[] = array(
-                'result_message' => "Successfully created add on",
+                'result_message' => "Successfully created add-on",
                 'result_code' => 0,
                 'id' => $addOn->getId()
             );
@@ -466,6 +474,28 @@ class AddOnsApi
             $responseArray[] = array(
                 'result_message' => $ex->getMessage(),
                 'result_code' => 1
+            );
+        }
+
+        return $responseArray;
+    }
+
+    public function uploadAddons($addonsString): array
+    {
+        $addons = explode("\n", trim($addonsString));
+        $this->logger->info("array lines: " . sizeof($addons));
+        $responseArray = array();
+        foreach ($addons as $addon) {
+            $name = trim(substr($addon, 0, 50));
+            $price = intval(trim(substr($addon,50 ,4 )));
+
+            $this->logger->info("name: " . $name);
+            $this->logger->info("price: " . $price);
+
+            $response = $this->createAddOn($name, $price);
+            $responseArray[] = array(
+                'result_code' => $response[0]['result_code'],
+                'result_message' => $response[0]['result_message'],
             );
         }
 

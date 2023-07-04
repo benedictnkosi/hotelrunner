@@ -499,9 +499,83 @@ class ReservationApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
 
-        $responseArray = array();
         try {
             $roomApi = new RoomApi($this->em, $this->logger);
+
+            //validate dates
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkOutDate)) {
+                return array(
+                    'result_message' => "Check-out date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkInDate)) {
+                return array(
+                    'result_message' => "Check-in date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            $checkInDateDateObject = new DateTime($checkInDate);
+            $checkOutDateDateObject = new DateTime($checkOutDate);
+
+            //validate number of nights
+            $totalNights = intval($checkInDateDateObject->diff($checkOutDateDateObject)->format('%a'));
+            if ($totalNights > 30) {
+                return array(
+                    'result_message' => "The maximum number of nights is 30",
+                    'result_code' => 1
+                );
+            }
+
+            //validate checkin dates
+            if (strlen($checkInDate) < 1 || strlen($checkOutDate) < 1) {
+                return array(
+                    'result_message' => "Check-in and check-out date is mandatory",
+                    'result_code' => 1
+                );
+            }
+
+            //validate checkin dates
+            if (!$this->defectApi->isDefectEnabled("create_reservation_10")) {
+                if (strcmp($checkInDate, $checkOutDate) == 0) {
+                    return array(
+                        'result_message' => "Check-in and check-out date can not be the same",
+                        'result_code' => 1
+                    );
+                }
+            }
+
+
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                return array(
+                    'result_message' => "Check-in date can not be after check-out date",
+                    'result_code' => 1
+                );
+            }
+
+            //new dates can not be same as old dates
+            if (strcmp($reservation->getCheckIn()->format("Y-m-d"), $checkInDateDateObject->format("Y-m-d")) == 0
+            && strcmp($reservation->getCheckOut()->format("Y-m-d"), $checkOutDateDateObject->format("Y-m-d")) == 0) {
+                return array(
+                    'result_message' => "Dates are the same, no changes made",
+                    'result_code' => 1
+                );
+            }
+
+            $now = new DateTime('today midnight');
+            if (!$this->defectApi->isDefectEnabled("create_reservation_11")) {
+                if ($checkInDateDateObject < $now) {
+                    return array(
+                        'result_message' => "Check-in date can not be in the past",
+                        'result_code' => 1
+                    );
+                }
+            }
+
             $isRoomAvailable = $roomApi->isRoomAvailable($reservation->getRoom()->getId(), $checkInDate, $checkOutDate, $reservation->getId());
             if ($isRoomAvailable) {
                 $reservation->setCheckIn(new DateTime($checkInDate));
@@ -542,7 +616,6 @@ class ReservationApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
 
-        $responseArray = array();
         try {
             $roomApi = new RoomApi($this->em, $this->logger);
             $isRoomAvailable = $roomApi->isRoomAvailable($roomId, $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"), $reservation->getId());
@@ -554,13 +627,32 @@ class ReservationApi
                         'result_code' => 1
                     );
                 }
+
+                //validate reservation not in the past
+                $checkOutDate = new DateTime($reservation->getCheckout()->format("Y-m-d"));
+                $now = new DateTime('today midnight');
+                if($checkOutDate < $now){
+                    return array(
+                        'result_message' => "Past reservation room cannot be updated",
+                        'result_code' => 1
+                    );
+
+                }
+
+                if($room->getId() == $reservation->getRoom()->getId()){
+                    return array(
+                        'result_message' => "Room is the same, no changes made.",
+                        'result_code' => 1
+                    );
+                }
+
                 $reservation->setRoom($room);
                 $this->em->persist($reservation);
                 $this->em->flush($reservation);
             } else {
                 return array(
                     'result_code' => 1,
-                    'result_message' => 'Selected dates not available'
+                    'result_message' => 'Selected dates are not available'
                 );
             }
 
@@ -737,12 +829,11 @@ class ReservationApi
         }
     }
 
-    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "no"): array
+    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "no", $gender = "female", $citizenship = "0"): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $this->logger->debug("child" . $childGuests);
         $this->logger->debug("adult" . $adultGuests);
-        $responseArray = array();
         $blockRoomApi = new BlockedRoomApi($this->em, $this->logger);
         $room = null;
         try {
@@ -830,7 +921,22 @@ class ReservationApi
                 );
             }
 
+            //validate citizenship
+            if (!is_numeric($citizenship) ||
+                (intval($citizenship) !== 0 && intval($citizenship) !== 1)) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Citizenship is invalid'
+                );
+            }
 
+            //validate gender
+            if (strcmp($gender, "female") !== 0 && strcmp($gender, "male") !== 0) {
+                return array(
+                    'result_message' => "Gender value is invalid",
+                    'result_code' => 1
+                );
+            }
 
             $checkInDateDateObject = new DateTime($checkInDate);
             $checkOutDateDateObject = new DateTime($checkOutDate);
@@ -981,11 +1087,17 @@ class ReservationApi
                         return $response;
                     } else {
                         $guest = $response[0]['guest'];
+                        $guest->setGender($gender);
+                        $guest->setCitizenship($citizenship);
+                        $this->em->persist($guest);
+                        $this->em->flush($guest);
                     }
                 } else {
                     //update guest details
                     $guest->setName($guestName);
                     $guest->setEmail($email);
+                    $guest->setGender($gender);
+                    $guest->setCitizenship($citizenship);
                     $this->em->persist($guest);
                     $this->em->flush($guest);
 

@@ -78,6 +78,20 @@ class Guest
     private $rewards = '0';
 
     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="gender", type="string", length=6, nullable=true)
+     */
+    private $gender;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="citizenship", type="integer", nullable=false)
+     */
+    private $citizenship = '0';
+
+    /**
      * @var Property
      *
      * @ORM\ManyToOne(targetEntity="Property")
@@ -229,6 +243,38 @@ class Guest
     public function setRewards(bool|string $rewards): void
     {
         $this->rewards = $rewards;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getGender(): ?string
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param string|null $gender
+     */
+    public function setGender(?string $gender): void
+    {
+        $this->gender = $gender;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCitizenship(): int|string
+    {
+        return $this->citizenship;
+    }
+
+    /**
+     * @param int $citizenship
+     */
+    public function setCitizenship(int|string $citizenship): void
+    {
+        $this->citizenship = $citizenship;
     }
 
     /**

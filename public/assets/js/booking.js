@@ -246,6 +246,8 @@ function createReservation() {
     const adultGuests = $('#adults').val();
     const childGuests = $('#children').val();
     const smoker = $('#select_smoker').find(":selected").val();
+    const gender = $('#select_gender').find(":selected").val();
+    const citizenship = $('#select_citizenship').find(":selected").val();
     const checkInDate = sessionStorage.getItem('checkInDate');
     const checkOutDate = sessionStorage.getItem('checkOutDate');
 
@@ -278,7 +280,9 @@ function createReservation() {
         check_out_date: checkOutDate,
         email: email,
         date: today,
-        smoking: smoker
+        smoking: smoker,
+        gender: gender,
+        citizenship: citizenship
     };
 
     $.ajax({

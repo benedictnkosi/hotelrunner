@@ -18,6 +18,7 @@ use App\Service\PaymentApi;
 use App\Service\ReservationApi;
 use App\Service\RoomApi;
 use DateTime;
+use Exception;
 use JMS\Serializer\SerializerBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -289,6 +290,7 @@ class ReservationController extends AbstractController
 
     /**
      * @Route("api/json/reservations/update")
+     * @throws Exception
      */
     public function updateReservationJson(Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi, BlockedRoomApi $blockedRoomApi,  NotesApi $notesApi, DefectApi $defectApi): Response
     {
@@ -334,6 +336,28 @@ class ReservationController extends AbstractController
                     );
                     return new JsonResponse($responseArray, 200 , array());
                 }
+
+                //validate current status is not pending for cancellations
+                if(strcmp($reservation->getStatus()->getName(), "pending") == 0
+                && strcmp($status->getName(), "cancelled") == 0){
+                    $responseArray[] = array(
+                        'result_message' => "Pending reservations cannot be cancelled",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+
+                //validate reservation is not in the past for cancellations
+                $checkOutDate = new DateTime($reservation->getCheckout());
+                $now = new DateTime('today midnight');
+                if($checkOutDate < $now){
+                    $responseArray[] = array(
+                        'result_message' => "Past reservations cannot be cancelled",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+
                 $reservation->SetStatus($status);
                 $notesApi->addNote($reservation->getId(), "Status Changed to " .$newValue. " at " . $now->format("Y-m-d H:i"));
 
@@ -425,6 +449,9 @@ class ReservationController extends AbstractController
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $reservation = $reservationApi->getReservation($reservationId);
+        if(is_array($reservation)){
+            return new JsonResponse($reservation, 200, array());
+        }
         $response = $reservationApi->updateReservationDate($reservation, $checkInDate, $checkOutDate, $blockedRoomApi);
 
         $callback = $request->get('callback');
@@ -553,7 +580,7 @@ class ReservationController extends AbstractController
 
 
         $response = $reservationApi->createReservation($request->get('room_ids'), $request->get('name'), $request->get('phone_number'),
-            $request->get('email'), $request->get('check_in_date'), $request->get('check_out_date'), $request, $request->get('adult_guests'), $request->get('child_guests'), null, false, "website", "website", $request->get('smoking'));
+            $request->get('email'), $request->get('check_in_date'), $request->get('check_out_date'), $request, $request->get('adult_guests'), $request->get('child_guests'), null, false, "website", "website", $request->get('smoking'), $request->get('gender'), $request->get('citizenship'));
         $callback = $request->get('callback');
         $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);
@@ -630,11 +657,19 @@ class ReservationController extends AbstractController
         }
 
         $file = $request->files->get('file');
+        $logger->debug("File name is : " .$_FILES['file']['name'] );
+        $ext =  $this->getExtension($_FILES['file']['name']);
+
+        if (strcmp($ext, "dat")!== 0)
+        {
+            $logger->error("Invalid extension");
+            return new JsonResponse("Unsupported Media Type" , 415, array());
+        }
+
         if (empty($file))
         {
             $logger->info("No file specified");
-            return new Response("No file specified",
-                Response::HTTP_UNPROCESSABLE_ENTITY, ['content-type' => 'text/plain']);
+            return new JsonResponse("No file specified" , 422, array());
         }
 
         $logger->info("File : " . file_get_contents($file));
@@ -646,6 +681,16 @@ class ReservationController extends AbstractController
         return $response;
     }
 
+    function getExtension($string)
+    {
+        try {
+            $parts = explode(".", $string);
+            $ext = strtolower($parts[count($parts) - 1]);
+        } catch (Exception $c) {
+            $ext = "";
+        }
+        return $ext;
+    }
     /**
      * @Route("/no_auth/import/queue")
      * @throws \Exception

@@ -32,6 +32,9 @@ class SingleReservationHtml
 
     }
 
+    /**
+     * @throws \Exception
+     */
     public function formatHtml($reservation): string
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -201,6 +204,13 @@ class SingleReservationHtml
             $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . $guest->getIdNumber() . '</a></span></p>';
         }
 
+        $citizenship = "South African";
+        if($guest->getCitizenship() == 1){
+            $citizenship = "Permanent Resident";
+        }
+        $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . ucfirst($guest->getGender()) . " "  . $citizenship . '</a></span></p>';
+
+
         // check if room cleaned for checkout reservations only
         $this->logger->debug("HTML output - check if room cleaned for checkout reservations only " . $reservation->getId());
         $results = $cleaningApi->isRoomCleanedForCheckOut($reservationId);
@@ -338,9 +348,12 @@ class SingleReservationHtml
         }
 
         //add addOn for the weekend nights
-        $numberOfWeekendNights = $this->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
+        $numberOfWeekendNights = $paymentApi->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
         $addOnsHTml .= '<p class="small-font-italic">' . $now->format("d-M") . " - " . $numberOfWeekendNights . " x Weekend nights @ R " . "50.00" . '</p>';
-        $totalPriceForAllAdOns += (50 * $numberOfWeekendNights);
+        if(strcasecmp($reservation->getOrigin(), "website") == 0){
+            $totalPriceForAllAdOns += (50 * $numberOfWeekendNights);
+        }
+
         if ($this->defectApi->isDefectEnabled("view_reservation_13")) {
             $totalPriceForAllAdOns += 1;
         }
@@ -608,32 +621,5 @@ class SingleReservationHtml
 					</div>';
 
         return $htmlString;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    function getNumberOfWeekendNights($checkIn, $checkOut): int
-    {
-        $numberOfWeekendDays = 0;
-        $numberOfDays = 0;
-        $newCheckIn = new DateTime($checkIn->format("m/d/Y"));
-        while (strcmp($newCheckIn->format("m/d/Y"), $checkOut->format("m/d/Y")) !== 0 && $numberOfDays < 10) {
-            $numberOfDays++;
-            $newCheckIn->modify('+1 day');
-            $this->logger->debug("new check in date" . $newCheckIn->format("m/d/Y"));
-            $this->logger->debug("checkout date" . $checkOut->format("m/d/Y"));
-
-            if ($this->isWeekend($checkOut)) {
-                $numberOfWeekendDays++;
-            }
-        }
-
-        return $numberOfWeekendDays;
-    }
-
-    function isWeekend($date): bool
-    {
-        return true;
     }
 }

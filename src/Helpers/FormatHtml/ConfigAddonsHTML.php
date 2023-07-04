@@ -2,6 +2,7 @@
 
 namespace App\Helpers\FormatHtml;
 
+use App\Service\DefectApi;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpParser\Node\Expr\Isset_;
 use Psr\Log\LoggerInterface;
@@ -10,17 +11,25 @@ class ConfigAddonsHTML
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
     }
 
     public function formatHtml($addOns): string
     {
         $html = '';
         if ($addOns != null) {
+            $this->createFlatFile($addOns, "addons.dat");
+
+            if($this->defectApi->isFunctionalityEnabled("download_addons_flatfile")) {
+                $html .= '<a href="/addons.dat" target="_blank" >Download Flat File</a>';
+            }
+
             foreach ($addOns as $addOn) {
                 $html .= '<div class="addon_row">
                         <div class="addon-left-div">
@@ -51,4 +60,32 @@ class ConfigAddonsHTML
 
         return $html;
     }
+
+
+    function createFlatFile($addons, $fileName): void
+    {
+        try {
+            $cfile = fopen($fileName, 'w');
+
+            foreach ($addons as $addon) {
+                if(is_array($addon)){
+                    return;
+                }
+                $id = str_pad($addon->GetId(), 6,"0", STR_PAD_LEFT);
+                $name = str_pad($addon->getName(), 50);
+                $price = str_pad($addon->getPrice(), 4,"0", STR_PAD_LEFT);
+                $quantity = str_pad($addon->getQuantity(), 2,"0", STR_PAD_LEFT);
+                $row = $id. $name. $price . $quantity .  "\n";
+                fwrite($cfile, $row);
+            }
+
+        // Closing the file
+            fclose($cfile);
+        } catch (\Exception $exception) {
+            $this->logger->debug($exception->getMessage());
+        }
+
+
+    }
+
 }
