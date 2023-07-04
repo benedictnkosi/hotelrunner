@@ -105,11 +105,12 @@ class SingleReservationHtml
         $htmlString .= '</h4>';
 
         //room name
-
+        $due = $paymentApi->getTotalDue($reservationId);
         $rooms_disabled = "disabled";
-        if ($this->defectApi->isFunctionalityEnabled("update_reservation_room")) {
+        if ($this->defectApi->isFunctionalityEnabled("update_reservation_room") && $due < 1) {
             $rooms_disabled = "";
         }
+
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-home glyphicon-small-icon" > 
 <select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input" '.$rooms_disabled.'>';
 
@@ -131,7 +132,7 @@ class SingleReservationHtml
 
         $checkInDateDisabled = "";
         if ($this->defectApi->isFunctionalityEnabled("update_reservation_dates")) {
-            if ($reservation->getCheckOut() < $now || (strcasecmp($reservation->getOrigin(), "website") != 0)) {
+            if ($reservation->getCheckOut() < $now || (strcasecmp($reservation->getOrigin(), "website") != 0) || $due > 1) {
                 $checkInDateDisabled = "Disabled";
             }
         } else {
@@ -139,14 +140,10 @@ class SingleReservationHtml
         }
 
 
-        $this->logger->debug(" debug1 - checkin  " . $reservation->getCheckIn()->format("Y-m-d"));
-        $this->logger->debug(" debug1 - checkout  " . $reservation->getCheckOut()->format("Y-m-d"));
-
         $checkOutDate = $reservation->getCheckOut();
         if ($this->defectApi->isDefectEnabled("view_reservation_7")) {
             $checkOutDate->modify('+1 day');
         }
-
 
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-calendar glyphicon-small-icon" > 
 						 <input id="checkindate_' . $reservationId . '" data-res-id="' . $reservationId . '" maxlength="30" type="text"  name="check_in_date" class="input-as-text date-picker check_in_date_input" value="' . $reservation->getCheckIn()->format("m/d/Y") .

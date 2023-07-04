@@ -277,7 +277,7 @@ class GuestApi
                 if ($guest->getGender() && strtolower($guest->getGender()) !== $id_gender && !$this->defectApi->isDefectEnabled("view_reservation_16")) {
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number is invalid'
+                        'result_message' => 'ID Number gender is not valid'
                     );
                 }
 
@@ -288,7 +288,7 @@ class GuestApi
                 if (($guest->getCitizenship() || $id_foreigner) && (int)$guest->getCitizenship() !== (int)$id_foreigner) {
                     return array(
                         'result_code' => 1,
-                        'result_message' => 'ID number is invalid'
+                        'result_message' => 'ID Number citizenship is not valid'
                     );
                 }
             } else {

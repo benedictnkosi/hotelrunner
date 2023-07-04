@@ -576,6 +576,15 @@ class ReservationApi
                 }
             }
 
+            //validate that Date cannot be changed for reservations with an outstanding balance.
+            $due = $this->getTotalDue($reservation->getId());
+            if($due > 0 ){
+                return array(
+                    'result_message' => "Date cannot be changed for reservations with an outstanding balance",
+                    'result_code' => 1
+                );
+            }
+
             $isRoomAvailable = $roomApi->isRoomAvailable($reservation->getRoom()->getId(), $checkInDate, $checkOutDate, $reservation->getId());
             if ($isRoomAvailable) {
                 $reservation->setCheckIn(new DateTime($checkInDate));
@@ -639,6 +648,7 @@ class ReservationApi
 
                 }
 
+                //New room can not be the same as current reservation room (API\SOAP)
                 if($room->getId() == $reservation->getRoom()->getId()){
                     return array(
                         'result_message' => "Room is the same, no changes made.",
