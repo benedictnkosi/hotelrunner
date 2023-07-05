@@ -577,7 +577,7 @@ class ReservationApi
             }
 
             //validate that Date cannot be changed for reservations with an outstanding balance.
-            $due = $this->getTotalDue($reservation->getId());
+            $due = $this->getAmountDue($reservation);
             if($due > 0 ){
                 return array(
                     'result_message' => "Date cannot be changed for reservations with an outstanding balance",
@@ -936,7 +936,7 @@ class ReservationApi
                 (intval($citizenship) !== 0 && intval($citizenship) !== 1)) {
                 return array(
                     'result_code' => 1,
-                    'result_message' => 'Citizenship is invalid'
+                    'result_message' => 'Citizenship is invalid ' . $citizenship
                 );
             }
 
