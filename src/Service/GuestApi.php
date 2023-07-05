@@ -269,7 +269,7 @@ class GuestApi
                     );
                 }
 
-                if ($id_day < 1 || $id_day > 31) {
+                if (($id_day < 1 || $id_day > 31) && !$this->defectApi->isDefectEnabled("update_reservation_3")) {
                     return array(
                         'result_code' => 1,
                         'result_message' => 'ID number is invalid'
