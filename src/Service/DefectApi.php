@@ -35,6 +35,9 @@ class DefectApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         try {
             $defect = $this->em->getRepository(Defect::class)->findOneBy(array('name' => $defectName));
+            if($defect == null){
+                return false;
+            }
             return $defect->isEnabled();
         } catch (Exception $ex) {
             $this->logger->debug("failed to get defect " . $ex->getMessage());
