@@ -227,7 +227,11 @@ class GuestApi
                 //if id year is not older than 100 yrs and it is less than or equal to 99. add 19 infront. else i2000
                 if($id_year <= 99){
                     $id_year = intval( "19" . $num_array[0] . $num_array[1]);
-                    if($id_year <  $currentYear - 100){
+                    $ageLimit = 100;
+                    if($this->defectApi->isDefectEnabled("update_reservation_2")){
+                        $ageLimit = 102;
+                    }
+                    if($id_year <  $currentYear - $ageLimit){
                         $id_year = intval( "20" . $num_array[0] . $num_array[1]);
                     }
                 }else{

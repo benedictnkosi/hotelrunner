@@ -628,7 +628,7 @@ class ReservationApi
         try {
             $roomApi = new RoomApi($this->em, $this->logger);
             $isRoomAvailable = $roomApi->isRoomAvailable($roomId, $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"), $reservation->getId());
-            if ($isRoomAvailable) {
+            if ($isRoomAvailable || $this->defectApi->isDefectEnabled("update_reservation_1")) {
                 $room = $roomApi->getRoom($roomId);
                 if ($room == null) {
                     return array(
