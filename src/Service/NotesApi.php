@@ -32,7 +32,7 @@ class NotesApi
             $reservationNotes = new ReservationNotes();
 
             //check note length
-            if (strlen($note) > 100) {
+            if (strlen($note) > 100 || strlen($note) < 1) {
                 return array(
                     'result_message' => "Note is invalid",
                     'result_code' => 1
