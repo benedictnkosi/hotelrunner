@@ -520,6 +520,14 @@ class ReservationApi
 
             $checkInDateDateObject = new DateTime($checkInDate);
             $checkOutDateDateObject = new DateTime($checkOutDate);
+            $now = new DateTime('today midnight');
+
+            if($checkOutDate < $now || $checkOutDate == $now){
+                return array(
+                    'result_message' => "Past reservation date cannot be updated",
+                    'result_code' => 1
+                );
+            }
 
             //validate number of nights
             $totalNights = intval($checkInDateDateObject->diff($checkOutDateDateObject)->format('%a'));
@@ -578,7 +586,7 @@ class ReservationApi
 
             //validate that Date cannot be changed for reservations with an outstanding balance.
             $due = $this->getAmountDue($reservation);
-            if($due > 0 ){
+            if($due !== 0 ){
                 return array(
                     'result_message' => "Date cannot be changed for reservations with an outstanding balance",
                     'result_code' => 1
@@ -648,13 +656,21 @@ class ReservationApi
                         'result_message' => "Past reservation room cannot be updated",
                         'result_code' => 1
                     );
-
                 }
 
                 //New room can not be the same as current reservation room (API\SOAP)
                 if($room->getId() == $reservation->getRoom()->getId()){
                     return array(
                         'result_message' => "Room is the same, no changes made.",
+                        'result_code' => 1
+                    );
+                }
+
+                //validate that Date cannot be changed for reservations with an outstanding balance.
+                $due = $this->getAmountDue($reservation);
+                if($due !== 0 ){
+                    return array(
+                        'result_message' => "Date cannot be changed for reservations with an outstanding balance",
                         'result_code' => 1
                     );
                 }
