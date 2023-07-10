@@ -651,7 +651,7 @@ class ReservationApi
 
                 if($reservation->getCheckOut() < $now || strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) == 0){
                     return array(
-                        'result_message' => "Past reservation date cannot be updated",
+                        'result_message' => "Past reservation room cannot be updated",
                         'result_code' => 1
                     );
                 }
