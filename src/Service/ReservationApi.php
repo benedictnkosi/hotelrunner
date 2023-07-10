@@ -522,7 +522,8 @@ class ReservationApi
             $checkOutDateDateObject = new DateTime($checkOutDate);
             $now = new DateTime('today midnight');
 
-            if($checkOutDate < $now || $checkOutDate == $now){
+
+            if($reservation->getCheckOut() < $now || strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) == 0){
                 return array(
                     'result_message' => "Past reservation date cannot be updated",
                     'result_code' => 1
@@ -646,14 +647,11 @@ class ReservationApi
                 }
 
                 //validate reservation not in the past
-                $checkOutDate = new DateTime($reservation->getCheckout()->format("Y-m-d"));
                 $now = new DateTime('today midnight');
 
-                $this->logger->info("now " . $now->format("Y/m/d H:i:s"));
-                $this->logger->info("checkout " . $checkOutDate->format("Y/m/d H:i:s"));
-                if($checkOutDate < $now || $checkOutDate == $now){
+                if($reservation->getCheckOut() < $now || strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) == 0){
                     return array(
-                        'result_message' => "Past reservation room cannot be updated",
+                        'result_message' => "Past reservation date cannot be updated",
                         'result_code' => 1
                     );
                 }
