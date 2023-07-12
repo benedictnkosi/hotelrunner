@@ -1,7 +1,4 @@
 id,room_name,check_in,check_out,guest_name,phone_number,amount
-809,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,500
-809,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,434.78
-809,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,65.22
 808,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,500
 808,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,434.78
 808,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,65.22
@@ -23,9 +20,6 @@ id,room_name,check_in,check_out,guest_name,phone_number,amount
 829,"no kids here 4",2023-08-24,2023-08-25,"new name",+83791743034,500
 829,"no kids here 4",2023-08-24,2023-08-25,"new name",+83791743034,434.78
 829,"no kids here 4",2023-08-24,2023-08-25,"new name",+83791743034,65.22
-833,Upstairs+King+Roomas,2023-08-28,2023-08-29,0e1fb892-16c2-4e5e-a601-0,+27837917418,500
-833,Upstairs+King+Roomas,2023-08-28,2023-08-29,0e1fb892-16c2-4e5e-a601-0,+27837917418,434.78
-833,Upstairs+King+Roomas,2023-08-28,2023-08-29,0e1fb892-16c2-4e5e-a601-0,+27837917418,65.22
 832,Upstairs+King+Roomas,2023-08-28,2023-08-29,0e1fb892-16c2-4e5e-a601-0,+27837917418,500
 832,Upstairs+King+Roomas,2023-08-28,2023-08-29,0e1fb892-16c2-4e5e-a601-0,+27837917418,434.78
 832,Upstairs+King+Roomas,2023-08-28,2023-08-29,0e1fb892-16c2-4e5e-a601-0,+27837917418,65.22

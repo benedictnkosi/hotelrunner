@@ -440,9 +440,9 @@ class PaymentApi
 
             //discount based on number of days booked
             if($totalDays > 6 && $totalDays < 28 ){
-                $roomPrice = $roomPrice * 0.9;
+                //$roomPrice = $roomPrice * 0.9;
             }elseif($totalDays > 27){
-                $roomPrice = $roomPrice * 0.7;
+                //$roomPrice = $roomPrice * 0.7;
             }
 
             //apply discount based on loyalty rewards
