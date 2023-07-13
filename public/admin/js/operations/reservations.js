@@ -37,7 +37,7 @@ function refreshReservations() {
     $("body").addClass("loading");
     getReservationsByPeriod("future");
     getReservationsByPeriod("pending");
-    //getReservationsByPeriod("past");
+    getReservationsByPeriod("past");
 }
 
 function getReservationsByPeriod(period) {
