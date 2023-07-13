@@ -119,7 +119,7 @@ class GuestController extends AbstractController
             );
             return new JsonResponse($response , 200, array());
         }
-        $response = $guestApi->updateGuestIdNumber($parameters['id'], $parameters['id_number']);
+        $response = $guestApi->updateGuestIdNumber($parameters['guest_id'], $parameters['id_number']);
         return new JsonResponse($response , 200, array());
     }
 
