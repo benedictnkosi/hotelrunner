@@ -554,6 +554,8 @@ class ReservationController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
 
+        $logger->info("citizenship is this at controller " . $request->get('citizenship'));
+
         if (!$request->isMethod('post')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
@@ -637,7 +639,7 @@ class ReservationController extends AbstractController
         }
 
         $response = $reservationApi->createReservation(implode(",",$roomIds), $parameters['name'], $parameters['phone_number'],
-            $parameters['email'], $parameters['check_in_date'], $parameters['check_out_date'], $request, $parameters['guest']['adult_guests'], $parameters['guest']['child_guests'], null, false, "website", "website", $parameters['smoking']);
+            $parameters['email'], $parameters['check_in_date'], $parameters['check_out_date'], $request, $parameters['guest']['adult_guests'], $parameters['guest']['child_guests'], null, false, "website", "website", $parameters['smoking'],$parameters['gender'],$parameters['citizenship']);
         $callback = $request->get('callback');
         $response = new JsonResponse($response, 201, array());
         $response->setCallback($callback);

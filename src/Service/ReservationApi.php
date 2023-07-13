@@ -859,6 +859,7 @@ class ReservationApi
     public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "no", $gender = "female", $citizenship = "0"): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
+        $this->logger->info("citizenship is this at top $citizenship");
         $this->logger->debug("child" . $childGuests);
         $this->logger->debug("adult" . $adultGuests);
         $blockRoomApi = new BlockedRoomApi($this->em, $this->logger);
@@ -1091,6 +1092,7 @@ class ReservationApi
                 }
 
 
+
                 if ($guest == null) {
                     $this->logger->debug("guest not found, creating a new guest");
                     //create guest
@@ -1113,9 +1115,10 @@ class ReservationApi
                         }
                         return $response;
                     } else {
+                        $this->logger->info("citizenship is this $citizenship");
                         $guest = $response[0]['guest'];
                         $guest->setGender($gender);
-                        $guest->setCitizenship($citizenship);
+                        $guest->setCitizenship(intval($citizenship));
                         $this->em->persist($guest);
                         $this->em->flush($guest);
                     }
@@ -1124,7 +1127,7 @@ class ReservationApi
                     $guest->setName($guestName);
                     $guest->setEmail($email);
                     $guest->setGender($gender);
-                    $guest->setCitizenship($citizenship);
+                    $guest->setCitizenship(intval($citizenship));
                     $this->em->persist($guest);
                     $this->em->flush($guest);
 
