@@ -493,10 +493,19 @@ class AddOnsApi
             $this->logger->info("price: " . $price);
 
             $response = $this->createAddOn($name, $price);
-            $responseArray[] = array(
-                'result_code' => $response[0]['result_code'],
-                'result_message' => $response[0]['result_message'],
-            );
+            if($response[0]['result_code'] == 0){
+                $responseArray[] = array(
+                    'result_code' => $response[0]['result_code'],
+                    'result_message' => $response[0]['result_message'],
+                    'id' => $response[0]['id']
+                );
+            }else{
+                $responseArray[] = array(
+                    'result_code' => $response[0]['result_code'],
+                    'result_message' => $response[0]['result_message']
+                );
+            }
+
         }
 
         return $responseArray;

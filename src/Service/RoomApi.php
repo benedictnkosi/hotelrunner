@@ -991,10 +991,19 @@ class RoomApi
             $this->logger->info("description: " . $description);
 
             $response = $this->updateCreateRoom($id, $name, $price, $sleeps, $status, $linkedRoom, $size, $beds, $stairs, $tv, $description, $kidsPolicy, json_encode($amenitiesArray));
-            $responseArray[] = array(
-                'result_code' => $response[0]['result_code'],
-                'result_message' => $response[0]['result_message'],
-            );
+            if($response[0]['result_code'] == 0){
+                $responseArray[] = array(
+                    'result_code' => $response[0]['result_code'],
+                    'result_message' => $response[0]['result_message'],
+                    'room_id' => $response[0]['room_id'],
+                );
+            }else{
+                $responseArray[] = array(
+                    'result_code' => $response[0]['result_code'],
+                    'result_message' => $response[0]['result_message']
+                );
+            }
+
         }
 
         return $responseArray;

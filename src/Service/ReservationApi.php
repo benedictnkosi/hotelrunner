@@ -757,12 +757,13 @@ class ReservationApi
             $this->logger->info("roomId field: " . $roomId);
             $this->logger->info("adults: " . $adultGuests);
             $this->logger->info("children: " . $childGuests);
-            $this->logger->info("somker: " . $smoker);
+            $this->logger->info("smoker: " . $smoker);
 
             $response = $this->createReservation($roomId, $guestName, $phoneNumber, "", $checkIn, $checkOut, $request, $adultGuests, $childGuests, $uid, false, $origin, $originURL, $smoker);
             $responseArray[] = array(
                 'result_code' => $response['result_code'],
                 'result_message' => $response['result_message'],
+                'reservation_id' => $response['reservation_id']
             );
 
         }
@@ -1271,7 +1272,7 @@ class ReservationApi
             }
             $responseArray = array(
                 'result_code' => 0,
-                'result_message' => "Successfully created reservation",
+                'result_message' => "Successfully created reservation yoh",
                 'reservation_id' => $reservationIds
             );
         } catch
