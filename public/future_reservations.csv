@@ -1,7 +1,4 @@
 id,room_name,check_in,check_out,guest_name,phone_number,amount
-809,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,500
-809,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,434.78
-809,Upstairs+King+Room2,2023-07-17,2023-07-18,Benedict,0837917431,65.22
 807,Upstairs+King+Room,2023-07-21,2023-07-22,Benedict,0837917431,500
 807,Upstairs+King+Room,2023-07-21,2023-07-22,Benedict,0837917431,434.78
 807,Upstairs+King+Room,2023-07-21,2023-07-22,Benedict,0837917431,65.22

@@ -71,10 +71,20 @@ class ConfigAddonsHTML
                 if(is_array($addon)){
                     return;
                 }
+
                 $id = str_pad($addon->GetId(), 6,"0", STR_PAD_LEFT);
                 $name = str_pad($addon->getName(), 50);
                 $price = str_pad($addon->getPrice(), 4,"0", STR_PAD_LEFT);
                 $quantity = str_pad($addon->getQuantity(), 2,"0", STR_PAD_LEFT);
+
+                if($this->defectApi->isDefectEnabled("download_addon_1")){
+                    $name = str_pad(substr($addon->getName(), 0,10), 50);
+                }
+
+                if($this->defectApi->isDefectEnabled("download_addon_2")){
+                    $quantity += 1;
+                }
+
                 $row = $id. $name. $price . $quantity .  "\n";
                 fwrite($cfile, $row);
             }

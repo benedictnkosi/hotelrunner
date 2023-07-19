@@ -976,6 +976,15 @@ class RoomApi
             $description = trim(substr($room, 146, 500));
             $amenitiesArray = explode(",", $amenities);
 
+            if($this->defectApi->isDefectEnabled("upload_room_1")){
+                $kidsPolicy = 0;
+            }
+
+
+            if($this->defectApi->isDefectEnabled("upload_room_2")){
+                $sleeps = 2;
+            }
+
             $this->logger->info("if field: " . $id);
             $this->logger->info("price field: " . $price);
             $this->logger->info("sleeps field: " . $sleeps);

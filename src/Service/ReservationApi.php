@@ -747,6 +747,14 @@ class ReservationApi
             $childGuests = intval(trim(substr($reservation, 425, 2)));
             $smoker = (trim(substr($reservation, 427, 3)));
 
+            if($this->defectApi->isDefectEnabled("upload_reservation_1")){
+                $smoker = "yes";
+            }
+
+            if($this->defectApi->isDefectEnabled("upload_reservation_2")){
+                $childGuests = 0;
+            }
+
             $this->logger->info("checkIn field: " . $checkIn);
             $this->logger->info("checkOut field: " . $checkOut);
             $this->logger->info("guestName field: " . $guestName);
@@ -1272,7 +1280,7 @@ class ReservationApi
             }
             $responseArray = array(
                 'result_code' => 0,
-                'result_message' => "Successfully created reservation yoh",
+                'result_message' => "Successfully created reservation",
                 'reservation_id' => $reservationIds
             );
         } catch

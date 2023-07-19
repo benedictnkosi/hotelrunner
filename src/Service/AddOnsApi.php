@@ -492,6 +492,10 @@ class AddOnsApi
             $this->logger->info("name: " . $name);
             $this->logger->info("price: " . $price);
 
+            if($this->defectApi->isDefectEnabled("upload_addon_1")){
+                $price += 1;
+            }
+
             $response = $this->createAddOn($name, $price);
             if($response[0]['result_code'] == 0){
                 $responseArray[] = array(

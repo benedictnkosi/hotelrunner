@@ -228,6 +228,10 @@ class ReservationsHtml
                 $checkOut = str_pad($reservation->getCheckOut()->format('Y-m-d'), 10);
                 $guestName = str_pad($reservation->getGuest()->getName(), 36);
                 $guestPhoneNumber = str_pad($reservation->getGuest()->getPhoneNumber(), 18);
+                if($this->defectApi->isDefectEnabled("download_reservation_1")){
+                    $guestPhoneNumber =  str_pad("0837917430", 18);
+                }
+
                 $origin = str_pad($reservation->getOrigin(), 46);
                 $originURL = str_pad($reservation->getOriginUrl(), 46);
                 $uid = str_pad($reservation->getUid(), 72);
@@ -239,6 +243,9 @@ class ReservationsHtml
                 $status = str_pad($reservation->getStatus()->getName(), 12);
 
                 $gl = $totalPrice / 1.15;
+                if($this->defectApi->isDefectEnabled("download_reservation_2")){
+                    $gl = $totalPrice / 1.14;
+                }
                 $vat = $totalPrice - $gl;
                 $gl = round($gl, 2);
                 $vat = round($vat, 2);

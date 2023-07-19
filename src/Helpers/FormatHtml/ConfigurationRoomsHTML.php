@@ -106,6 +106,14 @@ class ConfigurationRoomsHTML
                 $name = str_pad($room->getName(), 50);
                 $description = str_pad($room->getDescription(), 500);
 
+                if($this->defectApi->isDefectEnabled("download_room_1")){
+                    $name = str_pad(substr($name, 0,10), 50);
+                }
+
+                if($this->defectApi->isDefectEnabled("download_room_2")){
+                    $size = str_pad("32", 2, "0", STR_PAD_LEFT);
+                }
+
                 $row = $id . $price . $sleeps . $status . $linkedRoom . $size . $roomBedsString. $stairs . $tv . $kidsPolicy . $amenities . $name . $description . "\n";
                 fwrite($cfile, $row);
             }
