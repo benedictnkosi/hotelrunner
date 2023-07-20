@@ -347,6 +347,26 @@ class ReservationController extends AbstractController
                     return new JsonResponse($responseArray, 200 , array());
                 }
 
+                //validate current status is not pending for cancellations
+                if(strcmp($reservation->getStatus()->getName(), "pending") == 0
+                    && strcmp($status->getName(), "opened") == 0){
+                    $responseArray[] = array(
+                        'result_message' => "Pending reservations cannot be opened",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+
+                //validate current status is not pending for cancellations
+                if(strcmp($reservation->getStatus()->getName(), "pending") == 0
+                    && strcmp($status->getName(), "confirmed") == 0){
+                    $responseArray[] = array(
+                        'result_message' => "Pending reservations cannot be confirmed",
+                        'result_code' => 1
+                    );
+                    return new JsonResponse($responseArray, 200 , array());
+                }
+
                 //validate reservation is not in the past for cancellations
                 $checkOutDate = new DateTime($reservation->getCheckout());
                 $now = new DateTime('today midnight');
@@ -371,7 +391,9 @@ class ReservationController extends AbstractController
                     if ($reservationApi->isEligibleForCheckIn($reservation)) {
                         $reservation->setCheckInStatus($newValue);
                         $reservation->setCheckInTime($now->format("H:i"));
-                        $notesApi->addNote($reservation->getId(), "Checked-in at " . $now->format("H:i"));
+                        if (!$defectApi->isDefectEnabled("update_reservation_4")) {
+                            $notesApi->addNote($reservation->getId(), "Checked-in at " . $now->format("H:i"));
+                        }
                     } else {
                         $responseArray[] = array(
                             'result_message' => "Please make sure the guest Id and phone number is captured",

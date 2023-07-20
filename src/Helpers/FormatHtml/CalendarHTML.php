@@ -77,8 +77,10 @@ class CalendarHTML
             $blockedRooms = $blockRoomApi->getBlockedRoomsByRoomId( $room->getId());
 
             if ($reservations === null && $blockedRooms === null) {
+                $this->logger->debug("No reservations found for room " . $room->getId());
                 $htmlString .= str_repeat('<td class="available"></td>', $numberOfDays + 1 + $numberOfFirstOfMonth);
             } else {
+                $this->logger->debug("reservations found for room " . $room->getId());
                 for ($x = 0; $x <= $numberOfDays; $x++) {
                     $todayDate = new DateTime();
                     $todayDate->add(DateInterval::createFromDateString('yesterday'));
@@ -99,10 +101,21 @@ class CalendarHTML
                         }
 
                     }
-                    if(!is_array($reservations)){
+                    if(strcmp(gettype($reservations[0]), "array") !== 0){
+                        $this->logger->debug("Looping reservations");
                         foreach ($reservations as $reservation) {
+
+                            if(is_array($reservation)){
+                                var_dump(gettype($reservations[0]));
+                                //var_dump($reservation);
+                            }
+                            $this->logger->debug("Looping reservation " . $reservation->getId());
                             $isCheckInDay = false;
+                            $this->logger->debug("Check in day is" . $tempDate->format("Y-m-d") . " and res " . $reservation->getId() . " check in date is " . $reservation->getCheckIn()->format("Y-m-d"));
+                            $this->logger->debug("Check in day is" . $tempDate->format("Y-m-d") . " and res " . $reservation->getId() . " check out date is " . $reservation->getCheckOut()->format("Y-m-d"));
+
                             if ($tempDate >= $reservation->getCheckIn() && $tempDate < $reservation->getCheckOut()) {
+                                $this->logger->debug("checking if status is confirmed or opened ");
                                 if (strcasecmp($reservation->getStatus()->getName(), "confirmed") === 0
                                 || strcasecmp($reservation->getStatus()->getName(), "opened") === 0) {
                                     $resID = $reservation->getId();
@@ -111,15 +124,22 @@ class CalendarHTML
                                     if (strcasecmp($tempDate->format("Y-m-d"), $reservation->getCheckIn()->format("Y-m-d")) === 0) {
                                         $this->logger->debug("Check in day is true because tempdate is " . $tempDate->format("Y-m-d") . " and res " . $reservation->getId() . " check in date is " . $reservation->getCheckIn()->format("Y-m-d"));
                                         $isCheckInDay = true;
+                                    }else{
+                                        $this->logger->debug("Check in day is not today");
                                     }
+                                    $this->logger->debug("exiting loop ");
                                     break;
+                                }else{
+                                    $this->logger->debug("reservation status is not confimed or open " . $reservation->getStatus()->getName());
                                 }
 
+                            }else{
+                                $this->logger->debug("reservation not today " . $tempDate->format("Y-m-d"));
                             }
                         }
                     }
 
-                   // $this->logger->debug("blocked rooms");
+                    $this->logger->debug("blocked rooms");
                     if ($blockedRooms != null) {
 
                         foreach ($blockedRooms as $blockedRoom) {
@@ -132,8 +152,9 @@ class CalendarHTML
                         }
                     }
 
-                    //$this->logger->debug("checking if date booked");
+                    $this->logger->debug("checking if date booked");
                     if ($isDateBooked || $isDateBookedButOpen) {
+                        $this->logger->debug("date is booked ");
                         if ($isCheckInDay === true) {
                             $totalDays = intval($reservation->getCheckIn()->diff($reservation->getCheckOut())->format('%a'));
                             $amountDue = $reservationApi->getAmountDue($reservation);
@@ -172,15 +193,17 @@ class CalendarHTML
                                     }
                                 }
                             }else {
+
                                 if (strcasecmp($reservation->getStatus()->getName(), "confirmed") === 0){
+                                    $this->logger->debug("adding reservation to table: " . $reservation->getId());
                                     $htmlString .= '<td  class="booked clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . '"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkin" class="image_checkin"></td>';
 
                                 }else if (strcasecmp($reservation->getStatus()->getName(), "opened") === 0){
                                     $htmlString .= '<td  class="booked clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . '"><img  src="/admin/images/' . $reservation->getOrigin() . '.png"  data-res-id="' . $resID . '" alt="checkin" class="image_checkin opened_booking"></td>';
-
                                 }
                             }
                         } else {
+                            $this->logger->debug("check in is not today ");
                             $now = new DateTime();
                             if($cleaningApi->isCleaningRequiredToday($reservation) && (strcasecmp($tempDate->format("Y-m-d"), $now->format("Y-m-d")) === 0)){
                                 $htmlString .= '<td  class="booked clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . '"><img  src="/admin/images/broom.ico"  data-res-id="' . $resID . '" alt="clean room" class="image_checkin"></td>';
@@ -188,6 +211,7 @@ class CalendarHTML
                             }else{
                                 $htmlString .= '<td  class="booked clickable open-reservation-details" data-res-id="' . $resID . '" title="' . $guestName . '"></td>';
                             }
+                            $this->logger->debug($htmlString);
                         }
                     } else if ($isDateBlocked) {
                         $htmlString .= '<td class="blocked" title="' . $blockNote . '"></td>';
