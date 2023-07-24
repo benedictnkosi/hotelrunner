@@ -118,7 +118,7 @@ class ConfigurationRoomsHTML
                     $size = str_pad("32", 2, "0", STR_PAD_LEFT);
                 }
 
-                $row = $id . $price . $sleeps . $status . $linkedRoom . $size . "\n";
+                $row = $id . $price . $sleeps . $status . $linkedRoom . $size . $roomBedsString. $stairs . $tv . $kidsPolicy  . $name . $description . "\n";
                 fwrite($cfile, $row);
                 $this->logger->debug("Done writing to file ");
             }
