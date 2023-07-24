@@ -75,8 +75,9 @@ class ImageController extends AbstractController
     /**
      * @Route("no_auth/room/image/{fileName}", name="getFile")
      */
-    public function getFile($fileName, Request $request): Response
+    public function getFile($fileName, Request $request, LoggerInterface $logger): Response
     {
+        $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
@@ -95,12 +96,14 @@ class ImageController extends AbstractController
     /**
      * @Route("no_auth/files/dat/{fileName}", name="getFile")
      */
-    public function getDatFile($fileName, Request $request): Response
+    public function getDatFile($fileName, Request $request, LoggerInterface $logger): Response
     {
+        $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $filePath = __DIR__ . '/../../files/'. $fileName;
+        $logger->info("file path is : " . $filePath);
         if(file_exists($filePath)){
             try{
                 return new BinaryFileResponse($filePath);
