@@ -24,10 +24,10 @@ class ConfigAddonsHTML
     {
         $html = '';
         if ($addOns != null) {
-            $this->createFlatFile($addOns, "addons.dat");
+            $this->createFlatFile($addOns, __DIR__ . '/../../../files/' . "addons.dat");
 
             if($this->defectApi->isFunctionalityEnabled("download_addons_flatfile")) {
-                $html .= '<a href="/addons.dat" target="_blank" >Download Flat File</a>';
+                $html .= '<a href="/api/files/addons.dat" target="_blank" >Download Flat File</a>';
             }
 
             foreach ($addOns as $addOn) {

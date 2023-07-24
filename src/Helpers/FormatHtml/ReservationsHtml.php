@@ -63,7 +63,7 @@ class ReservationsHtml
 
         if($this->defectApi->isFunctionalityEnabled("download_reservations")) {
             $htmlString .= '<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
-            <a href="/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
+            <a href="/api/files/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
         }
 
 
@@ -212,7 +212,7 @@ class ReservationsHtml
     function createFlatFile($reservations, $fileName): void
     {
         try {
-            $cfile = fopen($fileName . '_reservations.dat', 'w');
+            $cfile = fopen(__DIR__ . '/../../../files/' . $fileName . '_reservations.dat', 'w');
 
 //Data to be inserted
             $allReservations = array();

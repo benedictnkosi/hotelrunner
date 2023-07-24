@@ -535,7 +535,7 @@ function addCleaning(event) {
         $("body").addClass("loading");
         let url = "/api/cleaning/add";
         const data = {
-            id: id,
+            reservation_id: id,
             employee_id: employee_id
         };
 
@@ -545,12 +545,12 @@ function addCleaning(event) {
             data: data,
             success: function (response) {
                 $("body").removeClass("loading");
-                if (response[0].result_code === 0) {
+                if (response.result_code === 0) {
                     getReservationById(sessionStorage.getItem("reservation_id"));
-                    showResSuccessMessage("reservation", response[0].result_message);
+                    showResSuccessMessage("reservation", response.result_message);
                     getRoomsNotCleaned();
                 } else {
-                    showResErrorMessage("reservation", response[0].result_message);
+                    showResErrorMessage("reservation", response.result_message);
                 }
             },
             error: function (jqXHR, textStatus, errorThrown) {

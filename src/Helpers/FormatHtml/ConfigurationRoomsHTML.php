@@ -25,12 +25,13 @@ class ConfigurationRoomsHTML
 
     public function formatLeftDivRoomsHtml($rooms): string
     {
+        $this->logger->info("Starting Method: " . __METHOD__);
         $htmlString = "";
         if ($rooms != null) {
-            $this->createFlatFile($rooms, "rooms.dat");
+            $this->createFlatFile($rooms, __DIR__ . '/../../../files/' . "rooms.dat");
 
             if($this->defectApi->isFunctionalityEnabled("download_rooms_flatfile")) {
-                $htmlString .= '<a href="/rooms.dat" target="_blank" class="ClickableButton roomsMenu" >Download Flat File</a>';
+                $htmlString .= '<a href="/api/files/rooms.dat" target="_blank" class="ClickableButton roomsMenu" >Download Flat File</a>';
             }
 
             foreach ($rooms as $room) {
@@ -51,6 +52,7 @@ class ConfigurationRoomsHTML
 
     public function formatComboListHtml($items, $withSelectOption = false): string
     {
+        $this->logger->info("Starting Method: " . __METHOD__);
         $htmlString = "";
         if ($withSelectOption) {
             $htmlString .= '<option value="0" >Please Select</option>';
@@ -70,10 +72,12 @@ class ConfigurationRoomsHTML
 
     function createFlatFile($rooms, $fileName): void
     {
+        $this->logger->info("Starting Method: " . __METHOD__);
         try {
             $cfile = fopen($fileName, 'w');
-
+            $this->logger->info("file name is: " . $fileName);
             foreach ($rooms as $room) {
+                $this->logger->info("Looping rooms: " . $room->getId());
                 if (is_array($room)) {
                     return;
                 }
@@ -116,6 +120,7 @@ class ConfigurationRoomsHTML
 
                 $row = $id . $price . $sleeps . $status . $linkedRoom . $size . $roomBedsString. $stairs . $tv . $kidsPolicy . $amenities . $name . $description . "\n";
                 fwrite($cfile, $row);
+                $this->logger->debug("Done writing to file ");
             }
 
 
