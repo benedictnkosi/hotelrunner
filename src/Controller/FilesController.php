@@ -29,9 +29,9 @@ class FilesController extends AbstractController
         $documentDir = __DIR__ . '/../../files/';
         try{
             $file = new BinaryFileResponse($documentDir . $name);
-        }catch(Exception){
+        }catch(Exception $ex){
+            $logger->info("Exception: " . $ex->getMessage());
             $file = new BinaryFileResponse($documentDir . "empty.dat");
-
         }
         return $file;
     }
