@@ -23,16 +23,24 @@ class FilesController extends AbstractController
     /**
      * @Route("api/files/{name}")
      */
-    public function getFile($name, LoggerInterface $logger): BinaryFileResponse
+    public function getFile($name, LoggerInterface $logger): JsonResponse
     {
         $logger->info("Starting Method: " . __METHOD__);
         $documentDir = __DIR__ . '/../../files/';
         try{
             $file = new BinaryFileResponse($documentDir . $name);
-        }catch(Exception $ex){
-            $logger->info("Exception: " . $ex->getMessage());
-            $file = new BinaryFileResponse($documentDir . "empty.dat");
+            $responseArray = array(
+                'result_message' => "File found",
+                'result_code' => 0
+            );
+            return new JsonResponse($responseArray , 200, array());
+        }catch(Exception){
+            $responseArray = array(
+                'result_message' => "File not found",
+                'result_code' => 1
+            );
+            return new JsonResponse($responseArray , 200, array());
+
         }
-        return $file;
     }
 }
