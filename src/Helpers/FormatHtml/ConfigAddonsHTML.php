@@ -92,6 +92,7 @@ class ConfigAddonsHTML
         // Closing the file
             fclose($cfile);
         } catch (\Exception $exception) {
+            fclose($cfile);
             $this->logger->debug($exception->getMessage());
         }
 

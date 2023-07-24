@@ -86,7 +86,7 @@ class ConfigurationRoomsHTML
 
                 $roomBedsString = "";
                 foreach ($roomBeds as $roomBed) {
-                    $roomBedsString .= $roomBed["name"] . ",";
+                    $roomBedsString .= $roomBed["name"] . "";
                 }
                 $roomBedsString = substr($roomBedsString, 0, strlen($roomBedsString) - 1);
                 $this->logger->debug("rooms string is " . $roomBedsString);
@@ -118,7 +118,7 @@ class ConfigurationRoomsHTML
                     $size = str_pad("32", 2, "0", STR_PAD_LEFT);
                 }
 
-                $row = $id . $price . $sleeps . $status . $linkedRoom . $size . $roomBedsString. $stairs . $tv . $kidsPolicy . $amenities . $name . $description . "\n";
+                $row = $id . $price . $sleeps . $status . $linkedRoom . $size . "\n";
                 fwrite($cfile, $row);
                 $this->logger->debug("Done writing to file ");
             }
@@ -127,6 +127,7 @@ class ConfigurationRoomsHTML
 // Closing the file
             fclose($cfile);
         } catch (\Exception $exception) {
+            fclose($cfile);
             $this->logger->debug($exception->getMessage());
         }
 
