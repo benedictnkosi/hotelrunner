@@ -31,7 +31,7 @@ class ConfigurationRoomsHTML
             $this->createFlatFile($rooms, __DIR__ . '/../../../files/' . "rooms.dat");
 
             if($this->defectApi->isFunctionalityEnabled("download_rooms_flatfile")) {
-                $htmlString .= '<a href="/api/files/rooms.dat" target="_blank" class="ClickableButton roomsMenu" >Download Flat File</a>';
+                $htmlString .= '<a href="/no_auth/files/dat/rooms.dat" target="_blank" class="ClickableButton roomsMenu" >Download Flat File</a>';
             }
 
             foreach ($rooms as $room) {

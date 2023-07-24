@@ -63,7 +63,7 @@ class ReservationsHtml
 
         if($this->defectApi->isFunctionalityEnabled("download_reservations")) {
             $htmlString .= '<a href="/'.$period . '_reservations.csv" target="_blank" >Download CSV</a>
-            <a href="/api/files/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
+            <a href="/no_auth/files/dat/'.$period . '_reservations.dat" target="_blank">| Download Flat File</a>';
         }
 
 
