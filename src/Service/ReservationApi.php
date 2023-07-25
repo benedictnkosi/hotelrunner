@@ -780,8 +780,6 @@ class ReservationApi
                     'reservation_id' => $response['reservation_id']
                 );
             }
-
-
         }
 
         return $responseArray;
