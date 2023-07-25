@@ -670,7 +670,7 @@ class ReservationController extends AbstractController
 
 
     /**
-     * @Route("/api/reservations/upload/")
+     * @Route("/api/upload/reservations/")
      * @throws \Exception
      */
     public function uploadReservations( Request $request, LoggerInterface $logger, EntityManagerInterface $entityManager, ReservationApi $reservationApi): Response

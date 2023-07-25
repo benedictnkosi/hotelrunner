@@ -656,7 +656,7 @@ function removePayment(event) {
 function uploadReservations() {
     $("body").addClass("loading");
     isUserLoggedIn();
-    let url = "/api/reservations/upload/";
+    let url = "/api/upload/reservations/";
     const file_data = $("#reservations-fileUploader").prop("files")[0];
     const form_data = new FormData();
     form_data.append("file", file_data);
