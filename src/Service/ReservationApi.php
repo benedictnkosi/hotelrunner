@@ -768,11 +768,19 @@ class ReservationApi
             $this->logger->info("smoker: " . $smoker);
 
             $response = $this->createReservation($roomId, $guestName, $phoneNumber, "", $checkIn, $checkOut, $request, $adultGuests, $childGuests, $uid, false, $origin, $originURL, $smoker);
-            $responseArray[] = array(
-                'result_code' => $response['result_code'],
-                'result_message' => $response['result_message'],
-                'reservation_id' => $response['reservation_id']
-            );
+            if($response['result_code'] == 1){
+                $responseArray[] = array(
+                    'result_code' => $response['result_code'],
+                    'result_message' => $response['result_message']
+                );
+            }else{
+                $responseArray[] = array(
+                    'result_code' => $response['result_code'],
+                    'result_message' => $response['result_message'],
+                    'reservation_id' => $response['reservation_id']
+                );
+            }
+
 
         }
 

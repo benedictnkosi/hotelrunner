@@ -1,4 +1,7 @@
 id,room_name,check_in,check_out,guest_name,phone_number,amount
+803,Upstairs+King+Room2,2023-07-18,2023-07-24,"new name",+83791743035,3000
+803,Upstairs+King+Room2,2023-07-18,2023-07-24,"new name",+83791743035,2608.7
+803,Upstairs+King+Room2,2023-07-18,2023-07-24,"new name",+83791743035,391.3
 807,Upstairs+King+Room,2023-07-20,2023-07-22,Benedict,0837917431,1000
 807,Upstairs+King+Room,2023-07-20,2023-07-22,Benedict,0837917431,869.57
 807,Upstairs+King+Room,2023-07-20,2023-07-22,Benedict,0837917431,130.43
