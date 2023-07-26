@@ -495,8 +495,17 @@ class AddOnsApi
                 );
                 continue;
             }
+
             $name = trim(substr($addon, 0, 50));
-            $price = intval(trim(substr($addon,50 ,4 )));
+            $price = trim(substr($addon,50 ,4 ));
+
+            if (strlen($price) > 4 || strlen($price) == 0 || !is_numeric($price)) {
+                $responseArray[] = array(
+                    'result_message' => "Add-on price Length should be between 1 and 4 and should be a number",
+                    'result_code' => 1
+                );
+                continue;
+            }
 
             $this->logger->info("name: " . $name);
             $this->logger->info("price: " . $price);
