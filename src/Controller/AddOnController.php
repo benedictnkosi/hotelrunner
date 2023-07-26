@@ -181,7 +181,7 @@ class AddOnController extends AbstractController
      * @Route("/api/addons/upload/")
      * @throws \Exception
      */
-    public function uploadRooms( Request $request, LoggerInterface $logger, AddOnsApi $addOnsApi): Response
+    public function uploadAddOns( Request $request, LoggerInterface $logger, AddOnsApi $addOnsApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('post')) {

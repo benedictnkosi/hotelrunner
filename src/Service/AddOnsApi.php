@@ -486,6 +486,7 @@ class AddOnsApi
         $this->logger->info("array lines: " . sizeof($addons));
         $responseArray = array();
         foreach ($addons as $addon) {
+            $this->logger->info("addon: " . $addon);
             $name = trim(substr($addon, 0, 50));
             $price = intval(trim(substr($addon,50 ,4 )));
 
