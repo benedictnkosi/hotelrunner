@@ -482,11 +482,19 @@ class AddOnsApi
 
     public function uploadAddons($addonsString): array
     {
-        $addons = explode("\n", trim($addonsString));
+        $this->logger->info("addon string: " . $addonsString);
+        $addons = explode(PHP_EOL, trim($addonsString));
         $this->logger->info("array lines: " . sizeof($addons));
         $responseArray = array();
         foreach ($addons as $addon) {
             $this->logger->info("addon: " . $addon);
+            if(strlen($addon) !== 54){
+                $responseArray[] =  array(
+                    'result_code' => 1,
+                    'result_message' => "File format is incorrect"
+                );
+                continue;
+            }
             $name = trim(substr($addon, 0, 50));
             $price = intval(trim(substr($addon,50 ,4 )));
 
