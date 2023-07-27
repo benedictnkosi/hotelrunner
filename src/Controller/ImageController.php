@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -106,7 +107,13 @@ class ImageController extends AbstractController
         if(file_exists($filePath)){
             try{
                 $logger->info("returning with 200: ");
-                return new BinaryFileResponse($filePath,200, array(), true);
+                $response =  new BinaryFileResponse($filePath,200, array(), true);
+                $response->setContentDisposition(
+                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                    "room.dat"
+                );
+                $response->headers->set('Content-Type', 'text/plain');
+                return $response;
             }catch(InvalidArgumentException $exception){
                 return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
             }
