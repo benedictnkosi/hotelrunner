@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,7 +111,11 @@ class ImageController extends AbstractController
             }catch(InvalidArgumentException $exception){
                 $logger->info("file not found: " . $exception->getMessage());
                 $filePath = __DIR__ . '/../../files/empty.dat';
-                return new BinaryFileResponse($filePath);
+                $response = new BinaryFileResponse($filePath);
+                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,'pdf.pdf');
+                return $response;
+
+
             }
         }else{
             $logger->info("file not found: ");
