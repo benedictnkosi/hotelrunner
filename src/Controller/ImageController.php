@@ -106,7 +106,7 @@ class ImageController extends AbstractController
         if(file_exists($filePath)){
             try{
                 $logger->info("returning with 200: ");
-                return new BinaryFileResponse($filePath,200, array());
+                return new BinaryFileResponse($filePath,200, array(), true);
             }catch(InvalidArgumentException $exception){
                 return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
             }
