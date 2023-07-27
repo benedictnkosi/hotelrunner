@@ -27,7 +27,7 @@ class ConfigAddonsHTML
             $this->createFlatFile($addOns, __DIR__ . '/../../../files/' . "addons.dat");
 
             if($this->defectApi->isFunctionalityEnabled("download_addons_flatfile")) {
-                $html .= '<a href="/no_auth/files/dat/addons.dat">Download Flat File</a>';
+                $html .= '<a href="/no_auth/files/dat/addons.dat" download>Download Flat File</a>';
             }
 
             foreach ($addOns as $addOn) {
