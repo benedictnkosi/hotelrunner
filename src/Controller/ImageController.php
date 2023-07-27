@@ -110,21 +110,21 @@ class ImageController extends AbstractController
                 $logger->info("file found : " . $filePath);
                 $response = new BinaryFileResponse($filePath);
                 $logger->info("file found2 : " . $filePath);
-                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"addons.dat");
+               // $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"addons.dat");
                 $logger->info("file found3 : " . $filePath);
                 return $response;
             }catch(InvalidArgumentException $exception){
                 $logger->info("file not found: " . $exception->getMessage());
                 $filePath = __DIR__ . '/../../files/empty.dat';
                 $response = new BinaryFileResponse($filePath);
-                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"empty.dat");
+               // $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"empty.dat");
                 return $response;
             }
         }else{
             $logger->info("file not found: ");
             $filePath = __DIR__ . '/../../files/empty.dat';
             $response = new BinaryFileResponse($filePath);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"empty.dat");
+            //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"empty.dat");
             return $response;
         }
     }
