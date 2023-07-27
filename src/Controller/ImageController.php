@@ -120,7 +120,9 @@ class ImageController extends AbstractController
         }else{
             $logger->info("file not found: ");
             $filePath = __DIR__ . '/../../files/empty.dat';
-            return new BinaryFileResponse($filePath);
+            $response = new BinaryFileResponse($filePath);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,'pdf.pdf');
+            return $response;
         }
     }
 
