@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,9 +75,8 @@ class ImageController extends AbstractController
     /**
      * @Route("no_auth/room/image/{fileName}", name="getFile")
      */
-    public function getFile($fileName, Request $request, LoggerInterface $logger): Response
+    public function getFile($fileName, Request $request): Response
     {
-        $logger->info("Starting Method: " . __METHOD__);
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
@@ -91,41 +89,6 @@ class ImageController extends AbstractController
             }
         }else{
             return new JsonResponse("file does not exist or is not readable" , 404, array());
-        }
-    }
-
-    /**
-     * @Route("no_auth/files/dat/{fileName}", name="getFile")
-     */
-    public function getDatFile($fileName, Request $request, LoggerInterface $logger): Response
-    {
-        $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('get')) {
-            return new JsonResponse("Method Not Allowed" , 405, array());
-        }
-        $filePath = __DIR__ . '/../../files/'. $fileName;
-        $logger->info("file path is : " . $filePath);
-        if(file_exists($filePath)){
-            try{
-                $logger->info("file found : " . $filePath);
-                $response = new BinaryFileResponse($filePath);
-                $logger->info("file found2 : " . $filePath);
-                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"addons.dat");
-                $logger->info("file found3 : " . $filePath);
-                return $response;
-            }catch(InvalidArgumentException $exception){
-                $logger->info("file not found: " . $exception->getMessage());
-                $filePath = __DIR__ . '/../../files/empty.dat';
-                $response = new BinaryFileResponse($filePath);
-                $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"empty.dat");
-                return $response;
-            }
-        }else{
-            $logger->info("file not found: ");
-            $filePath = __DIR__ . '/../../files/empty.dat';
-            $response = new BinaryFileResponse($filePath);
-            //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"empty.dat");
-            return $response;
         }
     }
 
