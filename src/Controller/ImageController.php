@@ -107,8 +107,11 @@ class ImageController extends AbstractController
         $logger->info("file path is : " . $filePath);
         if(file_exists($filePath)){
             try{
+                $logger->info("file found : " . $filePath);
                 $response = new BinaryFileResponse($filePath);
+                $logger->info("file found2 : " . $filePath);
                 $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,"addons.dat");
+                $logger->info("file found3 : " . $filePath);
                 return $response;
             }catch(InvalidArgumentException $exception){
                 $logger->info("file not found: " . $exception->getMessage());
