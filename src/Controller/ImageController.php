@@ -83,7 +83,7 @@ class ImageController extends AbstractController
         $filePath = __DIR__ . '/../../public/room/image/'. $fileName;
         if(file_exists($filePath)){
             try{
-                return new BinaryFileResponse($filePath);
+                return new BinaryFileResponse($filePath,200, array());
             }catch(InvalidArgumentException $exception){
                 return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
             }
