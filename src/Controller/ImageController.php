@@ -93,6 +93,26 @@ class ImageController extends AbstractController
     }
 
     /**
+     * @Route("no_auth/dat_file/{fileName}", name="getDatFile")
+     */
+    public function getDatFile($fileName, Request $request): Response
+    {
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $filePath = __DIR__ . '/../../files/'. $fileName;
+        if(file_exists($filePath)){
+            try{
+                return new BinaryFileResponse($filePath);
+            }catch(InvalidArgumentException $exception){
+                return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
+            }
+        }else{
+            return new JsonResponse("file does not exist or is not readable" , 404, array());
+        }
+    }
+
+    /**
      * @Route("api/configuration/image/upload")
      */
     public function uploadImage(LoggerInterface $logger, Request $request, FileUploaderApi $uploader,EntityManagerInterface $entityManager): Response
