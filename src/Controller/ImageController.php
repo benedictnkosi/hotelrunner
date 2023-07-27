@@ -100,7 +100,7 @@ class ImageController extends AbstractController
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
-        $filePath = __DIR__ . '/../../public/room/image/empty.dat';
+        $filePath = __DIR__ . '/../../files/'. $fileName;
         if(file_exists($filePath)){
             try{
                 return new BinaryFileResponse($filePath);
