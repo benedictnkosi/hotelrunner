@@ -75,7 +75,7 @@ class ImageController extends AbstractController
     /**
      * @Route("no_auth/room/image/{fileName}", name="getFile")
      */
-    public function getFile($fileName, Request $request): Response
+    public function getFile($fileName, Request $request,LoggerInterface $logger): Response
     {
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
@@ -95,14 +95,17 @@ class ImageController extends AbstractController
     /**
      * @Route("no_auth/dat_file/{fileName}", name="getDatFile")
      */
-    public function getDatFile($fileName, Request $request): Response
+    public function getDatFile($fileName, Request $request,LoggerInterface $logger): Response
     {
+        $logger->info("Starting Method: " . __METHOD__);
+
         if (!$request->isMethod('get')) {
             return new JsonResponse("Method Not Allowed" , 405, array());
         }
         $filePath = __DIR__ . '/../../files/'. $fileName;
         if(file_exists($filePath)){
             try{
+                $logger->info("returning with 200: ");
                 return new BinaryFileResponse($filePath,200, array());
             }catch(InvalidArgumentException $exception){
                 return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
