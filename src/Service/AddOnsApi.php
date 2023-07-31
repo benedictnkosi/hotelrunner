@@ -487,7 +487,7 @@ class AddOnsApi
         $this->logger->info("array lines: " . sizeof($addons));
         $responseArray = array();
         foreach ($addons as $addon) {
-            $this->logger->info("addon: " . $addon);
+            $this->logger->info("addon: " . $addon . " length " . strlen($addon));
             if(strlen($addon) !== 54){
                 $responseArray[] =  array(
                     'result_code' => 1,

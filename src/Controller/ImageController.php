@@ -108,10 +108,6 @@ class ImageController extends AbstractController
             try{
                 $logger->info("returning with 200: ");
                 $response =  new BinaryFileResponse($filePath,200);
-                $response->setContentDisposition(
-                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                    "room.dat"
-                );
                 $response->headers->set('Content-Type', 'text/plain');
                 $response->setStatusCode(200);
                 return $response;
