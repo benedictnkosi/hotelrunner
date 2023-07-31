@@ -742,10 +742,10 @@ class ReservationApi
             $origin = trim(substr($reservation, 124, 46));
             $originURL = trim(substr($reservation, 170, 46));
             $uid = trim(substr($reservation, 216, 44));
-            $roomId = intval(trim(substr($reservation, 407, 6)));
-            $adultGuests = intval(trim(substr($reservation, 423, 2)));
-            $childGuests = intval(trim(substr($reservation, 425, 2)));
-            $smoker = (trim(substr($reservation, 427, 3)));
+            $roomId = trim(substr($reservation, 407, 6));
+            $adultGuests = trim(substr($reservation, 423, 2));
+            $childGuests = trim(substr($reservation, 425, 2));
+            $smoker = (substr($reservation, 427, 3));
 
             if($this->defectApi->isDefectEnabled("upload_reservation_1")){
                 $smoker = "yes";
