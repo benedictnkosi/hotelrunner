@@ -488,7 +488,7 @@ class AddOnsApi
         $responseArray = array();
         foreach ($addons as $addon) {
             $this->logger->info("addon: " . $addon . " length " . strlen($addon));
-            if(strlen($addon) !== 54){
+            if(strlen($addon) !== 54 && strlen($addon) !== 55){
                 $responseArray[] =  array(
                     'result_code' => 1,
                     'result_message' => "File format is incorrect"
