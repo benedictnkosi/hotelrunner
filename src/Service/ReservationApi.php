@@ -1370,8 +1370,12 @@ class ReservationApi
             $roomPrice = $reservation->getRoom()->getPrice();
         }
 
+        $numberOfWeekendNights = $this->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
+        $totalPriceForWeekends = 50 * $numberOfWeekendNights;
+
+
         $totalPrice = intval($roomPrice) * $totalDays;
-        $totalPrice += $totalPriceForAllAdOns;
+        $totalPrice += $totalPriceForAllAdOns + $totalPriceForWeekends;
 
         //payments
         $payments = $paymentApi->getReservationPayments($reservation->getId());
