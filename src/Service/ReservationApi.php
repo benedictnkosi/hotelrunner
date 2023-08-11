@@ -1351,6 +1351,9 @@ class ReservationApi
         return $isEligible;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getAmountDue($reservation): float|int
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -1370,7 +1373,7 @@ class ReservationApi
             $roomPrice = $reservation->getRoom()->getPrice();
         }
 
-        $numberOfWeekendNights = $this->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
+        $numberOfWeekendNights = $paymentApi->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
         $totalPriceForWeekends = 50 * $numberOfWeekendNights;
 
 
