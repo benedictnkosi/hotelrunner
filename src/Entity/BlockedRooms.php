@@ -21,19 +21,22 @@ class BlockedRooms
      */
     private $id;
 
-    /**
-     * @var \DateTime|null
-     *
-     * @ORM\Column(name="from_date", type="date", nullable=true)
-     */
-    private $fromDate;
 
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="to_date", type="date", nullable=true)
+     * @ORM\Column(name="from_date", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $toDate;
+    private $fromDate = 'CURRENT_TIMESTAMP';
+
+
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="to_date", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
+     */
+    private $toDate = 'CURRENT_TIMESTAMP';
+
 
     /**
      * @var int|null
@@ -59,9 +62,9 @@ class BlockedRooms
     /**
      * @var \DateTime|null
      *
-     * @ORM\Column(name="created_date", type="date", nullable=true, options={"default"="CURRENT_DATE"})
+     * @ORM\Column(name="created_date", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $createdDate = 'CURRENT_DATE';
+    private $createdDate = 'CURRENT_TIMESTAMP';
 
     /**
      * @var Rooms
@@ -92,7 +95,7 @@ class BlockedRooms
     /**
      * @return \DateTime|null
      */
-    public function getFromDate(): ?\DateTime
+    public function getFromDate(): \DateTime|string|null
     {
         return $this->fromDate;
     }
@@ -100,7 +103,7 @@ class BlockedRooms
     /**
      * @param \DateTime|null $fromDate
      */
-    public function setFromDate(?\DateTime $fromDate): void
+    public function setFromDate(\DateTime|string|null $fromDate): void
     {
         $this->fromDate = $fromDate;
     }
@@ -108,7 +111,7 @@ class BlockedRooms
     /**
      * @return \DateTime|null
      */
-    public function getToDate(): ?\DateTime
+    public function getToDate(): \DateTime|string|null
     {
         return $this->toDate;
     }
@@ -116,7 +119,7 @@ class BlockedRooms
     /**
      * @param \DateTime|null $toDate
      */
-    public function setToDate(?\DateTime $toDate): void
+    public function setToDate(\DateTime|string|null $toDate): void
     {
         $this->toDate = $toDate;
     }
@@ -200,6 +203,4 @@ class BlockedRooms
     {
         $this->room = $room;
     }
-
-
 }

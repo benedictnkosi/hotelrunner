@@ -128,15 +128,13 @@ class BlockedRoomApi
             $now = new DateTime('today midnight');
 
             $blockedRooms = $this->em
-                ->createQuery("SELECT b FROM App\Entity\BlockedRooms b 
-            JOIN b.room r
-                JOIN r.property p
-            WHERE b.room = r.id
-            and p.id = r.property
-            and p.id = ".$_SESSION['PROPERTY_ID']."
-            and b.toDate >= '".$now->format('Y-m-d')."' 
+                ->createQuery("SELECT b FROM App\Entity\BlockedRooms b
+            WHERE b.toDate >= '".$now->format('Y-m-d')."'
             order by b.fromDate asc ")
                 ->getResult();
+
+            //$blockedRooms = $this->em->getRepository(BlockedRooms::class)->findAll();
+            $this->logger->debug("rooms found : " . sizeof($blockedRooms) );
 
 
             $this->logger->debug("Ending Method before the return: " . __METHOD__ );
@@ -159,6 +157,14 @@ class BlockedRoomApi
         $responseArray = array();
         try{
             $blockedRoom = $this->em->getRepository(BlockedRooms::class)->findOneBy(array('id' => $blockedRoomId));
+            if($blockedRoom == null){
+                $responseArray[] = array(
+                    'result_message' => "No blocked room found for id $blockedRoomId",
+                    'result_code'=> 1
+                );
+                $this->logger->debug("No blocked room found for id $blockedRoomId");
+                return $responseArray;
+            }
             $this->em->remove($blockedRoom);
             $this->em->flush();
             $responseArray[] = array(
