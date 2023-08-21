@@ -208,7 +208,7 @@ class PaymentController extends AbstractController
             $response = $paymentApi->getCashReportByDayJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
         }else if(strcmp($parameters['group'], "false") == 0) {
             $response = $paymentApi->getCashReportAllTransactionsJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
-        }else{
+        }else {
             $response = array(
                 'result_code' => 1,
                 'result_message' => "Invalid group parameter",
