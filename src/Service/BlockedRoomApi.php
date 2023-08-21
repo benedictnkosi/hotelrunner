@@ -36,7 +36,7 @@ class BlockedRoomApi
             $roomApi = new RoomApi( $this->em, $this->logger);
             $room = $roomApi->getRoom($roomId);
             if($room == null){
-                $responseArray[] = array(
+                $responseArray = array(
                     'result_code' => 1,
                     'result_message' => "Room not found for id $roomId"
                 );
@@ -71,14 +71,14 @@ class BlockedRoomApi
             $this->em->persist($blockRoom);
             $this->em->flush($blockRoom);
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully blocked room',
                 'id' => $blockRoom->getId()
             );
             $this->logger->debug(print_r($responseArray, true));
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
                 'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
             );
@@ -158,7 +158,7 @@ class BlockedRoomApi
         try{
             $blockedRoom = $this->em->getRepository(BlockedRooms::class)->findOneBy(array('id' => $blockedRoomId));
             if($blockedRoom == null){
-                $responseArray[] = array(
+                $responseArray = array(
                     'result_message' => "No blocked room found for id $blockedRoomId",
                     'result_code'=> 1
                 );
@@ -167,12 +167,12 @@ class BlockedRoomApi
             }
             $this->em->remove($blockedRoom);
             $this->em->flush();
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => "Successfully deleted blocked room",
                 'result_code'=> 0
             );
         }catch(Exception $exception){
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $exception->getMessage(),
                 'result_code'=> 1
             );

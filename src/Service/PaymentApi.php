@@ -655,7 +655,7 @@ order by date desc";
             WHERE channel = '".$channel."'
             and   DATE(`date`) >= '" . $startDate . "'
             and  DATE(`date`) <= '" . $endDate . "'
-GROUP BY LEFT( date, 10 ) 
+GROUP BY LEFT( date, 10 ), date 
 order by date desc";
 
             $this->logger->info($sql);
@@ -672,7 +672,8 @@ order by date desc";
                     );
                 }
             }
-        } catch (Exception) {
+        } catch (Exception $ex) {
+            $this->logger->debug("Exception: " . $ex->getMessage());
             $responseArray = array(
                 'result_code' => 1,
                 'result_message' => 'Exception occurred while getting payments'
@@ -723,7 +724,7 @@ order by date desc";
 
         try {
 
-            $sql = "SELECT amount, date, reservation_id, reference FROM `payments`
+            $sql = "SELECT id, amount, date, reservation_id, reference, channel, discount FROM `payments`
             WHERE channel = '".$channel."'
             and   DATE(`date`) >= '" . $startDate . "'
             and  DATE(`date`) <= '" . $endDate . "'
@@ -742,10 +743,14 @@ order by date desc";
                         'amount' => $results["amount"],
                         'reference' => $results["reference"],
                         'reservation_id' => $results["reservation_id"],
+                        'channel' => $results["channel"],
+                        'discount' => $results["discount"],
+                        'id' => $results["id"]
                     );
                 }
             }
-        } catch (Exception) {
+        } catch (Exception $ex) {
+            $this->logger->debug("Exception: " . $ex->getMessage());
             $responseArray = array(
                 'result_code' => 1,
                 'result_message' => 'Exception occurred while getting payments'

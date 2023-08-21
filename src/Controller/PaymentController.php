@@ -188,9 +188,7 @@ class PaymentController extends AbstractController
     public function getTotalCashPaymentByDayJson(LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PaymentApi $paymentApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        if (!$request->isMethod('get')) {
-            return new JsonResponse("Method Not Allowed" , 405, array());
-        }
+
         $parameters = json_decode($request->getContent(), true);
         if($parameters == null){
             $response = array(
@@ -199,10 +197,22 @@ class PaymentController extends AbstractController
             );
             return new JsonResponse($response , 200, array());
         }
-        if ($parameters['group']) {
+
+        $logger->info("soap call: " . $parameters['soap_call']);
+
+        if (!$request->isMethod('get') && $parameters['soap_call'] == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+
+        if (strcmp($parameters['group'], "true") == 0) {
             $response = $paymentApi->getCashReportByDayJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
-        }else{
+        }else if(strcmp($parameters['group'], "false") == 0) {
             $response = $paymentApi->getCashReportAllTransactionsJson($parameters['start_date'], $parameters['end_date'], $parameters['channel']);
+        }else{
+            $response = array(
+                'result_code' => 1,
+                'result_message' => "Invalid group parameter",
+            );
         }
 
         return new JsonResponse($response , 200, array());

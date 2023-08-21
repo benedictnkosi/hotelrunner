@@ -103,7 +103,7 @@ class BlockedRoomController extends AbstractController
         }
         $response = $blockedRoomApi->deleteBlockedRoom($id);
         $callback = $request->get('callback');
-        if ($response[0]['result_code'] === 0) {
+        if ($response['result_code'] === 0) {
             $response = new JsonResponse($response , 204, array());
         }else{
             $response = new JsonResponse($response , 200, array());

@@ -217,7 +217,7 @@ class CleaningApi
                 );
 
                 if (sizeof($cleanings) > 0) {
-                    $responseArray[] = $cleanings;
+                    $responseArray = $cleanings;
                 }
             }
         } catch (Exception $ex) {

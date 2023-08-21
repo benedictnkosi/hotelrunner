@@ -46,7 +46,7 @@ class CleaningController extends AbstractController
         }
         $cleanings = $cleaningApi->getCleaningsByRoomJson($roomId);
         if($cleanings == null){
-            $responseArray = array(
+            $responseArray[] = array(
                 'result_message' => "Cleanings not found",
                 'result_code' => 1
             );
