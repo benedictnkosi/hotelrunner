@@ -35,7 +35,7 @@ class BlockedRoomApi
 
             if (strlen($comments) > 50 || strlen($comments) == 0) {
                 $responseArray[] = array(
-                    'result_message' => "Add-on name Length should be between 1 and 50",
+                    'result_message' => "Note length should be between 1 and 50",
                     'result_code' => 1
                 );
                 return $responseArray;
@@ -45,14 +45,14 @@ class BlockedRoomApi
 
             if (!DateTime::createFromFormat('Y-m-d', $fromDate)) {
                 return array(
-                    'result_message' => "Check-out date invalid",
+                    'result_message' => "From date invalid",
                     'result_code' => 1
                 );
             }
 
             if (!DateTime::createFromFormat('Y-m-d', $toDate)) {
                 return array(
-                    'result_message' => "Check-in date invalid",
+                    'result_message' => "To date invalid",
                     'result_code' => 1
                 );
             }
