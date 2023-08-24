@@ -198,7 +198,6 @@ class PaymentController extends AbstractController
             return new JsonResponse($response , 200, array());
         }
 
-        $logger->info("soap call: " . $parameters['soap_call']);
 
         if (!$request->isMethod('get') && $parameters['soap_call'] == null) {
             return new JsonResponse("Method Not Allowed" , 405, array());
