@@ -189,6 +189,7 @@ class PaymentController extends AbstractController
     {
         $logger->info("Starting Method: " . __METHOD__);
 
+
         $parameters = json_decode($request->getContent(), true);
         if($parameters == null){
             $response = array(
