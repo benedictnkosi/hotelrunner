@@ -6,6 +6,7 @@ use App\Entity\Reservations;
 use App\Entity\Guest;
 use App\Service\AddOnsApi;
 use App\Service\CleaningApi;
+use App\Service\DefectApi;
 use App\Service\EmployeeApi;
 use App\Service\GuestApi;
 use App\Service\NotesApi;
@@ -19,15 +20,21 @@ use Doctrine\ORM\EntityManagerInterface;
 class SingleReservationHtml
 {
 
-    private $em;
-    private $logger;
+    private EntityManagerInterface $em;
+    private LoggerInterface $logger;
+    private DefectApi $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
+
     }
 
+    /**
+     * @throws \Exception
+     */
     public function formatHtml($reservation): string
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -73,29 +80,48 @@ class SingleReservationHtml
 
         //guest name and reservation id and count of stays
         $stayCount = $guestApi->getGuestStaysCount($guest->getId());
+
         $htmlString .= '<div class="res-details"><div><div>
-						<h4 class="guest-name"><a target="_blank" href="http://' . $room->getProperty()->getServerName() . '/invoice.html?id=' . $reservationId . '">' . $guest->getName() . ' - ' . $reservationId . '</a>';
+						<h4 class="guest-name">' . $guest->getName() . ' - ' . $reservationId;
 
         //reservation origin
         $this->logger->debug("HTML output - reservation origin " . $reservation->getId());
 
-        $htmlString .= '<img title="' . $reservation->getOrigin() . '" src="/admin/images/' . $reservation->getOrigin() . '.png" class="icon-small-image"></img>';
+        if ($this->defectApi->isDefectEnabled("view_reservation_4")) {
+            $htmlString .= '<img title="' . $reservation->getOrigin() . '" src="/admin/images/website.png" class="icon-small-image"></img>';
+        } else {
+            $htmlString .= '<img title="' . $reservation->getOrigin() . '" src="/admin/images/' . $reservation->getOrigin() . '.png" class="icon-small-image"></img>';
+        }
+        
 
         if (strcasecmp($reservation->getOrigin(), "website") === 0) {
-            $htmlString .= '<div class="stays-div">'.$stayCount.'</div>';
+            if ($this->defectApi->isDefectEnabled("view_reservation_5")) {
+                $stayCount++;
+            }
+            $htmlString .= '<div class="stays-div">' . $stayCount . '</div>';
         }
 
 
         $htmlString .= '</h4>';
 
         //room name
-
+        $due = $paymentApi->getTotalDue($reservationId);
+        $rooms_disabled = "disabled";
+        if ($this->defectApi->isFunctionalityEnabled("update_reservation_room") && $due < 1) {
+            $rooms_disabled = "";
+        }
 
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-home glyphicon-small-icon" > 
-<select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input">';
+<select id"select_room_' . $reservationId . '" data-res-id="' . $reservationId . '" class="reservation_room_input" '.$rooms_disabled.'>';
+
         foreach ($rooms as $roomEntity) {
             if ($roomEntity->getId() === $room->getId()) {
-                $htmlString .= '<option value="' . $roomEntity->getId() . '" selected>' . $roomEntity->getName() . '</option>';
+                if ($this->defectApi->isDefectEnabled("view_reservation_6")) {
+                    $htmlString .= '<option value="' . $rooms[0]->getId() . '" selected>' . $roomEntity->getName() . '</option>';
+                } else {
+                    $htmlString .= '<option value="' . $roomEntity->getId() . '" selected>' . $roomEntity->getName() . '</option>';
+                }
+
             } else {
                 $htmlString .= '<option value="' . $roomEntity->getId() . '" >' . $roomEntity->getName() . '</option>';
             }
@@ -105,16 +131,23 @@ class SingleReservationHtml
         //check in\out date
 
         $checkInDateDisabled = "";
-        if ($reservation->getCheckOut() < $now || (strcasecmp($reservation->getOrigin(), "website") != 0)) {
+        if ($this->defectApi->isFunctionalityEnabled("update_reservation_dates")) {
+            if ($reservation->getCheckOut() < $now || (strcasecmp($reservation->getOrigin(), "website") != 0) || $due > 1) {
+                $checkInDateDisabled = "Disabled";
+            }
+        } else {
             $checkInDateDisabled = "Disabled";
         }
 
-        $this->logger->debug(" debug1 - checkin  " . $reservation->getCheckIn()->format("Y-m-d"));
-        $this->logger->debug(" debug1 - checkout  " . $reservation->getCheckOut()->format("Y-m-d"));
+
+        $checkOutDate = $reservation->getCheckOut();
+        if ($this->defectApi->isDefectEnabled("view_reservation_7")) {
+            $checkOutDate->modify('+1 day');
+        }
 
         $htmlString .= '<p name="res-dates"><span class="glyphicon glyphicon-calendar glyphicon-small-icon" > 
-						 <input id="checkindate_' . $reservationId . '" data-res-id="' . $reservationId . '" type="text"  name="check_in_date" class="input-as-text date-picker check_in_date_input" value="' . $reservation->getCheckIn()->format("m/d/Y") .
-            ' - ' . $reservation->getCheckOut()->format("m/d/Y") . '" ' . $checkInDateDisabled . '/>
+						 <input id="checkindate_' . $reservationId . '" data-res-id="' . $reservationId . '" maxlength="30" type="text"  name="check_in_date" class="input-as-text date-picker check_in_date_input" value="' . $reservation->getCheckIn()->format("m/d/Y") .
+            ' - ' . $checkOutDate->format("m/d/Y") . '" ' . $checkInDateDisabled . '/>
 						 </span></p>';
 
         //check in time
@@ -157,12 +190,23 @@ class SingleReservationHtml
         }
 
         if ($reservation->getAdults() !== Null && $reservation->getChildren() !== Null) {
-            $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . $reservation->getAdults() . ' Adults and ' . $reservation->getChildren() . ' Children</a></span></p>';
+            $adults = $reservation->getAdults();
+            if ($this->defectApi->isDefectEnabled("view_reservation_3")) {
+                $adults += 1;
+            }
+            $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . $adults . ' Adults and ' . $reservation->getChildren() . ' Children</a></span></p>';
         }
 
         if ($guest->getIdNumber() !== Null && !empty($guest->getIdNumber())) {
             $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . $guest->getIdNumber() . '</a></span></p>';
         }
+
+        $citizenship = "South African";
+        if($guest->getCitizenship() == 1){
+            $citizenship = "Permanent Resident";
+        }
+        $htmlString .= '<p name="guest-contact" class="guest-contact"><span class="glyphicon glyphicon-user glyphicon-small-icon"><a class="res-contact-link" href="javascript:void(0)">' . ucfirst($guest->getGender()) . " "  . $citizenship . '</a></span></p>';
+
 
         // check if room cleaned for checkout reservations only
         $this->logger->debug("HTML output - check if room cleaned for checkout reservations only " . $reservation->getId());
@@ -175,7 +219,11 @@ class SingleReservationHtml
         //customer image
         $this->logger->debug("HTML output - customer image" . $reservation->getId());
         if ($guest->getIdNumber() == null) {
-            $customerIdImage = "unverified.png";
+            if ($this->defectApi->isDefectEnabled("view_reservation_9")) {
+                $customerIdImage = "verified.png";
+            }else{
+                $customerIdImage = "unverified.png";
+            }
         } else {
             $customerIdImage = "verified.png";
         }
@@ -186,53 +234,64 @@ class SingleReservationHtml
         //for direct bookings only
         $this->logger->debug("HTML output - for direct bookings only " . $reservation->getId());
 
-        if ($reservation->getCheckIn() >= $now) {
+        if ($this->defectApi->isFunctionalityEnabled("cancel_booking")) {
+            if ($reservation->getCheckIn() >= $now) {
 
-            if (strcmp($reservation->getStatus()->getName(), "pending") != 0) {
-                //cancel booking
-                $this->logger->debug(" HTML output - cancel booking " . $reservation->getId());
-                $htmlString .= '<span title="Cancel booking" class="glyphicon glyphicon-remove changeBookingStatus clickable" aria-hidden="true" id="cancelBooking_' . $reservationId . '"></span>';
+                if (strcmp($reservation->getStatus()->getName(), "pending") != 0) {
+                    //cancel booking
+                    $this->logger->debug(" HTML output - cancel booking " . $reservation->getId());
+                    $htmlString .= '<span title="Cancel booking" class="glyphicon glyphicon-remove changeBookingStatus clickable" aria-hidden="true" id="cancelBooking_' . $reservationId . '"></span>';
+                }
             }
         }
 
-        $blockClassName = "";
-        $openCloseTitle = "";
-        if (strcasecmp($reservation->getStatus()->getName(), "confirmed") == 0) {
-            $openCloseTitle = "Open Room";
-            $blockClassName = "glyphicon-triangle-top";
-        } else if (strcasecmp($reservation->getStatus()->getName(), "opened") == 0) {
-            $openCloseTitle = "Close Room";
-            $blockClassName = "glyphicon-triangle-bottom";
-        }
+
+        if ($this->defectApi->isFunctionalityEnabled("open_close_room")) {
+            $blockClassName = "";
+            $openCloseTitle = "";
+            if (strcasecmp($reservation->getStatus()->getName(), "confirmed") == 0) {
+                $openCloseTitle = "Open Room";
+                $blockClassName = "glyphicon-triangle-top";
+            } else if (strcasecmp($reservation->getStatus()->getName(), "opened") == 0) {
+                $openCloseTitle = "Close Room";
+                $blockClassName = "glyphicon-triangle-bottom";
+            }
 
 
-        $this->logger->debug(" HTML output - open\close room " . $reservation->getId());
+            $this->logger->debug(" HTML output - open\close room " . $reservation->getId());
 
-        if (strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) != 0) {
-            $htmlString .= '<span title="' . $openCloseTitle . '" class="glyphicon ' . $blockClassName . ' changeBookingStatus clickable" aria-hidden="true" id="changeBookingStatus_' . $reservation->getId() . '">
+            if (strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) != 0) {
+                $htmlString .= '<span title="' . $openCloseTitle . '" class="glyphicon ' . $blockClassName . ' changeBookingStatus clickable" aria-hidden="true" id="changeBookingStatus_' . $reservation->getId() . '">
         </span>';
+            }
         }
 
 
         //whatsapp guest
         $this->logger->debug(" HTML output - whatsapp guest " . $reservation->getId());
-        $htmlString .= '<a title="Whatsapp Guest" class="image_verified" target="_blank" href="https://api.whatsapp.com/send?phone=' . $guest->getPhoneNumber() . '&text=Hello)"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>';
+        if ($this->defectApi->isFunctionalityEnabled("whatsapp_guest")) {
+            $htmlString .= '<a title="Whatsapp Guest" class="image_verified" target="_blank" href="https://api.whatsapp.com/send?phone=' . $guest->getPhoneNumber() . '&text=Hello)"><i class="fa fa-whatsapp" aria-hidden="true"></i></a>';
+        }
 
         //guest id verified
-        if (strcasecmp($reservation->getOrigin(), "website") === 0) {
-            $htmlString .= '<img title="Customer ID - ' . str_replace(".png", "", $customerIdImage) . '" src="/admin/images/' . $customerIdImage . '" class="image_verified clickable"/>';
+        if ($this->defectApi->isFunctionalityEnabled("update_guest_id")) {
+            if (strcasecmp($reservation->getOrigin(), "website") === 0) {
+                $htmlString .= '<img title="Customer ID - ' . str_replace(".png", "", $customerIdImage) . '" src="/admin/images/' . $customerIdImage . '" class="image_verified clickable"/>';
+            }
         }
+
 
         // display if guest already checked in
         $this->logger->debug("HTML output - display if guest already checked in" . $reservation->getId());
-        if (strcasecmp($reservation->getCheckInStatus(), "checked_in") == 0) {
+        if (strcasecmp($reservation->getCheckInStatus(), "checked_in") == 0 || $this->defectApi->isDefectEnabled("view_reservation_13")) {
             $htmlString .= '<img src="/admin/images/menu_stayover.png" title="Checked in" class="image_verified"/><p></p>';
         }
 
         //display if guest checked out
         $this->logger->debug("HTML output - display if guest already checked in" . $reservation->getId());
         if (strcasecmp($reservation->getCheckInStatus(), "checked_out") == 0 &&
-            (strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d") == 0))) {
+            (strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d") == 0))
+                && !$this->defectApi->isDefectEnabled("view_reservation_13")) {
             $htmlString .= '<img src="/admin/images/checked_out.png" title="Checked out" class="image_verified"/><p></p>';
         }
 
@@ -284,34 +343,42 @@ class SingleReservationHtml
             $addOnsHTml .= '<p class="small-font-italic">' . $addOn->getDate()->format("d-M") . " - " . $addOn->getQuantity() . " x " . $addOn->getAddOn()->getName() . " @ R " . $addOn->getAddOn()->getPrice() . ' <a href="javascript:void(0)" data-addon-id="' . $addOn->getId() . '" class="delete_addon_link">delete</a></p>';
             $totalPriceForAllAdOns += (intVal($addOn->getAddOn()->getPrice()) * intval($addOn->getQuantity()));
         }
+
         //add addOn for the weekend nights
-        $numberOfWeekendNights = $this->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
+        $numberOfWeekendNights = $paymentApi->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
         $addOnsHTml .= '<p class="small-font-italic">' . $now->format("d-M") . " - " . $numberOfWeekendNights . " x Weekend nights @ R " . "50.00" . '</p>';
-        $totalPriceForAllAdOns += (50 * $numberOfWeekendNights);
+        if(strcasecmp($reservation->getOrigin(), "website") == 0){
+            $totalPriceForAllAdOns += (50 * $numberOfWeekendNights);
+        }
+
+        if ($this->defectApi->isDefectEnabled("view_reservation_13")) {
+            $totalPriceForAllAdOns += 1;
+        }
 
 
         //discount based on number of days booked
-        if($totalDays > 6 && $totalDays < 28 ){
-            $roomPrice = $roomPrice * 0.9;
-        }elseif($totalDays > 27){
-            $roomPrice = $roomPrice * 0.7;
-        }
-
-        //apply discount based on loyalty rewards
-        if($guest->isRewards()){
-            //apply discount based on number of stays
-            if($stayCount < 10){
+        if( $this->defectApi->isFunctionalityEnabled("discount_based_on_nights")){
+            if ($totalDays > 6 && $totalDays < 28) {
                 $roomPrice = $roomPrice * 0.9;
-            }elseif($stayCount < 20){
-                $roomPrice = $roomPrice * 0.8;
-            }else{
+            } elseif ($totalDays > 27) {
                 $roomPrice = $roomPrice * 0.7;
             }
         }
 
 
-
-
+        //apply discount based on loyalty rewards
+        if ($this->defectApi->isFunctionalityEnabled("loyalty_rewards")) {
+            if ($guest->isRewards()) {
+                //apply discount based on number of stays
+                if ($stayCount < 10) {
+                    $roomPrice = $roomPrice * 0.9;
+                } elseif ($stayCount < 20) {
+                    $roomPrice = $roomPrice * 0.8;
+                } else {
+                    $roomPrice = $roomPrice * 0.7;
+                }
+            }
+        }
         $totalPrice = intval($roomPrice) * $totalDays;
 
         $totalPrice += $totalPriceForAllAdOns;
@@ -331,7 +398,11 @@ class SingleReservationHtml
         }
 
         $due = $totalPrice - $totalPayment;
-
+        if ($this->defectApi->isDefectEnabled("view_reservation_1")) {
+            if ($due !== 0) {
+                $due += +1;
+            }
+        }
 
         $htmlString .= '<h5 class="text-align-left">Line items</h5>';
         $this->logger->debug(" debug - checkin  " . $reservation->getCheckIn()->format("Y-m-d"));
@@ -369,182 +440,183 @@ class SingleReservationHtml
         $htmlString .= '<div id="right-div-' . $reservation->getId() . '">';
 
         // add phone number
-        if ($guest->getPhoneNumber() === null || empty($guest->getPhoneNumber())) {
-            $this->logger->debug(" HTML output - add guest phonenumber" . $reservation->getId());
+        if ($this->defectApi->isFunctionalityEnabled("update_phone_number")) {
+            if ($guest->getPhoneNumber() === null || empty($guest->getPhoneNumber())) {
+                $this->logger->debug(" HTML output - add guest phonenumber" . $reservation->getId());
 
-            $htmlString .= '
+                $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="guest_phone_input" type="text" data-guestid="' . $guest->getId() . '"
+                <input id="guest_phone_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
 										 class="textbox  display-none block-display reservation_input" placeholder="Phone number"/><div id="add_guest_phone_button" class="ClickableButton res_add_guest_phone" data-guestid="' . $guest->getId() . '" >Add Phone Number</div></div>';
+            }
         }
+
 
         // add email
-        if ($guest->getEmail() === null || empty($guest->getPhoneNumber())) {
-            $this->logger->debug(" HTML output - add guest email" . $reservation->getId());
+        if ($this->defectApi->isFunctionalityEnabled("update_guest_email")) {
+            if ($guest->getEmail() === null || empty($guest->getPhoneNumber())) {
+                $this->logger->debug(" HTML output - add guest email" . $reservation->getId());
 
-            $htmlString .= '
+                $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="guest_email_input" type="text" data-guestid="' . $guest->getId() . '"
+                <input id="guest_email_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
 										 class="textbox  display-none block-display reservation_input" placeholder="Email Address"/><div id="add_guest_email_button" class="ClickableButton res_add_guest_email" data-guestid="' . $guest->getId() . '" >Add Email</div></div>';
+            }
         }
+
 
         // add Guest ID
-        if ($guest->getIdNumber() === null || empty($guest->getIdNumber())) {
-            $this->logger->debug(" HTML output - add guest ID" . $reservation->getId());
+        if ($this->defectApi->isFunctionalityEnabled("update_guest_id")) {
+            if ($guest->getIdNumber() === null || empty($guest->getIdNumber())) {
+                $this->logger->debug(" HTML output - add guest ID" . $reservation->getId());
 
-            $htmlString .= '
+                $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="guest_id_input" type="text" data-guestid="' . $guest->getId() . '"
-										 class="textbox  display-none block-display reservation_input" placeholder="Passport\ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID\Passport</div></div>';
+                <input id="guest_id_input" maxlength="30" type="text" data-guestid="' . $guest->getId() . '"
+										 class="textbox  display-none block-display reservation_input" placeholder="South African ID number"/><div id="add_guest_id_button" class="ClickableButton res_add_guest_id" data-guestid="' . $guest->getId() . '" >Add ID Number</div></div>';
+            }
         }
+
 
         // add payment
         $this->logger->debug(" HTML output - add payment" . $reservation->getId());
 
-
-        $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_payment" >
+        if ($this->defectApi->isFunctionalityEnabled("add_payment")) {
+            $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_payment" >
         <select id="select_payment_' . $reservationId . '">';
-        $htmlString .= ' <option value="none">Select Payment Method</option>';
-        $htmlString .= ' <option value="cash">Cash</option>';
-        $htmlString .= ' <option value="card">Card</option>';
-        $htmlString .= ' <option value="transfer">Transfer</option>';
+            $htmlString .= ' <option value="none">Select Payment Method</option>';
+            $htmlString .= ' <option value="cash">Cash</option>';
+            $htmlString .= ' <option value="card">Card</option>';
+            $htmlString .= ' <option value="transfer">Transfer</option>';
 
-        $htmlString .= '</select> 
-            <p>Amount</p><input id="amount_' . $reservationId . '" type="text"
+            $htmlString .= '</select> 
+            <p>Amount</p><input maxlength="30" id="amount_' . $reservationId . '" type="text"
 										 class="textbox  display-none block-display reservation_input" placeholder="0.00"/>
-										 <p>Payment Reference</p><input id="payment_reference_' . $reservationId . '" type="text"
+										 <p>Payment Reference</p><input id="payment_reference_' . $reservationId . '" type="text" maxlength="30" 
 										 class="textbox display-none block-display reservation_input payment_reference" placeholder="e.g. 2023/01/000037"/>
             </div>';
 
-        $htmlString .= '
+            $htmlString .= '
                     <div id="add_payment_button_' . $reservationId . '" class="ClickableButton res_add_payment" data-resid="' . $reservationId . '" >Add Payment</div></div>';
+
+        }
 
 
         // add discount
-        $this->logger->debug(" HTML output - add discount" . $reservation->getId());
+        if ($this->defectApi->isFunctionalityEnabled("add_disount")) {
+            $this->logger->debug(" HTML output - add discount" . $reservation->getId());
 
-        $htmlString .= '
+            $htmlString .= '
                 <div class="right-side-action-block">
-                <input id="discount_' . $reservationId . '" type="text"
+                <input maxlength="30" id="discount_' . $reservationId . '" type="text"
 										 class="textbox  display-none block-display reservation_input" placeholder="0.00"/><div id="add_discount_button_' . $reservationId . '" class="ClickableButton res_add_discount" data-resid="' . $reservationId . '" >Add Discount</div></div>';
 
+        }
+
         // add notes
-        $this->logger->debug(" HTML output - add notes" . $reservation->getId());
-        $htmlString .= '
+        if ($this->defectApi->isFunctionalityEnabled("add_note")) {
+            $this->logger->debug(" HTML output - add notes" . $reservation->getId());
+            $htmlString .= '
                     <div class="right-side-action-block">
                     <textarea id="note_' . $reservationId . '"
                         class="textbox  display-none block-display reservation_input" placeholder="e.g. 12h00 early check in"></textarea><div id="add_note_button_' . $reservationId . '" class="ClickableButton res_add_note" data-resid="' . $reservationId . '" >Add Note</div></div>';
 
-        // add notes
-        $this->logger->debug(" HTML output - block guest" . $reservation->getId());
-        $htmlString .= '
+        }
+
+        // block guest
+        if ($this->defectApi->isFunctionalityEnabled("block_guest")) {
+            $this->logger->debug(" HTML output - block guest" . $reservation->getId());
+            $htmlString .= '
                     <div class="right-side-action-block">
                     <textarea id="block_note_' . $reservationId . '"
                         class="textbox  display-none block-display reservation_input" placeholder="e.g. smoking in room"></textarea><div id="block_guest_button_' . $reservationId . '" class="ClickableButton blockGuest" data-resid="' . $reservationId . '" >Block Guest</div></div>';
+        }
 
         // add add-ons - only for confirmed booking
-        if (strcmp($reservation->getStatus()->getName(), "pending") != 0) {
-            $this->logger->debug(" HTML output - add add-ons" . $reservation->getId());
-            $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_add_on_' . $reservationId . '" ><select id="select_add_on_' . $reservationId . '">';
-            $htmlString .= ' <option value="none">Select Add On</option>';
-            $addOnsList = $addOnsApi->getAddOns();
-            if ($addOnsList !== null) {
-                foreach ($addOnsList as $addOn) {
-                    $htmlString .= ' <option value="' . $addOn->getId() . '">' . $addOn->getName() . '</option>';
+        if ($this->defectApi->isFunctionalityEnabled("add_add-ons")) {
+            if (strcmp($reservation->getStatus()->getName(), "pending") != 0) {
+                $this->logger->debug(" HTML output - add add-ons" . $reservation->getId());
+                $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_add_on_' . $reservationId . '" ><select id="select_add_on_' . $reservationId . '">';
+                $htmlString .= ' <option value="none">Select Add On</option>';
+                $addOnsList = $addOnsApi->getAddOns();
+                if ($addOnsList !== null) {
+                    foreach ($addOnsList as $addOn) {
+                        $htmlString .= ' <option value="' . $addOn->getId() . '">' . $addOn->getName() . '</option>';
+                    }
                 }
-            }
 
-            $htmlString .= '</select> 
+                $htmlString .= '</select>
             <p>Quantity</p><input type="number" value="1" id="add_on_quantity_' . $reservationId . '"></p>
             </div>';
 
-            $htmlString .= '
+                $htmlString .= '
                     <div id="add_add_on_button_' . $reservationId . '" class="ClickableButton res_add_add_on" data-resid="' . $reservationId . '" >Add Add-Ons</div></div>';
 
+            }
         }
+
 
         // check if guest eligible for check in 1. Guest ID provided 2. guest has phone number recorded
-        $this->logger->debug("HTML output - check if guest eligible for check in" . $reservation->getId());
+        if ($this->defectApi->isFunctionalityEnabled("check_in_out_guest")) {
+            $this->logger->debug("HTML output - check if guest eligible for check in" . $reservation->getId());
 
-        if (strcasecmp($reservation->getCheckInStatus(), "not checked in") === 0
-            && (strcasecmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) == 0)) {
-            $this->logger->debug("this user is checking in today");
-            $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedIn" id="check_in_user_' . $reservationId . '"  reservation_id="' . $reservationId . '">Check In Guest</div></div>';
-        }
+            if (strcasecmp($reservation->getCheckInStatus(), "not checked in") === 0
+                && (strcasecmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) == 0)) {
+                $this->logger->debug("this user is checking in today");
+                $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedIn" id="check_in_user_' . $reservationId . '"  reservation_id="' . $reservationId . '">Check In Guest</div></div>';
+            }
 
-        // guest checkout button
-        $this->logger->debug("HTML output - check if guest eligible for check out" . $reservation->getId() . " - " . $reservation->getCheckInStatus());
-        if (strcasecmp($reservation->getCheckInStatus(), "checked_in") === 0) {
-            $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedOut" id="check_out_user_' . $reservationId . '" reservation_id="' . $reservationId . '">Check Out Guest</div></div>';
+            // guest checkout button
+            $this->logger->debug("HTML output - check if guest eligible for check out" . $reservation->getId() . " - " . $reservation->getCheckInStatus());
+            if (strcasecmp($reservation->getCheckInStatus(), "checked_in") === 0) {
+                $htmlString .= '<div class="right-side-action-block"><div class="ClickableButton NotCheckedOut" id="check_out_user_' . $reservationId . '" reservation_id="' . $reservationId . '">Check Out Guest</div></div>';
+            }
+
         }
 
 
         //Mark room as cleaned
-        $this->logger->debug("HTML output - Mark room as cleaned " . $reservation->getId());
-        $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_mark_cleaned_' . $reservationId . '" ><select id="select_employee_' . $reservationId . '">';
-        $htmlString .= ' <option value="none">Select Cleaner</option>';
-        $employeeApi = new EmployeeApi($this->em, $this->logger);
-        $employees = $employeeApi->getEmployees();
-        if (count($employees) > 0) {
-            foreach ($employees as $employee) {
-                $htmlString .= ' <option value="' . $employee->getId() . '">' . $employee->getName() . '</option>';
+        if ($this->defectApi->isFunctionalityEnabled("add_cleaning")) {
+            $this->logger->debug("HTML output - Mark room as cleaned " . $reservation->getId());
+            $htmlString .= ' <div class="right-side-action-block"><div class="display-none borderAndPading block-display reservation_input" id="div_mark_cleaned_' . $reservationId . '" ><select id="select_employee_' . $reservationId . '">';
+            $htmlString .= ' <option value="none">Select Cleaner</option>';
+            $employeeApi = new EmployeeApi($this->em, $this->logger);
+            $employees = $employeeApi->getEmployees();
+            if (count($employees) > 0) {
+                foreach ($employees as $employee) {
+                    $htmlString .= ' <option value="' . $employee->getId() . '">' . $employee->getName() . '</option>';
+                }
             }
-        }
 
-        $htmlString .= '</select> 
+            $htmlString .= '</select>
 
             </div>';
 
-        $htmlString .= '
+            $htmlString .= '
                     <div id="mark_cleaned_button_' . $reservationId . '" class="ClickableButton res_mark_cleaned" data-resid="' . $reservationId . '" >Add Cleaning</div></div>';
+
+        }
 
 
         //cleaning score - if check out date is in the past and not direct booking
-        $this->logger->debug("HTML output - cleaning score " . $reservation->getId());
-        if ($reservation->getCheckOut() < $now && strcasecmp($reservation->getOrigin(), "website") != 0) {
-            //check if cleanliness score is not captured
-            if (strcasecmp($reservation->getCleanlinessScore(), "0") == 0) {
-                //display the input field to capture score
-                $htmlString .= '<input name="score" type="text" id="score_input_' . $reservationId . '"   
-							placeholder="Score" class="textbox cleaning_score_input display-none">';
-                $htmlString .= '<div class="ClickableButton res_add_add_on" reservation_id="' . $reservationId . '">Cleanliness Score</div>';
-            } else {
-                //display score
-                $htmlString .= '<div>Cleanliness score: ' . $reservation->getCleanlinessScore() . '</div>';
-            }
-        }
+//        $this->logger->debug("HTML output - cleaning score " . $reservation->getId());
+//        if ($reservation->getCheckOut() < $now && strcasecmp($reservation->getOrigin(), "website") != 0) {
+//            //check if cleanliness score is not captured
+//            if (strcasecmp($reservation->getCleanlinessScore(), "0") == 0) {
+//                //display the input field to capture score
+//                $htmlString .= '<input name="score" maxlength="30" type="text" id="score_input_' . $reservationId . '"
+//							placeholder="Score" class="textbox cleaning_score_input display-none">';
+//                $htmlString .= '<div class="ClickableButton res_add_add_on" reservation_id="' . $reservationId . '">Cleanliness Score</div>';
+//            } else {
+//                //display score
+//                $htmlString .= '<div>Cleanliness score: ' . $reservation->getCleanlinessScore() . '</div>';
+//            }
+//        }
 
         $this->logger->debug("Ending HTML output" . $reservation->getId());
         $htmlString .= '</div>
 					</div>';
 
         return $htmlString;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    function getNumberOfWeekendNights($checkIn, $checkOut): int
-    {
-        $numberOfWeekendDays = 0;
-        $numberOfDays = 0;
-        $newCheckIn = new DateTime($checkIn->format("m/d/Y"));
-        while(strcmp( $newCheckIn->format("m/d/Y"),  $checkOut->format("m/d/Y")) !== 0 && $numberOfDays < 10){
-            $numberOfDays ++;
-             $newCheckIn->modify('+1 day');
-            $this->logger->debug("new check in date" . $newCheckIn->format("m/d/Y"));
-            $this->logger->debug("checkout date" . $checkOut->format("m/d/Y"));
-
-            if($this->isWeekend($checkOut)){
-                $numberOfWeekendDays++;
-            }
-        }
-
-        return $numberOfWeekendDays;
-    }
-
-    function isWeekend($date): bool
-    {
-        return true;
     }
 }

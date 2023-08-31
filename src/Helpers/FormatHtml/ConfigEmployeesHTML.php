@@ -24,8 +24,8 @@ class ConfigEmployeesHTML
             foreach ($employees as $employee) {
                 $html .= '<div class="employee_row">
                         
-                            <input type="text" class="employee_field" data-employee-id="'.$employee->getId().'" value="'.$employee->getName().'"
-                                   required/>
+                            <input type="text" class="employee_field" maxlength="30" data-employee-id="'.$employee->getId().'" placeholder="'.$employee->getName(). ' ('.$employee->getGender().')"
+                                   />
                                    <div class="ClickableButton remove_employee_button" data-employee-id="'.$employee->getId().'" >Remove</div>
                         
                     </div>';

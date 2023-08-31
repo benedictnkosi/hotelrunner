@@ -27,6 +27,10 @@ function showBackToReservationsLink() {
         }
     });
 }
+function hideMessages(divName){
+    $("#"+divName+"_error_message_div").addClass("display-none");
+    $("#"+divName+"_success_message_div").addClass("display-none");
+}
 
 function showResErrorMessage(divName, message){
     $("body").removeClass("loading");
@@ -46,6 +50,6 @@ function showResSuccessMessage(divName,message){
     $("#"+divName+"_success_message").text(message)
     $("#"+divName+"_success_message_div").removeClass("display-none");
     $([document.documentElement, document.body]).animate({
-        scrollTop: $("#"+divName+"_error_message_div").offset().top
+        scrollTop: $("#"+divName+"_success_message_div").offset().top
     }, 2000);
 }

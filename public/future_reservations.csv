@@ -1,8 +1,4 @@
-id,room_name,check_in,check_out,guest_name,phone_number
-683,Upstairs+King+Room,2023-03-14,2023-03-20,"Vincent Joseph",0837917430
-670,"King Studio",2023-04-07,2023-04-10,Koketso,
-672,"One Bedroom Suite",2023-04-07,2023-04-10,Koketso,
-669,Upstairs+King+Room,2023-04-07,2023-04-10,Koketso,
-671,"King Studio With Stove",2023-04-07,2023-04-10,Koketso,
-668,"Budget Suite",2023-04-07,2023-04-10,Koketso,
-206,"Queen Suite",2023-04-08,2023-04-10,Jacob,
+id,room_name,check_in,check_out,guest_name,phone_number,amount
+9161,da5f3062-1059-4dd5-b44c-5,2023-09-28,2023-09-29,"New Name Overide",+27837917430,800
+9161,da5f3062-1059-4dd5-b44c-5,2023-09-28,2023-09-29,"New Name Overide",+27837917430,695.65
+9161,da5f3062-1059-4dd5-b44c-5,2023-09-28,2023-09-29,"New Name Overide",+27837917430,104.35

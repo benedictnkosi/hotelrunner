@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Rooms
  *
- * @ORM\Table(name="rooms", indexes={@ORM\Index(name="fk_room_property", columns={"property"}), @ORM\Index(name="fk_room_tv", columns={"tv"}), @ORM\Index(name="rooms_ibfk_2", columns={"status"}), @ORM\Index(name="rooms_ibfk_1", columns={"bed"})})
+ * @ORM\Table(name="rooms", indexes={@ORM\Index(name="fk_room_tv", columns={"tv"}), @ORM\Index(name="rooms_ibfk_2", columns={"status"}), @ORM\Index(name="rooms_ibfk_1", columns={"bed"}), @ORM\Index(name="fk_room_property", columns={"property"})})
  * @ORM\Entity
  */
 class Rooms
@@ -85,14 +85,28 @@ class Rooms
     private $bdcLastExport = 'CURRENT_TIMESTAMP';
 
     /**
-     * @var RoomStatus
+     * @var bool
      *
-     * @ORM\ManyToOne(targetEntity="RoomStatus")
+     * @ORM\Column(name="kids", type="boolean", nullable=false)
+     */
+    private $kids = '0';
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="amenities", type="string", length=500, nullable=false)
+     */
+    private $amenities;
+
+    /**
+     * @var RoomBedSize
+     *
+     * @ORM\ManyToOne(targetEntity="RoomBedSize")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="status", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="bed", referencedColumnName="id")
      * })
      */
-    private $status;
+    private $bed;
 
     /**
      * @var Property
@@ -105,14 +119,14 @@ class Rooms
     private $property;
 
     /**
-     * @var RoomBedSize
+     * @var RoomStatus
      *
-     * @ORM\ManyToOne(targetEntity="RoomBedSize")
+     * @ORM\ManyToOne(targetEntity="RoomStatus")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="bed", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="status", referencedColumnName="id")
      * })
      */
-    private $bed;
+    private $status;
 
     /**
      * @var RoomTv
@@ -285,19 +299,52 @@ class Rooms
     }
 
     /**
-     * @return RoomStatus
+     * @return bool
      */
-    public function getStatus(): RoomStatus
+    public function isKids(): bool|string
     {
-        return $this->status;
+        return $this->kids;
     }
 
     /**
-     * @param RoomStatus $status
+     * @param bool $kids
      */
-    public function setStatus(RoomStatus $status): void
+    public function setKids(bool|string $kids): void
     {
-        $this->status = $status;
+        $this->kids = $kids;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAmenities(): string
+    {
+        return $this->amenities;
+    }
+
+    /**
+     * @param string $amenities
+     */
+    public function setAmenities(string $amenities): void
+    {
+        $this->amenities = $amenities;
+    }
+
+
+    /**
+     * @return RoomBedSize
+     */
+    public function getBed(): RoomBedSize
+    {
+        return $this->bed;
+    }
+
+    /**
+     * @param RoomBedSize $bed
+     */
+    public function setBed(RoomBedSize $bed): void
+    {
+        $this->bed = $bed;
     }
 
     /**
@@ -317,19 +364,19 @@ class Rooms
     }
 
     /**
-     * @return RoomBedSize
+     * @return RoomStatus
      */
-    public function getBed(): RoomBedSize
+    public function getStatus(): RoomStatus
     {
-        return $this->bed;
+        return $this->status;
     }
 
     /**
-     * @param RoomBedSize $bed
+     * @param RoomStatus $status
      */
-    public function setBed(RoomBedSize $bed): void
+    public function setStatus(RoomStatus $status): void
     {
-        $this->bed = $bed;
+        $this->status = $status;
     }
 
     /**

@@ -19,30 +19,100 @@ class BlockedRoomApi
     {
         $this->em = $entityManager;
         $this->logger = $logger;
-        if(session_id() === ''){
-            $logger->info("Session id is empty". __METHOD__ );
+        if (session_id() === '') {
+            $logger->info("Session id is empty" . __METHOD__);
             session_start();
         }
     }
 
-    public function blockRoom($roomId, $fromDate,$toDate , $comments, $reservationId = null): array
+    public function blockRoom($roomId, $fromDate, $toDate, $comments, $reservationId = null): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $this->logger->debug("blocking room: " . $roomId);
 
         $responseArray = array();
         try {
-            //get the room
-            $roomApi = new RoomApi( $this->em, $this->logger);
-            $room = $roomApi->getRoom($roomId);
-            if($room == null){
+
+            if (strlen($comments) > 50 || strlen($comments) == 0) {
                 $responseArray[] = array(
+                    'result_message' => "Note length should be between 1 and 50",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            //validate dates
+
+            if (!DateTime::createFromFormat('Y-m-d', $fromDate)) {
+                return array(
+                    'result_message' => "From date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $toDate)) {
+                return array(
+                    'result_message' => "To date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            $checkInDateDateObject = new DateTime($fromDate);
+            $checkOutDateDateObject = new DateTime($toDate);
+
+            //validate checkin dates
+            if (strlen($fromDate) < 1 || strlen($toDate) < 1) {
+                return array(
+                    'result_message' => "From and to date is mandatory",
+                    'result_code' => 1
+                );
+            }
+
+            if (strcmp($fromDate, $toDate) == 0) {
+                return array(
+                    'result_message' => "From and to date can not be the same",
+                    'result_code' => 1
+                );
+            }
+
+
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                return array(
+                    'result_message' => "From date can not be after to date",
+                    'result_code' => 1
+                );
+            }
+
+            $now = new DateTime('today midnight');
+
+            if ($checkInDateDateObject < $now) {
+                return array(
+                    'result_message' => "From date can not be in the past",
+                    'result_code' => 1
+                );
+            }
+
+            //get the room
+            $roomApi = new RoomApi($this->em, $this->logger);
+            $room = $roomApi->getRoom($roomId);
+
+            $isRoomAvailable = $roomApi->isRoomAvailable($room->getId(), $fromDate, $toDate, $reservationToExclude = 0);
+            if (!$isRoomAvailable) {
+                return array(
+                    'result_message' => "Room can not be blocked because it is already booked or blocked",
+                    'result_code' => 1
+                );
+            }
+
+            if ($room == null) {
+                $responseArray = array(
                     'result_code' => 1,
                     'result_message' => "Room not found for id $roomId"
                 );
                 $this->logger->debug("Ending Method before the return: " . __METHOD__);
                 return $responseArray;
-            }else{
+            } else {
                 $this->logger->debug("Room is not null");
             }
 
@@ -51,15 +121,17 @@ class BlockedRoomApi
             $fromDateDateTime = new DateTime($fromDate);
 
             //check if there is a room blocked for reservation
-            if($reservationId !== null){
+            if ($reservationId !== null) {
                 $comments .= "reservation - $reservationId";
                 $blockRoom = $this->em->getRepository(BlockedRooms::class)->findOneBy(array('linkedResaId' => $reservationId));
-                if($blockRoom === null){
+                if ($blockRoom === null) {
                     $blockRoom = new BlockedRooms();
                 }
-            }else{
+            } else {
                 $blockRoom = new BlockedRooms();
             }
+
+
 
             $blockRoom->setRoom($room);
             $blockRoom->setComment($comments);
@@ -71,16 +143,16 @@ class BlockedRoomApi
             $this->em->persist($blockRoom);
             $this->em->flush($blockRoom);
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully blocked room',
-                'block_id' => $blockRoom->getId()
+                'id' => $blockRoom->getId()
             );
             $this->logger->debug(print_r($responseArray, true));
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -92,124 +164,130 @@ class BlockedRoomApi
 
     public function getBlockedRoomsByRoomId($roomId)
     {
-        $this->logger->debug("Starting Method: " . __METHOD__ );
+        $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        try{
+        try {
             $now = new DateTime('today midnight');
 
             $blockedRooms = $this->em
                 ->createQuery("SELECT b FROM App\Entity\BlockedRooms b 
             JOIN b.room r
             WHERE b.room = r.id
-            and b.toDate >= '".$now->format('Y-m-d')."' 
+            and b.toDate >= '" . $now->format('Y-m-d') . "' 
             and b.room = $roomId 
             order by b.fromDate asc ")
                 ->getResult();
 
-            $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+            $this->logger->debug("Ending Method before the return: " . __METHOD__);
             return $blockedRooms;
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage() . " - " . $exception->getTraceAsString(),
-                'result_code'=> 1
+                'result_code' => 1
             );
             $this->logger->debug(print_r($responseArray, true));
         }
 
-        $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return null;
     }
 
     public function getBlockedRoomsByProperty()
     {
-        $this->logger->debug("Starting Method: " . __METHOD__ );
+        $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        try{
+        try {
             $now = new DateTime('today midnight');
 
             $blockedRooms = $this->em
-                ->createQuery("SELECT b FROM App\Entity\BlockedRooms b 
-            JOIN b.room r
-                JOIN r.property p
-            WHERE b.room = r.id
-            and p.id = r.property
-            and p.id = ".$_SESSION['PROPERTY_ID']."
-            and b.toDate >= '".$now->format('Y-m-d')."' 
+                ->createQuery("SELECT b FROM App\Entity\BlockedRooms b
+            WHERE b.toDate >= '" . $now->format('Y-m-d') . "'
             order by b.fromDate asc ")
                 ->getResult();
 
+            //$blockedRooms = $this->em->getRepository(BlockedRooms::class)->findAll();
+            $this->logger->debug("rooms found : " . sizeof($blockedRooms));
 
-            $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+
+            $this->logger->debug("Ending Method before the return: " . __METHOD__);
             return $blockedRooms;
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage() . " - " . $exception->getTraceAsString(),
-                'result_code'=> 1
+                'result_code' => 1
             );
             $this->logger->debug(print_r($responseArray, true));
         }
 
-        $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return null;
     }
 
     public function deleteBlockedRoom($blockedRoomId): array
     {
-        $this->logger->debug("Starting Method: " . __METHOD__ );
+        $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        try{
+        try {
             $blockedRoom = $this->em->getRepository(BlockedRooms::class)->findOneBy(array('id' => $blockedRoomId));
+            if ($blockedRoom == null) {
+                $responseArray = array(
+                    'result_message' => "No blocked room found for id $blockedRoomId",
+                    'result_code' => 1
+                );
+                $this->logger->debug("No blocked room found for id $blockedRoomId");
+                return $responseArray;
+            }
             $this->em->remove($blockedRoom);
             $this->em->flush();
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => "Successfully deleted blocked room",
-                'result_code'=> 0
+                'result_code' => 0
             );
-        }catch(Exception $exception){
-            $responseArray[] = array(
+        } catch (Exception $exception) {
+            $responseArray = array(
                 'result_message' => $exception->getMessage(),
-                'result_code'=> 1
+                'result_code' => 1
             );
             $this->logger->debug(print_r($responseArray, true));
         }
 
-        $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
 
     public function deleteBlockedRoomByReservation($reservationId): array
     {
-        $this->logger->debug("Starting Method: " . __METHOD__ );
+        $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        try{
+        try {
             $blockedRoom = $this->em->getRepository(BlockedRooms::class)->findOneBy(array('linkedResaId' => $reservationId));
-            if($blockedRoom != null){
+            if ($blockedRoom != null) {
                 $this->em->remove($blockedRoom);
                 $this->em->flush();
                 $responseArray[] = array(
                     'result_message' => "Successfully deleted blocked room",
-                    'result_code'=> 0
+                    'result_code' => 0
                 );
             }
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),
-                'result_code'=> 1
+                'result_code' => 1
             );
             $this->logger->debug(print_r($responseArray, true));
         }
 
-        $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
 
-    public function updateBlockedRoomByReservation($reservationId, $fromDate,$toDate)
+    public function updateBlockedRoomByReservation($reservationId, $fromDate, $toDate)
     {
-        $this->logger->debug("Starting Method: " . __METHOD__ );
+        $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        try{
+        try {
             $blockedRoom = $this->em->getRepository(BlockedRooms::class)->findOneBy(array('linkedResaId' => $reservationId));
-            if($blockedRoom != null){
+            if ($blockedRoom != null) {
                 $toDateDateTime = new DateTime($toDate);
                 $fromDateDateTime = new DateTime($fromDate);
                 $blockedRoom->setFromDate($fromDateDateTime);
@@ -225,40 +303,40 @@ class BlockedRoomApi
                     'block_id' => $blockedRoom->getId()
                 );
                 $this->logger->debug(print_r($responseArray, true));
-            }else{
+            } else {
                 $responseArray[] = array(
                     'result_message' => "No blocked room found for reservation",
-                    'result_code'=> 1
+                    'result_code' => 1
                 );
                 $this->logger->debug("No blocked room found for reservation");
             }
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),
-                'result_code'=> 1
+                'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
         }
-        $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
 
 
     public function getBlockedRoom($blockedRoomId)
     {
-        $this->logger->debug("Starting Method: " . __METHOD__ );
+        $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
-        try{
+        try {
             return $this->em->getRepository(BlockedRooms::class)->findOneBy(array('id' => $blockedRoomId));
-        }catch(Exception $exception){
+        } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),
-                'result_code'=> 1
+                'result_code' => 1
             );
             $this->logger->debug(print_r($responseArray, true));
         }
 
-        $this->logger->debug("Ending Method before the return: " . __METHOD__ );
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
 

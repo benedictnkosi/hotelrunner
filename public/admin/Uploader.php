@@ -144,7 +144,7 @@ class Uploader
         } else {
             $this->setMessage("Invalid file format !");
         }
-        echo $this->getMessage();
+        //echo $this->getMessage();
         return $result;
     }
 

@@ -19,6 +19,8 @@ class DatabaseHelper
     public function queryDatabase($sql)
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
+
+        $this->logger->debug("db name: " . DATABASE_NAME);
         $conn = new mysqli (DATABASE_SERVER, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME);
         // Check connection
         if ($conn->connect_error) {
@@ -34,5 +36,20 @@ class DatabaseHelper
             $this->logger->debug("No results found");
             return false;
         }
+    }
+
+
+    public function execute($sql): void
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+
+        $this->logger->debug("db name: " . DATABASE_NAME);
+        $conn = new mysqli (DATABASE_SERVER, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME);
+        // Check connection
+        if ($conn->connect_error) {
+            $this->logger->debug("failed to connect to the database");
+            die ("Connection failed: " . $conn->connect_error);
+        }
+        $conn->query($sql);
     }
 }

@@ -12,12 +12,31 @@ $(document).ready(function () {
         importCalendar();
     });
 
+    $("#upload_rooms_form").validate({
+        // Specify validation rules
+        rules: {
+
+        }, submitHandler: function () {
+            uploadRooms();
+        }
+    });
+
+    $("#upload_addons_form").validate({
+        // Specify validation rules
+        rules: {
+
+        }, submitHandler: function () {
+            uploadAddons();
+        }
+    });
+
     createBedsTokenField("");
 });
 
 function createBedsTokenField(selectedRooms) {
     $('#beds_tokenfield').tokenfield('destroy');
     $('#beds_tokenfield').val(selectedRooms);
+    $('#beds_tokenfield').tokenfield('readonly');
     $('#beds_tokenfield').tokenfield({
         autocomplete: {
             source: function (request, response) {
@@ -30,14 +49,9 @@ function createBedsTokenField(selectedRooms) {
             },
             delay: 100
         },
-        showAutocompleteOnFocus: true
+        showAutocompleteOnFocus: true,
+        createTokensOnBlur: false
     });
-
-    $('#beds_tokenfield')
-        .on('tokenfield:createdtoken', function (e) {
-            $('#beds_tokenfield-tokenfield').blur();
-        })
-        .tokenfield()
 }
 
 function loadConfigurationPageData() {
@@ -123,7 +137,7 @@ function bindConfigElements() {
     $("#config_guest_form").validate({
         // Specify validation rules
         rules: {
-            guest_name: "required",
+
         }, submitHandler: function () {
             getGuests($('#guest_name').val().trim());
         }
@@ -177,6 +191,7 @@ function bindConfigElements() {
             createMessageTemplate();
         }
     });
+
 }
 
 function createUpdateRoom() {
@@ -184,6 +199,7 @@ function createUpdateRoom() {
     const room_name = $("#room_name").val().trim();
     const room_description = $("#room_description").val().trim();
     const room_price = $("#room_price").val().trim();
+    const kids_policy = $('input[name=kids_allowed]:checked', '#config_room_form').val();
     const room_sleeps = $("#room_sleeps").val().trim();
     const room_size = $('#room_size').val().trim();
     const select_room_status = $('#select_room_status').find(":selected").val();
@@ -192,8 +208,24 @@ function createUpdateRoom() {
     const select_Stairs = $('#select_Stairs').find(":selected").val();
     const select_tv = $('#select_tv').find(":selected").val();
 
+    let amenities = [];
+    $("input:checkbox[name=amenities]:checked").each(function(){
+        amenities.push($(this).val());
+    });
+
     if (input_bed.length < 1) {
         $('#beds_tokenfield').form();
+    }
+
+    if(kids_policy === undefined){
+        showResErrorMessage("configuration", "kids policy is required");
+        return;
+    }
+
+    //amenities selected
+    if($('#config_room_form input[type=checkbox]:checked').length < 1) {
+        showResErrorMessage("configuration", "At least one Amenity must be selected");
+        return;
     }
 
     $("body").addClass("loading");
@@ -210,6 +242,8 @@ function createUpdateRoom() {
         bed: input_bed,
         stairs: select_Stairs,
         tv: select_tv,
+        kids_policy: kids_policy,
+        amenities: amenities,
         description: encodeURIComponent(room_description.replaceAll("/", "###"))
     };
 
@@ -446,7 +480,7 @@ function populateFormWithRoom(event) {
         $("#select_bed").val($("#select_bed option:first").val());
         $("#select_tv").val($("#select_tv option:first").val());
         $("#select_Stairs").val($("#select_Stairs option:first").val());
-
+        //$("#config_room_submit").removeClass("display-none");
     } else {
 
         let url = "/no_auth/rooms/" + roomId;
@@ -476,6 +510,26 @@ function populateFormWithRoom(event) {
 
                 createBedsTokenField(stringSelectedBeds);
 
+                $('input[name="kids_allowed"]').each(function() {
+                    this.checked = false;
+                });
+
+                if(response[0].kids_policy === true){
+                    $("#yes_kids_radio").prop("checked", true);
+                }else if(response[0].kids_policy === false){
+                    $("#no_kids").prop("checked", true);
+                }
+
+                $('input[name="amenities"]').each(function() {
+                    this.checked = false;
+                });
+
+                const amenities = JSON.parse(response[0].amenities);
+                if(amenities !== null){
+                    for (i = 0; i < amenities.length; i++) {
+                        $('input[value="' + amenities[i] + '"]').prop("checked", true);
+                    }
+                }
                 $('#select_tv').val(response[0].tv);
                 $('#select_Stairs').val(response[0].stairs);
                 $("#links_div").html(response[0].ical_links);
@@ -484,8 +538,7 @@ function populateFormWithRoom(event) {
                 //show uploaded images
                 $("#uploaded_images_div").html(response[0].uploaded_images);
                 $('#imageUploaderDiv').removeClass("display-none");
-                $('#icalDiv').removeClass("display-none");
-
+                enableFunction("room_channels", "icalDiv");
                 $(".remove_link_button").click(function (event) {
                     event.stopImmediatePropagation();
                     removeChannel(event);
@@ -496,6 +549,8 @@ function populateFormWithRoom(event) {
                         scrollTop: $("#manage_room_h3").offset().top
                     }, 2000);
                 }
+
+                //$("#config_room_submit").addClass("display-none");
             } else {
                 showResErrorMessage("reservation", response[0].result_message);
             }
@@ -597,7 +652,7 @@ function deleteAddOn(event) {
 
     $.ajax({
         url : url,
-        type: "REMOVE",
+        type: "DELETE",
         data : "",
         success: function(response)
         {
@@ -606,7 +661,6 @@ function deleteAddOn(event) {
                 getAddOns();
                 showResSuccessMessage("configuration", response[0].result_message);
             } else {
-
                 showResErrorMessage("configuration", response[0].result_message);
             }
         },
@@ -624,12 +678,18 @@ function updateAddOn(event) {
     const newValue = $(event.target).val().trim();
     $("body").addClass("loading");
     isUserLoggedIn();
-    let url = "/admin_api/addon/update/" + addOnId + "/" + field + "/" + newValue;
+        let url = "/admin_api/addon/update";
+
+    const data = {
+        id: addOnId,
+        field: field,
+        value: newValue
+    };
 
     $.ajax({
         url : url,
         type: "PUT",
-        data : "",
+        data : data,
         success: function(response)
         {
             $("body").removeClass("loading");
@@ -637,7 +697,6 @@ function updateAddOn(event) {
                 getAddOns();
                 showResSuccessMessage("configuration", data[0].result_message);
             } else {
-
                 showResErrorMessage("configuration", response[0].result_message);
             }
         },
@@ -687,6 +746,9 @@ function getEmployees() {
 }
 
 function getGuests(filter = "*") {
+    if(filter.length === 0){
+        filter = "*";
+    }
     isUserLoggedIn();
     let url = "/api/config/guests/" + filter;
     $("body").addClass("loading");
@@ -700,7 +762,7 @@ function getGuests(filter = "*") {
         contentType: "application/json; charset=UTF-8",
         success: function (data) {
             $("body").removeClass("loading");
-            $("#guest_div").html(data.html);
+            $("#guests_table").html(data.html);
             $('.guest_field').unbind('click')
             $(".guest_field").change(function (event) {
                 updateGuest(event);
@@ -736,6 +798,7 @@ function updateEmployee(event) {
         {
             $("body").removeClass("loading");
             if (response[0].result_code === 0) {
+                getEmployees();
                 showResSuccessMessage("configuration", data[0].result_message);
             } else {
                 showResErrorMessage("configuration", response[0].result_message);
@@ -772,12 +835,12 @@ function updateGuest(event) {
         success: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
+            if (response.result_code === 0) {
                 getGuests();
-                showResSuccessMessage("configuration", response[0].result_message);
+                showResSuccessMessage("configuration", response.result_message);
             } else {
 
-                showResErrorMessage("configuration", response[0].result_message);
+                showResErrorMessage("configuration", response.result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -790,27 +853,34 @@ function updateGuest(event) {
 
 function createEmployee() {
     const employee_name = $("#employee_name").val().trim();
+    const gender = $('input[name=gender]:checked', '#config_employee_form').val();
+
     $("body").addClass("loading");
     isUserLoggedIn();
     let url = "/admin_api/createemployee";
 
+    if(gender === undefined){
+        showResErrorMessage("configuration", "Please select gender");
+        return;
+    }
 
     const data = {
-        name: employee_name
+        name: employee_name,
+        gender: gender
     };
 
     $.ajax({
         url : url,
         type: "POST",
         data : data,
-        success: function(response)
+        complete: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                showResSuccessMessage("configuration", response[0].result_message);
+            if (response.responseJSON[0].result_code === 0) {
+                showResSuccessMessage("configuration", response.responseJSON[0].result_message);
                 getEmployees();
             } else {
-                showResErrorMessage("configuration", response[0].result_message);
+                showResErrorMessage("configuration", response.responseJSON[0].result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -829,16 +899,15 @@ function deleteEmployee(event) {
     let url = "/admin_api/employee/delete/" + employeeId;
     $.ajax({
         url : url,
-        type: "REMOVE",
+        type: "DELETE",
         data : "",
-        success: function(response)
+        complete: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
+            if (response.status === 204) {
                 getEmployees();
-                showResSuccessMessage("configuration", response[0].result_message);
+                showResSuccessMessage("configuration", "Successfully deleted employee");
             } else {
-
                 showResErrorMessage("configuration", response[0].result_message);
             }
         },
@@ -850,34 +919,6 @@ function deleteEmployee(event) {
     });
 }
 
-function deleteGuest(event) {
-    let guestId = event.target.getAttribute("data-guest-id");
-    $("body").addClass("loading");
-    isUserLoggedIn();
-    let url = "/admin_api/guest/delete/" + guestId;
-
-    $.ajax({
-        type: "get",
-        url: url,
-        crossDomain: true,
-        cache: false,
-        dataType: "jsonp",
-        contentType: "application/json; charset=UTF-8",
-        success: function (data) {
-            $("body").removeClass("loading");
-            showResSuccessMessage("configuration", data[0].result_message);
-            getGuests();
-        },
-        error: function (xhr) {
-            $("body").removeClass("loading");
-            if (xhr.status === 404) {
-                showResErrorMessage("configuration", "Unauthorised to use this function");
-            }else{
-                showResErrorMessage("configuration", "Server Error");
-            }
-        }
-    });
-}
 
 function getMessageTemplates() {
     isUserLoggedIn();
@@ -1077,7 +1118,7 @@ function deleteScheduledMessage(event) {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
@@ -1107,7 +1148,7 @@ function createMessageTemplate() {
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
@@ -1199,31 +1240,36 @@ function addNewChannel() {
     const room_id = $("#room_id").val().trim();
     const link = $("#icalLink").val().trim();
     isUserLoggedIn();
-    let url = "/admin_api/ical/links/" + room_id + "/" + encodeURIComponent(link.replaceAll("/", "###"));
+    let url = "/admin_api/ical/add";
     $("body").addClass("loading");
+
+    const data = {
+        room_id: room_id,
+        url: encodeURIComponent(link)
+    };
+
     $.ajax({
-        type: "get",
-        url: url,
-        crossDomain: true,
-        cache: false,
-        dataType: "jsonp",
-        contentType: "application/json; charset=UTF-8",
-        success: function (data) {
+        url : url,
+        type: "POST",
+        data : data,
+        complete: function(response)
+        {
             $("body").removeClass("loading");
-            const jsonObj = data[0];
-            if (jsonObj.result_code === 0) {
+            if (response.responseJSON[0].result_code === 0) {
                 $('#icalLink').val('');
                 populateFormWithRoom(room_id);
-                showResSuccessMessage("configuration", jsonObj.result_message)
+                showResSuccessMessage("configuration", response.responseJSON[0].result_message)
             } else {
-                showResErrorMessage("configuration", jsonObj.result_message)
+                showResErrorMessage("configuration", response.responseJSON[0].result_message)
             }
         },
-        error: function (xhr) {
+        error: function (jqXHR, textStatus, errorThrown)
+        {
             $("body").removeClass("loading");
-            console.log("request for addNewChannel " + xhr.status);
+            showResErrorMessage("configuration", errorThrown)
         }
     });
+
 }
 
 function removeChannel(event) {
@@ -1233,25 +1279,55 @@ function removeChannel(event) {
     let url = "/admin_api/ical/remove/" + channelId;
 
     $.ajax({
-        type: "get",
+        type: "DELETE",
         url: url,
-        crossDomain: true,
-        cache: false,
-        dataType: "jsonp",
         contentType: "application/json; charset=UTF-8",
-        success: function (data) {
-            const parent = $(event.target).parent();
-            parent.remove();
+        complete: function(response)
+        {
             $("body").removeClass("loading");
-            showResSuccessMessage("configuration", data[0].result_message);
+            if (response.status === 204) {
+                const parent = $(event.target).parent();
+                parent.remove();
+                showResSuccessMessage("configuration", "Successfully removed channel");
+            } else {
+                showResErrorMessage("configuration", response[0].result_message);
+            }
         },
         error: function (xhr) {
             $("body").removeClass("loading");
-            if (xhr.status === 404) {
+            if (xhr.status === 403) {
                 showResErrorMessage("configuration", "Unauthorised to use this function");
             }else{
                 showResErrorMessage("configuration", "Server Error");
             }
+        }
+    });
+}
+
+function deleteGuest(event) {
+    let guestId = event.target.getAttribute("data-guest-id");
+    $("body").addClass("loading");
+    isUserLoggedIn();
+    let url = "/admin_api/guest/delete/" + guestId;
+
+    $.ajax({
+        url : url,
+        type: "DELETE",
+        data : "",
+        complete: function(response)
+        {
+            $("body").removeClass("loading");
+            if (response.status === 204) {
+                getGuests($('#guest_name').val().trim());
+                showResSuccessMessage("configuration", "Successfully removed guest");
+            } else {
+                showResErrorMessage("configuration", response.result_message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            $("body").removeClass("loading");
+            showResErrorMessage("configuration", errorThrown);
         }
     });
 }
@@ -1271,6 +1347,102 @@ function importCalendar(event) {
     });
 }
 
+function uploadRooms() {
+    $("body").addClass("loading");
+    isUserLoggedIn();
+    let url = "/api/rooms/upload/";
+    const file_data = $("#rooms-fileUploader").prop("files")[0];
+    const form_data = new FormData();
+    form_data.append("file", file_data);
+
+    if ( file_data === undefined ) {
+        showResErrorMessage("configuration","Please upload file");
+        return;
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data:form_data ,
+        dataType: 'script',
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            $("body").removeClass("loading");
+            const arr = JSON.parse(response);
+            let message = "";
+            let isErrors = false;
+            for (let i = 0; i < arr.length; i++){
+                let z = i +1;
+                message +=  arr[i]["result_message"] + "\n";
+                if(arr[i]["result_code"] === 1){
+                    isErrors = true;
+                }
+            }
+
+            if (!isErrors) {
+                showResSuccessMessage("configuration", message);
+                getConfigRooms();
+            } else {
+                showResErrorMessage("configuration",message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $("body").removeClass("loading");
+            showResErrorMessage("configuration", errorThrown);
+        }
+    });
+}
+
+
+function uploadAddons() {
+    $("body").addClass("loading");
+    isUserLoggedIn();
+    let url = "/api/addons/upload/";
+    const file_data = $("#addons-fileUploader").prop("files")[0];
+    const form_data = new FormData();
+    form_data.append("file", file_data);
+
+    if ( file_data === undefined ) {
+        showResErrorMessage("configuration","Please upload file");
+        return;
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        data:form_data ,
+        dataType: 'script',
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            $("body").removeClass("loading");
+            const arr = JSON.parse(response);
+            let message = "";
+            let isErrors = false;
+            for (let i = 0; i < arr.length; i++){
+                let z = i +1;
+                message +=  arr[i]["result_message"] + "\n";
+                if(arr[i]["result_code"] === 1){
+                    isErrors = true;
+                }
+            }
+
+            if (!isErrors) {
+                showResSuccessMessage("configuration", message);
+                getAddOns();
+            } else {
+                showResErrorMessage("configuration",message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            $("body").removeClass("loading");
+            showResErrorMessage("configuration", errorThrown);
+        }
+    });
+}
 
 function initialiseImageUpload(roomId) {
 
@@ -1278,17 +1450,16 @@ function initialiseImageUpload(roomId) {
     $(".dropzone").remove();
     newUploadForm = '<form action="/api/configuration/image/upload" class="dropzone" id="fileUpload_dropzone"></form>';
     $("#imageUploaderDiv").append(newUploadForm);
-
-
+    let processing = false;
     const myNewdDropzone = new Dropzone("#fileUpload_dropzone", {
         dictDefaultMessage: "Drop files here or click to upload.",
         clickable: true,
         enqueueForUpload: true,
-        maxFilesize: 5,
+        maxFilesize: 1,
         addRemoveLinks: true,
-        uploadMultiple: false,
-        maxFiles: 20,
-
+        uploadMultiple: true,
+        maxFiles: 10,
+        parallelUploads: 10,
         // on initialize get the images on the
         // server for the partner
         init: function () {
@@ -1321,9 +1492,15 @@ function initialiseImageUpload(roomId) {
                         const imageName = event.target.getAttribute("alt");
                         let url = "/api/configuration/markdefault/" + imageName;
                         isUserLoggedIn();
-                        $.getJSON(url + "?callback=?", null, function (response) {
-                            if (response[0].result_code === 0) {
-                                initialiseImageUpload(roomId);
+                        $.ajax({
+                            url: url,
+                            type: "PUT",
+                            data: "",
+                            success: function (response) {
+                                $("body").removeClass("loading");
+                                if (response[0].result_code === 0) {
+                                    initialiseImageUpload(roomId);
+                                }
                             }
                         });
                     });
@@ -1332,21 +1509,32 @@ function initialiseImageUpload(roomId) {
             // delete from server
             this
                 .on("removedfile", function (file) {
-                    $
-                        .get("/api/configuration/removeimage/" + file.name, function (data, status) {
-                            if (data[0].result_code !== 0) {
+                    $.ajax({
+                        url: "/api/configuration/removeimage/" + file.name,
+                        type: 'DELETE',
+                        success: function(data) {
+                            $("body").removeClass("loading");
+                            if (data[0].result_code === 0) {
+                                showResSuccessMessage("configuration", data[0].result_message);
+                            }else{
                                 showResErrorMessage("configuration", data[0].result_message);
-                                initialiseImageUpload(roomId);
                             }
-                        });
+                            initialiseImageUpload(roomId);
+                        },
+                        error: function (xhr) {
+                            $("body").removeClass("loading");
+                            if (xhr.status === 403) {
+                                showResErrorMessage("configuration", "Unauthorised to use this function");
+                            } else {
+                                showResErrorMessage("configuration", "Internal Server Error");
+                            }
+                        }
+                    });
                 });
 
-            // on successfull upload, add the
-            // server anme mappinging to the
-            // array and save in sessiopn
-            // storage
+
             this
-                .on("success", function (file, responseText) {
+                .on("successmultiple", function () {
                     initialiseImageUpload(roomId);
                 });
         }

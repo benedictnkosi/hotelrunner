@@ -21,9 +21,9 @@ $(document).ready(function () {
         }
     });
 
-    $("#phoneNumber").blur(function () {
-        if (document.referrer.includes("admin")) {
-            getCustomer();
+    $("#phoneNumber").blur(function (event) {
+        if(event.target.value.length > 3 && $("#guestName").val().length < 1){
+            getGuest();
         }
     });
 
@@ -45,6 +45,10 @@ $(document).ready(function () {
         getAvailableRooms(sessionStorage.getItem('checkInDate'), sessionStorage.getItem('checkOutDate'));
     }
 
+    $("#children").change(function () {
+        getAvailableRooms(sessionStorage.getItem('checkInDate'), sessionStorage.getItem('checkOutDate'));
+    });
+
     //date picker
     $.getScript("https://cdn.jsdelivr.net/momentjs/latest/moment.min.js", function () {
         $.getScript("https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js", function () {
@@ -60,21 +64,13 @@ $(document).ready(function () {
             });
 
             $('#checkindate').on('apply.daterangepicker', function (event, picker) {
+                hideMessages("reservation");
                 let checkInDate = new Date(picker.startDate.format("YYYY-MM-DD"));
                 let checkOutDate = new Date(picker.endDate.format("YYYY-MM-DD"))
                 let difference = checkOutDate - checkInDate;
                 let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
                 if (totalDays < 1) {
                     showResErrorMessage("reservation", "Check-in and check-out date can not be the same");
-                    $('#checkindate').daterangepicker({
-                        startDate: date,
-                        endDate: endDate,
-                        opens: 'left',
-                        autoApply: true,
-                        minDate: minDate
-                    }, function (start, end, label) {
-                        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-                    });
                     return;
                 }
 
@@ -96,16 +92,27 @@ $(document).ready(function () {
 function displayTotal() {
     let numberOfNights = parseInt(sessionStorage.getItem('numberOfNights'));
     let total = 0;
+    let totalRooms = 0;
+    let totalSleeps = 0;
     let nightsMessage = "";
     let roomIdArray = [];
     //find all rooms added
     var buttons = document.getElementsByTagName("button");
+    let roomSleeps;
+    let roomPrice;
+    let roomName;
+    let roomId;
     for (var i = 0; i < buttons.length; i++) {
         if (buttons[i].textContent === "Remove") {
             roomId = buttons[i].getAttribute("data-roomId");
             roomName = buttons[i].getAttribute("data-roomName");
             roomPrice = buttons[i].getAttribute("data-roomPrice");
+            roomSleeps = buttons[i].getAttribute("data-sleeps");
             total += (numberOfNights * parseInt(roomPrice));
+            totalRooms++;
+            totalSleeps += (parseInt(roomSleeps));
+            sessionStorage.setItem("rooms_sleep", totalSleeps);
+            sessionStorage.setItem("total_rooms_selected", totalRooms);
             nightsMessage += roomName + " - " + numberOfNights + " x nights @ R" + roomPrice + ".00" + "<br>";
             roomIdArray.push(roomId);
         }
@@ -129,7 +136,8 @@ function displayTotal() {
 
 function getAvailableRooms(checkInDate, checkOutDate) {
     $("body").addClass("loading");
-    let url = "/no_auth/availablerooms/" + checkInDate + "/" + checkOutDate + "/" + sessionStorage.getItem("property_uid");
+    let kids = $('#children').val();
+    let url = "/no_auth/availablerooms/" + checkInDate + "/" + checkOutDate + "/" + sessionStorage.getItem("property_uid") + "/" + kids;
     $.getJSON(url + "?callback=?", null, function (data) {
         let roomIndex;
         $("#availableRoomsDropdown").html(data.html);
@@ -157,17 +165,17 @@ function getAvailableRooms(checkInDate, checkOutDate) {
             } else {
                 if (bedshtml.length > 1) {
                     var item = '<li>' +
-                        '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
-                        '<img src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div><button class="btn btn-style btn-secondary book mt-3 add-room-button" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
+                        '<div class="div-select-room-name">' +
+                        '<img src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div><button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
-                        '</a></li>';
+                        '</li>';
                 } else {
                     var item = '<li>' +
-                        '<a href="/room?id=' + room_id + '"><div class="div-select-room-name">' +
+                        '<div class="div-select-room-name">' +
                         '<img class="no_beds_image" src="' + img + '" data-price="' + price + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '"/>' + room_name + '<div class="select_sleeps"><span>ZAR ' + price + '</span><span class="fa fa-users">' + sleeps + ' Guests</span>' + bedshtml + '</div>' +
-                        '<button class="btn btn-style btn-secondary book mt-3 add-room-button" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
+                        '<button class="btn btn-style btn-secondary book mt-3 add-room-button" data-sleeps="' + sleeps + '" data-roomId="' + room_id + '" data-roomName="' + room_name + '" data-roomPrice="' + price + '">Add</button>' +
                         '</div>' +
-                        '</a></li>';
+                        '</li>';
                 }
 
             }
@@ -217,13 +225,6 @@ function getAvailableRooms(checkInDate, checkOutDate) {
             displayTotal();
         });
 
-        $(".view-room-button").click(function (event) {
-            event.preventDefault();
-            window.open(
-                "/room?id=" + event.target.getAttribute("data-roomId"),
-                '_blank' // <- This is what makes it open in a new window.
-            );
-        });
 
         $("body").removeClass("loading");
     });
@@ -244,10 +245,16 @@ function createReservation() {
     const email = $('#email').val();
     const adultGuests = $('#adults').val();
     const childGuests = $('#children').val();
+    const smoker = $('#select_smoker').find(":selected").val();
+    const gender = $('#select_gender').find(":selected").val();
+    const citizenship = $('#select_citizenship').find(":selected").val();
     const checkInDate = sessionStorage.getItem('checkInDate');
     const checkOutDate = sessionStorage.getItem('checkOutDate');
 
     isRoomSelected = sessionStorage.getItem("isRoomSelected");
+
+    let guests = parseInt($('#adults').val()) + parseInt($('#children').val());
+
     if (isRoomSelected === null) {
         showResErrorMessage("reservation", "Please select a room");
         return;
@@ -272,7 +279,10 @@ function createReservation() {
         check_in_date: checkInDate,
         check_out_date: checkOutDate,
         email: email,
-        date: today
+        date: today,
+        smoking: smoker,
+        gender: gender,
+        citizenship: citizenship
     };
 
     $.ajax({
@@ -282,12 +292,12 @@ function createReservation() {
         success: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                showResSuccessMessage("reservation", response[0].result_message);
+            if (response.result_code === 0) {
+                showResSuccessMessage("reservation", response.result_message);
                 sessionStorage.setItem("reservation_id", JSON.stringify(data[0].reservation_id));
                 window.location.href = "/confirmation";
             } else {
-                showResErrorMessage("reservation", response[0].result_message);
+                showResErrorMessage("reservation", response.result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -311,35 +321,37 @@ function getPropertyName() {
         contentType: "application/json; charset=UTF-8",
         success: function (response) {
             sessionStorage.setItem("PropertyName", response[0].name)
-            $('#hotel_name').html(response[0].name);
+            //$('#hotel_name').html(response[0].name);
         }
     });
 
 }
 
 
-function getCustomer() {
+function getGuest() {
     if(sessionStorage.getItem('authenticated').localeCompare('true') === 0) {
         $("#phoneNumber").val($("#phoneNumber").val().replaceAll(" ", ""));
         $("body").addClass("loading");
         let url = "/api/guests/" + $("#phoneNumber").val();
+
         $.ajax({
+            url : url,
             type: "get",
-            url: url,
-            crossDomain: true,
-            cache: false,
-            dataType: "jsonp",
-            contentType: "application/json; charset=UTF-8",
-            success: function (response) {
+            success: function(response)
+            {
                 $("body").removeClass("loading");
-                if (response[0].result_code === 0) {
-                    $('#guestName').val(response[0].name);
-                    $('#email').val(response[0].email);
+                if (response.result_code === 0) {
+                    $('#guestName').val(response.name);
+                    $('#email').val(response.email);
                 }
             },
-            done: function (response) {
+            error: function (jqXHR, textStatus, errorThrown)
+            {
                 $("body").removeClass("loading");
+                showResErrorMessage("configuration", errorThrown);
             }
         });
+
+
     }
 }

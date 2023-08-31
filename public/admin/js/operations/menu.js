@@ -1,7 +1,8 @@
 $(document).ready(function () {
+    onlyShowEnabledFunctionalityMenus();
     window.setTimeout(hideLoader, 3000);
     if (sessionStorage.getItem("current_page") === null) {
-        updateView('calendar');
+        updateView('configuration');
     } else {
         updateView(sessionStorage.getItem("current_page"));
     }
@@ -37,6 +38,53 @@ $(document).ready(function () {
         $(".headcol").css("position", "absolute");
     });
 });
+
+function onlyShowEnabledFunctionalityMenus(){
+    $(".toggle-menu").addClass("display-none");
+    isUserLoggedIn();
+    let url = "/no_auth/getEnabledFuntionality";
+
+    $.ajax({
+        url : url,
+        type: "get",
+        success: function(data)
+        {
+            for (let i = 0; i < data.length; i++){
+                console.log(data[i].name)
+                $("#" + data[i].name).removeClass("display-none");
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            console.log(errorThrown);
+        }
+    });
+}
+
+function enableFunction(functionName, elementID){
+    isUserLoggedIn();
+    let url = "/no_auth/isFunctionalityEnabled/" + functionName;
+    $.ajax({
+        url : url,
+        type: "get",
+        success: function(data)
+        {
+            if(data.enabled === true){
+                console.log("function is enabled " + data.enabled);
+                $('#' + elementID).removeClass("display-none");
+            }else{
+                console.log("function not enabled " + data.enabled);
+
+                $('#' + elementID).addClass("display-none");
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            console.log(errorThrown);
+        }
+    });
+}
+
 
 function hideLoader() {
     $("body").removeClass("startup-loading");
@@ -100,7 +148,7 @@ function isRetry(functionName){
 }
 
 function isUserLoggedIn() {
-    let url =  "/no_auth/me/";
+    let url =  "/no_auth/me";
 
     $.get(url, function(data){
         console.log(data[0].authenticated);

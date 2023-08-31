@@ -20,6 +20,9 @@ class PropertyController extends AbstractController
     public function getPropertyTerms( LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $response = $propertyApi->getPropertyTerms($roomApi,  $request);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -33,6 +36,9 @@ class PropertyController extends AbstractController
     public function updatePropertyTerms( $terms, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $response = $propertyApi->updatePropertyTerms( $terms);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -46,6 +52,9 @@ class PropertyController extends AbstractController
     public function getPropertyUid( LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $response = $propertyApi->getPropertyUid();
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -59,6 +68,9 @@ class PropertyController extends AbstractController
     public function getPropertyDetails($uid,  LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, PropertyApi $propertyApi, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $response = $propertyApi->getPropertyDetailsByUid($uid);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());

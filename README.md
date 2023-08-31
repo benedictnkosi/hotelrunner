@@ -65,6 +65,8 @@ TRUNCATE TABLE `cleaning`;
 delete FROM `reservations` where id > 0;
 delete FROM `guest` where id > 0;
 delete from room_images where id > 0;
+delete from room_beds where id > 0;
+
 delete from blocked_rooms where id > 0;
 delete from ical where id > 0;
 delete from schedule_messages where id > 0;
@@ -88,7 +90,11 @@ migrating to server
 2. back up backend/public/room/image
 3. delete the /backend folder
 4. clone the repo 
-5. restore .env and  \config\packages\doctrine.yaml and monolog.yaml and  /backend/src/app folder
+5. restore 
+   1. .env
+   2. \config\packages\doctrine.yaml
+   3. monolog.yaml and  
+   4. /backend/src/app folder
 6. restore backend/public/room/image
 7. change the permissions for the folder backend to 777
 8. update the /home/aluvejsl/backend/public/php.ini session.save_path to /tmp

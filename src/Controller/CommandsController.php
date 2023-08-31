@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Helpers\DatabaseHelper;
 use App\Service\PropertyApi;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -16,39 +17,6 @@ require_once(__DIR__ . '/../app/application.php');
 
 class CommandsController extends AbstractController
 {
-
-    /**
-     * @Route("no_auth/soap/client")
-     */
-    public function mySoapClient(LoggerInterface $logger)
-    {
-        $logger->info("Starting Method: " . __METHOD__);
-        $client = new \SoapClient('web_url');
-
-        $result = $client->call('hello', array('name' => 'Scott'));
-        $logger->info("soap response is: " . $result);
-        $response = new Response();
-        return $response;
-    }
-
-    /**
-     * @Route("no_auth/soap")
-     */
-    public function mySoapServer(LoggerInterface $logger)
-    {
-        $logger->info("Starting Method: " . __METHOD__);
-        $server = new SoapServer('/path/to/hello.wsdl');
-        $server->setObject($this->get('hello_service'));
-
-        $response = new Response();
-        $response->headers->set('Content-Type', 'text/xml; charset=ISO-8859-1');
-
-        ob_start();
-        $server->handle();
-        $response->setContent(ob_get_clean());
-
-        return $response;
-    }
 
     /**
      * @Route("no_auth/runcommand/clear")
@@ -177,15 +145,25 @@ class CommandsController extends AbstractController
                 'result_code' => 0
             );
 
+            $command = 'git fetch --all';
+            $result = $this->execute($command);
+            $responseArray[] = array(
+                'command' =>  $command,
+                'result_message_auto' => print_r($result, true),
+                'result_code' => 0
+            );
+
+
             $server = $_SERVER['SERVER_NAME'];
 
             if(str_contains($server,"staging")){
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git staging-environment --force';
+                $command = 'git reset --hard origin/staging-environment';
             }elseif (str_contains($server,"ete")){
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git ete-environment --force';
+                $command = 'git reset --hard origin/ete-environment';
             }else{
-                $command = 'git pull https://'.GIT_TOKEN.'@github.com/benedictnkosi/hotelrunner.git main --force';
+                $command = 'git reset --hard origin/main';
             }
+
 
             $result = $this->execute($command);
             $responseArray[] = array(
@@ -286,5 +264,71 @@ class CommandsController extends AbstractController
         ];
     }
 
+    /**
+     * @Route("no_auth/runcommand/deleteallrooms")
+     */
+
+    function cleanDatabase(LoggerInterface $logger) {
+        try{
+            $databaseHelper = new DatabaseHelper($logger);
+            $sql = "TRUNCATE TABLE `reservation_notes`;";
+            $databaseHelper->execute($sql);
+            $sql = "TRUNCATE TABLE `reservation_add_ons`;";
+            $databaseHelper->execute($sql);
+            $sql = "TRUNCATE TABLE `payments`;";
+            $databaseHelper->execute($sql);
+            $sql = "TRUNCATE TABLE `cleaning`;";
+            $databaseHelper->execute($sql);
+            $sql = "delete FROM `reservations` where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete FROM `guest` where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from room_images where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from room_beds where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from blocked_rooms where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from ical where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from schedule_messages where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from rooms where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from add_ons where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from employee where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from message_template where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from schedule_messages where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "delete from user where id > 0;";
+            $databaseHelper->execute($sql);
+            $sql = "INSERT INTO `user` (`id`, `email`, `roles`, `password`, `property`) VALUES
+(NULL,'admin@aluve.com', '[\"ROLE_ADMIN\"]', '$2y$13$6ffQ7/M.uHCi9L/XkrxNo.xODYabUQYwpXZRiUU0.qQOul6dvUnK6', 3);";
+            $databaseHelper->execute($sql);
+
+            //delete the images
+            $files = glob(__DIR__ . '/../../public/room/image/*'); // get all file names
+            foreach($files as $file){ // iterate files
+                if(is_file($file)) {
+                    unlink($file); // delete file
+                }
+            }
+
+            //delete the logs
+            $files = glob(__DIR__ . '/../../var/log/*'); // get all file names
+            foreach($files as $file){ // iterate files
+                if(is_file($file)) {
+                    unlink($file); // delete file
+                }
+            }
+        }catch(Exception $exception){
+            return new JsonResponse( "Failed to delete rooms: " . $exception->getMessage(), 500, array());
+        }
+
+        return new JsonResponse( "Success", 200, array());
+    }
 
 }

@@ -12,6 +12,9 @@ use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 require_once(__DIR__ . '/../app/application.php');
 
@@ -19,11 +22,13 @@ class ReservationApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
         if (session_id() === '') {
             $logger->info("Session id is empty");
             session_start();
@@ -33,12 +38,27 @@ class ReservationApi
     public function getReservation($resId)
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
+
         try {
-            return $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+            //validate id is a number
+            if (!is_numeric($resId)) {
+                return array(
+                    'result_message' => "Reservation id is not a number",
+                    'result_code' => 1
+                );
+            }
+            $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $resId));
+            if ($reservation == null) {
+                $responseArray = array(
+                    'result_message' => "Reservation not found",
+                    'result_code' => 1
+                );
+            } else {
+                return $reservation;
+            }
         } catch (Exception $ex) {
-            $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+            $responseArray = array(
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -80,6 +100,7 @@ class ReservationApi
                     'check_in_time' => $reservation->getCheckInTime(),
                     'check_out_time' => $reservation->getCheckOutTime(),
                     'checked_in_time' => $reservation->getCheckedInTime(),
+                    'received_on' => $reservation->getReceivedOn()->format('Y-m-d H:i:s'),
                     'room_id' => $reservation->getRoom()->getId(),
                     'room_name' => $reservation->getRoom()->getName(),
                     'total_paid' => $totalPayment,
@@ -92,7 +113,7 @@ class ReservationApi
             return $responseArray;
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -111,7 +132,7 @@ class ReservationApi
             return $this->em->getRepository(Reservations::class)->findOneBy(array('uid' => $uid, 'status' => $status));
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -142,15 +163,21 @@ class ReservationApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
+
             $this->logger->error(print_r($responseArray, true));
+            return $responseArray;
         }
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
 
         if (empty($reservations)) {
-            return null;
+            $responseArray[] = array(
+                'result_message' => "No reservations found",
+                'result_code' => 1
+            );
+            return $responseArray;
         }
         return $reservations;
     }
@@ -193,15 +220,20 @@ class ReservationApi
                 ->getResult();
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
+            return $responseArray;
         }
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
 
         if (empty($reservations)) {
-            return null;
+            $responseArray[] = array(
+                'result_message' => "No reservations found",
+                'result_code' => 1
+            );
+            return $responseArray;
         }
         return $reservations;
     }
@@ -228,17 +260,22 @@ class ReservationApi
                 ->getResult();
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
+            return $responseArray;
         }
 
 
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
 
         if (empty($reservations)) {
-            return null;
+            $responseArray[] = array(
+                'result_message' => "No reservations found",
+                'result_code' => 1
+            );
+            return $responseArray;
         }
 
         return $reservations;
@@ -266,10 +303,11 @@ class ReservationApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
+            return $responseArray;
         }
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
 
@@ -417,7 +455,7 @@ class ReservationApi
 
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -448,7 +486,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -461,9 +499,101 @@ class ReservationApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
 
-        $responseArray = array();
         try {
             $roomApi = new RoomApi($this->em, $this->logger);
+
+            //validate dates
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkOutDate)) {
+                return array(
+                    'result_message' => "Check-out date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkInDate)) {
+                return array(
+                    'result_message' => "Check-in date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            $checkInDateDateObject = new DateTime($checkInDate);
+            $checkOutDateDateObject = new DateTime($checkOutDate);
+            $now = new DateTime('today midnight');
+
+
+            if($reservation->getCheckOut() < $now || strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) == 0){
+                return array(
+                    'result_message' => "Past reservation date cannot be updated",
+                    'result_code' => 1
+                );
+            }
+
+            //validate number of nights
+            $totalNights = intval($checkInDateDateObject->diff($checkOutDateDateObject)->format('%a'));
+            if ($totalNights > 30) {
+                return array(
+                    'result_message' => "The maximum number of nights is 30",
+                    'result_code' => 1
+                );
+            }
+
+            //validate checkin dates
+            if (strlen($checkInDate) < 1 || strlen($checkOutDate) < 1) {
+                return array(
+                    'result_message' => "Check-in and check-out date is mandatory",
+                    'result_code' => 1
+                );
+            }
+
+            //validate checkin dates
+            if (!$this->defectApi->isDefectEnabled("create_reservation_10")) {
+                if (strcmp($checkInDate, $checkOutDate) == 0) {
+                    return array(
+                        'result_message' => "Check-in and check-out date can not be the same",
+                        'result_code' => 1
+                    );
+                }
+            }
+
+
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                return array(
+                    'result_message' => "Check-in date can not be after check-out date",
+                    'result_code' => 1
+                );
+            }
+
+            //new dates can not be same as old dates
+            if (strcmp($reservation->getCheckIn()->format("Y-m-d"), $checkInDateDateObject->format("Y-m-d")) == 0
+            && strcmp($reservation->getCheckOut()->format("Y-m-d"), $checkOutDateDateObject->format("Y-m-d")) == 0) {
+                return array(
+                    'result_message' => "Dates are the same, no changes made",
+                    'result_code' => 1
+                );
+            }
+
+            $now = new DateTime('today midnight');
+            if (!$this->defectApi->isDefectEnabled("create_reservation_11")) {
+                if ($checkInDateDateObject < $now) {
+                    return array(
+                        'result_message' => "Check-in date can not be in the past",
+                        'result_code' => 1
+                    );
+                }
+            }
+
+            //validate that Date cannot be changed for reservations with an outstanding balance.
+            $due = $this->getAmountDue($reservation);
+            if($due !== 0 ){
+                return array(
+                    'result_message' => "Date cannot be changed for reservations with an outstanding balance",
+                    'result_code' => 1
+                );
+            }
+
             $isRoomAvailable = $roomApi->isRoomAvailable($reservation->getRoom()->getId(), $checkInDate, $checkOutDate, $reservation->getId());
             if ($isRoomAvailable) {
                 $reservation->setCheckIn(new DateTime($checkInDate));
@@ -477,22 +607,21 @@ class ReservationApi
                 //update blocked room
                 $blockedRoomApi->updateBlockedRoomByReservation($reservation->getId(), $checkInDate, $checkOutDate);
             } else {
-                $responseArray[] = array(
+                return array(
                     'result_code' => 1,
                     'result_message' => 'Selected dates not available'
                 );
-                return $responseArray;
             }
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully updated reservation'
             );
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -505,32 +634,64 @@ class ReservationApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
 
-        $responseArray = array();
         try {
             $roomApi = new RoomApi($this->em, $this->logger);
             $isRoomAvailable = $roomApi->isRoomAvailable($roomId, $reservation->getCheckIn()->format("Y-m-d"), $reservation->getCheckOut()->format("Y-m-d"), $reservation->getId());
-            if ($isRoomAvailable) {
+            if ($isRoomAvailable || $this->defectApi->isDefectEnabled("update_reservation_1")) {
                 $room = $roomApi->getRoom($roomId);
+                if ($room == null) {
+                    return array(
+                        'result_message' => "Room not found",
+                        'result_code' => 1
+                    );
+                }
+
+                //validate reservation not in the past
+                $now = new DateTime('today midnight');
+
+                if($reservation->getCheckOut() < $now || strcmp($reservation->getCheckOut()->format("Y-m-d"), $now->format("Y-m-d")) == 0){
+                    return array(
+                        'result_message' => "Past reservation room cannot be updated",
+                        'result_code' => 1
+                    );
+                }
+
+                //New room can not be the same as current reservation room (API\SOAP)
+                if($room->getId() == $reservation->getRoom()->getId()){
+                    return array(
+                        'result_message' => "Room is the same, no changes made.",
+                        'result_code' => 1
+                    );
+                }
+
+                //validate that Date cannot be changed for reservations with an outstanding balance.
+                $due = $this->getAmountDue($reservation);
+                if($due !== 0 ){
+                    return array(
+                        'result_message' => "Date cannot be changed for reservations with an outstanding balance",
+                        'result_code' => 1
+                    );
+                }
+
                 $reservation->setRoom($room);
                 $this->em->persist($reservation);
                 $this->em->flush($reservation);
             } else {
-                $responseArray[] = array(
+                return array(
                     'result_code' => 1,
-                    'result_message' => 'Selected dates not available'
+                    'result_message' => 'Selected dates are not available'
                 );
-                return $responseArray;
             }
 
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully updated reservation'
             );
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -558,7 +719,7 @@ class ReservationApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -573,15 +734,26 @@ class ReservationApi
         $reservations = explode("\n", trim($reservationsString));
         $this->logger->info("array lines: " . sizeof($reservations));
         $responseArray = array();
-        foreach($reservations as $reservation) {
-            $checkIn = trim(substr($reservation,52,8));
-            $checkOut = trim(substr($reservation,62,8));
-            $guestName = trim(substr($reservation,70,36));
-            $phoneNumber = trim(substr($reservation,106,18));
-            $origin = trim(substr($reservation,124,46));
-            $originURL = trim(substr($reservation,170,46));
-            $uid = trim(substr($reservation,216,44));
-            $roomId = intval(trim(substr($reservation,379,4)));
+        foreach ($reservations as $reservation) {
+            $checkIn = trim(substr($reservation, 52, 8));
+            $checkOut = trim(substr($reservation, 62, 8));
+            $guestName = trim(substr($reservation, 70, 36));
+            $phoneNumber = trim(substr($reservation, 106, 18));
+            $origin = trim(substr($reservation, 124, 46));
+            $originURL = trim(substr($reservation, 170, 46));
+            $uid = trim(substr($reservation, 216, 44));
+            $roomId = trim(substr($reservation, 407, 6));
+            $adultGuests = trim(substr($reservation, 423, 2));
+            $childGuests = trim(substr($reservation, 425, 2));
+            $smoker = (substr($reservation, 427, 3));
+
+            if($this->defectApi->isDefectEnabled("upload_reservation_1")){
+                $smoker = "yes";
+            }
+
+            if($this->defectApi->isDefectEnabled("upload_reservation_2")){
+                $childGuests = 0;
+            }
 
             $this->logger->info("checkIn field: " . $checkIn);
             $this->logger->info("checkOut field: " . $checkOut);
@@ -591,33 +763,322 @@ class ReservationApi
             $this->logger->info("originURL field: " . $originURL);
             $this->logger->info("uid field: " . $uid);
             $this->logger->info("roomId field: " . $roomId);
+            $this->logger->info("adults: " . $adultGuests);
+            $this->logger->info("children: " . $childGuests);
+            $this->logger->info("smoker: " . $smoker);
 
-            $response = $this->createReservation($roomId, $guestName, $phoneNumber, "", $checkIn, $checkOut, $request, null, null, $uid, false, $origin, $originURL);
-            $responseArray[] = $response[0]['result_message'];
+            $response = $this->createReservation($roomId, $guestName, $phoneNumber, "", $checkIn, $checkOut, $request, $adultGuests, $childGuests, $uid, false, $origin, $originURL, $smoker);
+            if($response['result_code'] == 1){
+                $responseArray[] = array(
+                    'result_code' => $response['result_code'],
+                    'result_message' => $response['result_message']
+                );
+            }else{
+                $responseArray[] = array(
+                    'result_code' => $response['result_code'],
+                    'result_message' => $response['result_message'],
+                    'reservation_id' => $response['reservation_id']
+                );
+            }
         }
 
         return $responseArray;
     }
 
 
-    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website"): array
+    public function importFTPReservations($request): array|Response
+    {
+        $this->logger->info("Starting Method: " . __METHOD__);
+
+        $ftpConnection = ftp_connect('ftp.hotelrunner.co.za');
+
+        ftp_login($ftpConnection, 'reservations@hotelrunner.co.za', '-DDij,n&zk(p');
+
+        ftp_pasv($ftpConnection, true);
+
+        $h = fopen('php://temp', 'r+');
+        $response = array();
+        try {
+            ftp_fget($ftpConnection, $h, '/reservations.dat', FTP_BINARY, 0);
+        } catch (\Exception $ex) {
+            $this->logger->info($ex->getMessage());
+            $response = array("result_code" => 1,
+                "result_message" => $ex->getMessage());
+            $this->writeFTPResults($response);
+        }
+
+        $fstats = fstat($h);
+        fseek($h, 0);
+        if ($fstats['size'] < 1) {
+            $this->logger->info("No file found");
+            $response = array("result_code" => 1,
+                "result_message" => "No file found");
+            $this->writeFTPResults($response);
+        }
+        $contents = fread($h, $fstats['size']);
+
+        fclose($h);
+
+        if (strlen($contents) < 1) {
+            $this->logger->info("No file found");
+            $response = array("result_code" => 1,
+                "result_message" => "No file found");
+            $this->writeFTPResults($response);
+        }
+
+        $this->logger->info("File : " . $contents);
+
+        $response = $this->uploadReservations($contents, $request);
+
+        //rename the input file for backup
+
+        if (ftp_rename($ftpConnection, '/reservations.dat', '/reservations_' . date("YmdGis") . '.dat')) {
+            $this->logger->info("successfully backed up file");
+        } else {
+            $this->logger->info("There was a problem backing up up file");
+        }
+        $this->writeFTPResults($response);
+        return $response;
+    }
+
+    private function writeFTPResults($response): void
+    {
+        //write results to result.log
+        try {
+            $ftpConnection = ftp_connect('ftp.hotelrunner.co.za');
+
+            ftp_login($ftpConnection, 'reservations@hotelrunner.co.za', '-DDij,n&zk(p');
+
+            ftp_pasv($ftpConnection, true);
+
+            $wfile = fopen('result.log', 'w');
+            $this->logger->info(json_encode(($response)));
+            fwrite($wfile, json_encode(($response)));
+            fclose($wfile);
+
+            $cfile = fopen('result.log', 'r');
+            // try to upload $file
+            if (ftp_fput($ftpConnection, 'result.log', $cfile, FTP_ASCII)) {
+                $this->logger->info("Successfully uploaded 'result.log'\n");
+            } else {
+                $this->logger->error("There was a problem while uploading 'result.log'\n");
+            }
+            fclose($cfile);
+            ftp_close($ftpConnection);
+        } catch (\Exception $exception) {
+            ftp_close($ftpConnection);
+            $this->logger->error("Failed to write to the result log. " . $exception->getMessage());
+        }
+    }
+
+    public function createReservation($roomIds, $guestName, $phoneNumber, $email, $checkInDate, $checkOutDate, $request = null, $adultGuests = null, $childGuests = null, $uid = null, $isImport = false, $origin = "website", $originUrl = "website", $smoker = "no", $gender = "female", $citizenship = "0"): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
+        $this->logger->info("citizenship is this at top $citizenship");
         $this->logger->debug("child" . $childGuests);
         $this->logger->debug("adult" . $adultGuests);
-        $responseArray = array();
         $blockRoomApi = new BlockedRoomApi($this->em, $this->logger);
         $room = null;
         try {
+            //validate guest name
+            if (strlen($guestName) > 50 || strlen($guestName) < 4) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Guest name should be min 4 characters and max 50 characters ' . strlen($guestName)
+                );
+            }
+
+            //validate phone number
+            if (strlen($phoneNumber) !== 12 || !str_starts_with($phoneNumber, "+")) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Phone number should be 12 characters and must start with +'
+                );
+            }
+
+            //validate phone number is numbers only
+            $phoneNumberWithoutPlus = str_replace("+", "", $phoneNumber);
+            if (!is_numeric($phoneNumberWithoutPlus)) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Phone number is not numeric'
+                );
+            }
+
+            //validate email
+            if (strlen($email) > 0) {
+                if (strlen($email) > 50 || strlen($email) < 4) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'Email should be min 4 characters and max 50 characters'
+                    );
+                }
+
+                $pattern = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i";
+                if (!preg_match($pattern, $email)) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'Email is not valid'
+                    );
+                }
+            }
+
+            //validate adults
+            if (strlen($adultGuests) > 2 || strlen($adultGuests) == 0 || !is_numeric($adultGuests) || intval($adultGuests) < 1) {
+                return array(
+                    'result_message' => "Number of adult guests length should be between 1 and 2 and should be a positive number",
+                    'result_code' => 1
+                );
+            }
+
+            //validate kids
+            if (strlen($childGuests) > 2 || strlen($childGuests) == 0 || !is_numeric($childGuests) || intval($childGuests) < 0) {
+                return array(
+                    'result_message' => "Number of child guests length should be between 1 and 2 and should be a positive number",
+                    'result_code' => 1
+                );
+            }
+
+
+            //validate smoker
+            if (strcmp($smoker, "yes") !== 0 && strcmp($smoker, "no") !== 0) {
+                return array(
+                    'result_message' => "The smoker value is invalid",
+                    'result_code' => 1
+                );
+            }
+
+            //validate dates
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkOutDate)) {
+                return array(
+                    'result_message' => "Check-out date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $checkInDate)) {
+                return array(
+                    'result_message' => "Check-in date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            //validate citizenship
+            if (!is_numeric($citizenship) ||
+                (intval($citizenship) !== 0 && intval($citizenship) !== 1)) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'Citizenship is invalid ' . $citizenship
+                );
+            }
+
+            //validate gender
+            if (strcmp($gender, "female") !== 0 && strcmp($gender, "male") !== 0) {
+                return array(
+                    'result_message' => "Gender value is invalid",
+                    'result_code' => 1
+                );
+            }
+
+            $checkInDateDateObject = new DateTime($checkInDate);
+            $checkOutDateDateObject = new DateTime($checkOutDate);
+
+            //validate number of nights
+            $totalNights = intval($checkInDateDateObject->diff($checkOutDateDateObject)->format('%a'));
+            if ($totalNights > 30) {
+                return array(
+                    'result_message' => "The maximum number of nights is 30",
+                    'result_code' => 1
+                );
+            }
+
+            //validate checkin dates
+            if (strlen($checkInDate) < 1 || strlen($checkOutDate) < 1) {
+                return array(
+                    'result_message' => "Check-in and check-out date is mandatory",
+                    'result_code' => 1
+                );
+            }
+
+            //validate checkin dates
+            if (!$this->defectApi->isDefectEnabled("create_reservation_10")) {
+                if (strcmp($checkInDate, $checkOutDate) == 0) {
+                    return array(
+                        'result_message' => "Check-in and check-out date can not be the same",
+                        'result_code' => 1
+                    );
+                }
+            }
+
+
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                return array(
+                    'result_message' => "Check-in date can not be after check-out date",
+                    'result_code' => 1
+                );
+            }
+
+            $now = new DateTime('today midnight');
+            if (!$this->defectApi->isDefectEnabled("create_reservation_11")) {
+                if ($checkInDateDateObject < $now) {
+                    return array(
+                        'result_message' => "Check-in date can not be in the past",
+                        'result_code' => 1
+                    );
+                }
+            }
+
+
+
+
             //get property Id
             $roomIds = str_replace('[', "", $roomIds);
             $roomIds = str_replace(']', "", $roomIds);
             $roomIds = str_replace('"', "", $roomIds);
             $roomIdsArray = explode(",", $roomIds);
             $reservationIds = array();
+            $roomApi = new RoomApi($this->em, $this->logger);
+            $roomsCapacity = 0;
+
+            //validate the room capacity vs number of guests
+            foreach ($roomIdsArray as $roomId) {
+                $room = $roomApi->getRoom($roomId);
+                if ($room == null) {
+                    $responseArray = array(
+                        'result_code' => 1,
+                        'result_message' => 'Room not found, id: ' . $roomId
+                    );
+                    return $responseArray;
+                }
+                $roomsCapacity += intval($room->getSleeps());
+            }
+
+
+            $totalGuests = intval($adultGuests) + intval($childGuests);
+            if (!$this->defectApi->isDefectEnabled("create_reservation_12")) {
+                if ($totalGuests > $roomsCapacity) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'The selected rooms can not accommodate the number of guests'
+                    );
+                }
+            }
+
+
+            //validate that the number of guests is not less than the number of rooms booked
+            $this->logger->debug("number of rooms " . sizeof($roomIdsArray));
+            if (sizeof($roomIdsArray) > $totalGuests) {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'The number of guests can not be less than the number of rooms booked'
+                );
+            }
+
             foreach ($roomIdsArray as $roomId) {
                 $this->logger->debug("room id " . $roomId);
-                $roomApi = new RoomApi($this->em, $this->logger);
+
                 //get guest
                 $guestApi = new GuestApi($this->em, $this->logger);
                 $guest = null;
@@ -625,15 +1086,26 @@ class ReservationApi
 
                 $room = $roomApi->getRoom($roomId);
 
+                //validate that children are not booked in a no kids room
+                $kidsAllowed = $room->isKids();
+                if (!$kidsAllowed && intval($childGuests) > 0) {
+                    $responseArray = array(
+                        'result_code' => 1,
+                        'result_message' => 'Kids not allowed for one of the rooms'
+                    );
+                    return $responseArray;
+                }
+
                 if (strcmp($origin, "airbnb.com") === 0) {
                     $guest = $guestApi->getGuestByName("Airbnb Guest");
                 } elseif (strcmp($origin, "booking.com") === 0) {
                     if (!empty($phoneNumber)) {
                         $guest = $guestApi->getGuestByPhoneNumber($phoneNumber, $request, $room->getProperty()->getId());
                     }
-                } elseif (strlen($phoneNumber) > 1) {
+                } else {
                     $guest = $guestApi->getGuestByPhoneNumber($phoneNumber, $request, $room->getProperty()->getId());
                 }
+
 
 
                 if ($guest == null) {
@@ -658,11 +1130,24 @@ class ReservationApi
                         }
                         return $response;
                     } else {
+                        $this->logger->info("citizenship is this $citizenship");
                         $guest = $response[0]['guest'];
+                        $guest->setGender($gender);
+                        $guest->setCitizenship(intval($citizenship));
+                        $this->em->persist($guest);
+                        $this->em->flush($guest);
                     }
                 } else {
+                    //update guest details
+                    $guest->setName($guestName);
+                    $guest->setEmail($email);
+                    $guest->setGender($gender);
+                    $guest->setCitizenship(intval($citizenship));
+                    $this->em->persist($guest);
+                    $this->em->flush($guest);
+
                     if (strcmp($guest->getState(), "blocked") === 0) {
-                        $responseArray[] = array(
+                        $responseArray = array(
                             'result_code' => 1,
                             'result_message' => 'Guest blocked for ' . $guest->getComments()
                         );
@@ -688,7 +1173,7 @@ class ReservationApi
                 $isRoomAvailable = $roomApi->isRoomAvailable($room->getId(), $checkInDate, $checkOutDate);
 
                 if (!$isRoomAvailable) {
-                    $responseArray[] = array(
+                    $responseArray = array(
                         'result_code' => 1,
                         'result_message' => 'Tried to create a reservation. Room not available for selected dates ' . $checkInDate . " - " . $checkOutDate
                     );
@@ -704,10 +1189,11 @@ class ReservationApi
                             $SMSHelper->sendMessage(str_replace(" ", "", $room->getProperty()->getPhoneNumber()), $messageBody);
                         }
 
-                    }else{
+                    } else {
                         return $responseArray;
                     }
                 }
+
 
                 $reservation = new Reservations();
                 $reservation->setRoom($room);
@@ -742,6 +1228,13 @@ class ReservationApi
                 $this->em->persist($reservation);
                 $this->em->flush($reservation);
 
+                //add smoking note
+                if (strcmp($smoker, "yes") == 0) {
+                    $notesApi = new NotesApi($this->em, $this->logger);
+                    if (!$this->defectApi->isDefectEnabled("view_reservation_2")) {
+                        $notesApi->addNote($reservation->getId(), "The guest is a smoker");
+                    }
+                }
 
                 //block connected Room
                 if ($isImport) {
@@ -753,7 +1246,7 @@ class ReservationApi
                 $now = new DateTime();
                 if (strcmp($reservation->getCheckIn()->format("Y-m-d"), $now->format("Y-m-d")) === 0) {
                     $notificationApi = new NotificationApi($this->em, $this->logger);
-                    $notificationApi->updateAdsNotification($room->getProperty()->getId());
+                    //$notificationApi->updateAdsNotification($room->getProperty()->getId());
                 }
 
 
@@ -791,16 +1284,16 @@ class ReservationApi
                     $reservationIds[] = $reservation->getId();
                 }
             }
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => "Successfully created reservation",
                 'reservation_id' => $reservationIds
             );
         } catch
         (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->debug(print_r($responseArray, true));
             if ($isImport) {
@@ -808,10 +1301,10 @@ class ReservationApi
                 if (!$this->isFailedUidRecorded($uid)) {
                     $this->recordFailedUid($uid);
 
-                    $messageBody = "There was an exception creation a reservation. " . $checkInDate . " - " . $room->getName() ;
+                    $messageBody = "There was an exception creation a reservation. " . $checkInDate . " - " . $room->getName();
                     $SMSHelper = new SMSHelper($this->logger);
                     $SMSHelper->sendMessage("+27837917430", $messageBody);
-                    $SMSHelper->sendMessage(str_replace(" ", "", $room->getProperty()->getPhoneNumber()) , $messageBody);
+                    $SMSHelper->sendMessage(str_replace(" ", "", $room->getProperty()->getPhoneNumber()), $messageBody);
                 }
 
             }
@@ -858,6 +1351,9 @@ class ReservationApi
         return $isEligible;
     }
 
+    /**
+     * @throws Exception
+     */
     public function getAmountDue($reservation): float|int
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
@@ -877,8 +1373,12 @@ class ReservationApi
             $roomPrice = $reservation->getRoom()->getPrice();
         }
 
+        $numberOfWeekendNights = $paymentApi->getNumberOfWeekendNights($reservation->getCheckIn(), $reservation->getCheckOut());
+        $totalPriceForWeekends = 50 * $numberOfWeekendNights;
+
+
         $totalPrice = intval($roomPrice) * $totalDays;
-        $totalPrice += $totalPriceForAllAdOns;
+        $totalPrice += $totalPriceForAllAdOns + $totalPriceForWeekends;
 
         //payments
         $payments = $paymentApi->getReservationPayments($reservation->getId());
@@ -926,9 +1426,9 @@ class ReservationApi
                 }
             }
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
             $this->logger->error(print_r($responseArray, true));
         }

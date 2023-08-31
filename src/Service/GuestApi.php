@@ -9,6 +9,7 @@ use App\Entity\ReservationStatus;
 use App\Helpers\SMSHelper;
 use DateTime;
 use Exception;
+use JetBrains\PhpStorm\ArrayShape;
 use phpDocumentor\Reflection\Types\Void_;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,18 +19,20 @@ class GuestApi
 {
     private $em;
     private $logger;
+    private $defectApi;
 
     public function __construct(EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->em = $entityManager;
         $this->logger = $logger;
+        $this->defectApi = new DefectApi($entityManager, $logger);
         if (session_id() === '') {
             $logger->info("Session id is empty");
             session_start();
         }
     }
 
-    public function createGuest($name, $phoneNumber, $email,  $origin, $propertyId): array
+    public function createGuest($name, $phoneNumber, $email, $origin, $propertyId): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
@@ -37,7 +40,7 @@ class GuestApi
             $property = $this->em->getRepository(Property::class)->findOneBy(array('id' => $propertyId));
             $guest = new Guest();
             $guest->setName($name);
-            $guest->setPhoneNumber(str_replace("+27", "0", trim($phoneNumber)));
+            $guest->setPhoneNumber($phoneNumber);
             $guest->setEmail($email);
             $guest->setProperty($property);
             $guest->setComments($origin);
@@ -53,7 +56,7 @@ class GuestApi
         } catch (Exception $ex) {
             $responseArray[] = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -65,28 +68,27 @@ class GuestApi
     public function updateGuestPhoneNumber($guestId, $phoneNumber): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId ));
-            if($guest === null){
-                $responseArray[] = array(
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if ($guest === null) {
+                $responseArray = array(
                     'result_code' => 1,
                     'result_message' => 'Guest not found for id ' . $guestId
                 );
-            }else{
+            } else {
                 $guest->setPhoneNumber($phoneNumber);
                 $this->em->persist($guest);
                 $this->em->flush($guest);
-                $responseArray[] = array(
+                $responseArray = array(
                     'result_code' => 0,
                     'result_message' => 'Successfully updated guest phone number'
                 );
             }
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -98,28 +100,27 @@ class GuestApi
     public function updateGuestName($guestId, $name): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId ));
-            if($guest === null){
-                $responseArray[] = array(
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if ($guest === null) {
+                $responseArray = array(
                     'result_code' => 1,
                     'result_message' => 'Guest not found for id ' . $guestId
                 );
-            }else{
+            } else {
                 $guest->setName($name);
                 $this->em->persist($guest);
                 $this->em->flush($guest);
-                $responseArray[] = array(
+                $responseArray = array(
                     'result_code' => 0,
-                    'result_message' => 'Successfully updated guest phone number'
+                    'result_message' => 'Successfully updated guest name'
                 );
             }
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -133,26 +134,26 @@ class GuestApi
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
         try {
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId ));
-            if($guest === null){
-                $responseArray[] = array(
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if ($guest === null) {
+                $responseArray = array(
                     'result_code' => 1,
                     'result_message' => 'Guest not found for id ' . $guestId
                 );
-            }else{
+            } else {
                 $guest->setEmail($email);
                 $this->em->persist($guest);
                 $this->em->flush($guest);
-                $responseArray[] = array(
+                $responseArray = array(
                     'result_code' => 0,
                     'result_message' => 'Successfully updated guest email address'
                 );
             }
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -164,28 +165,27 @@ class GuestApi
     public function updateGuestRewards($guestId, $flag): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId ));
-            if($guest === null){
-                $responseArray[] = array(
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if ($guest === null) {
+                $responseArray = array(
                     'result_code' => 1,
                     'result_message' => 'Guest not found for id ' . $guestId
                 );
-            }else{
+            } else {
                 $guest->setRewards(intval($flag));
                 $this->em->persist($guest);
                 $this->em->flush($guest);
-                $responseArray[] = array(
+                $responseArray = array(
                     'result_code' => 0,
                     'result_message' => 'Successfully updated guest rewards flag'
                 );
             }
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -193,47 +193,129 @@ class GuestApi
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
+
+    #[ArrayShape(['result_code' => "int", 'result_message' => "string"])]
     public function updateGuestIdNumber($guestId, $IdNumber): array
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
-        $responseArray = array();
         try {
             //check if ID not linked to a blocked guest
             $blockedGuest = $this->em->getRepository(Guest::class)->findOneBy(array('idNumber' => $IdNumber, 'state' => 'blocked'));
-            if($blockedGuest !== null) {
-                $responseArray[] = array(
+            if ($blockedGuest !== null) {
+                return array(
                     'result_code' => 1,
                     'result_message' => 'This ID number was blocked for ' . $blockedGuest->getComments() . ". ID is linked to number " . $blockedGuest->getPhoneNumber()
                 );
-                return $responseArray;
             }
 
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId ));
-            if($guest === null) {
-                $responseArray[] = array(
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if ($guest === null) {
+                return array(
                     'result_code' => 1,
-                    'result_message' => 'Guest not found for id ' . $guestId
-                );
-            }else{
-                $guest->setIdNumber($IdNumber);
-                $this->em->persist($guest);
-                $this->em->flush($guest);
-                $responseArray[] = array(
-                    'result_code' => 0,
-                    'result_message' => 'Successfully updated guest ID number'
+                    'result_message' => 'Guest not found'
                 );
             }
+
+            //validate South african ID number
+            if (is_numeric($IdNumber) && strlen($IdNumber) === 13) {
+                $num_array = str_split($IdNumber);
+
+                // Validate the day and month
+                $currentYear = intval(date("Y"));
+
+                $id_year = intval( $num_array[0] . $num_array[1]);
+                //if id year is not older than 100 yrs and it is less than or equal to 99. add 19 infront. else i2000
+                if($id_year <= 99){
+                    $id_year = intval( "19" . $num_array[0] . $num_array[1]);
+                    $ageLimit = 100;
+                    if($this->defectApi->isDefectEnabled("update_reservation_2")){
+                        $ageLimit = 102;
+                    }
+                    if($id_year <  $currentYear - $ageLimit){
+                        $id_year = intval( "20" . $num_array[0] . $num_array[1]);
+                    }
+                }else{
+                    $id_year = intval( "20" . $num_array[0] . $num_array[1]);
+                }
+
+                $guestAge = $currentYear - $id_year;
+                $id_month = $num_array[2] . $num_array[3];
+
+                $id_day = $num_array[4] . $num_array[5];
+
+                //validate year
+                if ($id_year > $currentYear) {
+                    $this->logger->debug("id year is $id_year current year is $currentYear");
+
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number is invalid'
+                    );
+                }
+
+                //validate guest age from id
+                if ($guestAge < 18) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'Guest is too young to stay with us'
+                    );
+                }
+
+
+                if ($id_month < 1 || $id_month > 12) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number is invalid'
+                    );
+                }
+
+                if (($id_day < 1 || $id_day > 31) && !$this->defectApi->isDefectEnabled("update_reservation_3")) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID number is invalid'
+                    );
+                }
+
+                // Validate gender
+                $id_gender = $num_array[6] >= 5 ? 'male' : 'female';
+                if ($guest->getGender() && strtolower($guest->getGender()) !== $id_gender && !$this->defectApi->isDefectEnabled("view_reservation_16")) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID Number gender is not valid'
+                    );
+                }
+
+                // citizenship as per id number
+                $id_foreigner = $num_array[10];
+
+                // citizenship as per submission
+                if (($guest->getCitizenship() || $id_foreigner) && (int)$guest->getCitizenship() !== (int)$id_foreigner) {
+                    return array(
+                        'result_code' => 1,
+                        'result_message' => 'ID Number citizenship is not valid'
+                    );
+                }
+            } else {
+                return array(
+                    'result_code' => 1,
+                    'result_message' => 'ID number is invalid'
+                );
+            }
+
+            $guest->setIdNumber($IdNumber);
+            $this->em->persist($guest);
+            $this->em->flush($guest);
+            return array(
+                'result_code' => 0,
+                'result_message' => 'Successfully updated guest ID number'
+            );
 
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            return array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage(),
             );
-            $this->logger->error(print_r($responseArray, true));
         }
-
-        $this->logger->debug("Ending Method before the return: " . __METHOD__);
-        return $responseArray;
     }
 
     public function createAirbnbGuest($confirmationCode, $name): ?array
@@ -243,7 +325,7 @@ class GuestApi
         try {
             //get property id
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('originUrl' => $confirmationCode));
-            if($reservation === null){
+            if ($reservation === null) {
                 $this->logger->debug("Reservation not found");
                 return null;
             }
@@ -254,7 +336,7 @@ class GuestApi
                 'property' => $property->getId(),
                 'comments' => 'airbnb'));
 
-            if($guest === null){
+            if ($guest === null) {
                 $guest = new Guest();
                 $guest->setName($name);
                 $guest->setComments('airbnb');
@@ -267,14 +349,14 @@ class GuestApi
 
             $this->em->persist($reservation);
             $this->em->flush($reservation);
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully updated reservation guest'
             );
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -289,20 +371,25 @@ class GuestApi
         $responseArray = array();
         try {
             $reservation = $this->em->getRepository(Reservations::class)->findOneBy(array('id' => $reservationId));
-
+            if($reservation == null){
+                return array(
+                    'result_code' => 1,
+                    'result_message' => "Reservation not found",
+                );
+            }
             $guest = $reservation->getGuest();
             $guest->setState("blocked");
             $guest->setComments($reason);
             $this->em->persist($guest);
             $this->em->flush($guest);
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 0,
                 'result_message' => 'Successfully blocked guest'
             );
         } catch (Exception $ex) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_code' => 1,
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
             );
             $this->logger->error(print_r($responseArray, true));
         }
@@ -315,24 +402,27 @@ class GuestApi
     {
         $this->logger->debug("Starting Method: " . __METHOD__);
         try {
-            $propertyId =   $_SESSION['PROPERTY_ID'];
-            if ($filterValue == 0) {
-                $guest = $this->em->getRepository(Guest::class)->findBy(array('property' => $propertyId));
-            } else {
-                if (strlen($filterValue) > 4) {
-                    $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($filterValue)), 'property' => $propertyId));
-                } else {
-                    $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $filterValue, 'property' => $propertyId));
+            if (strlen($filterValue) == 12) {
+                $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => trim($filterValue), 'state' => 'Active'));
+                if ($guest == null) {
+                    $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($filterValue))));
                 }
+            } else {
+                $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $filterValue));
             }
-            $responseArray = array();
 
-            if($guest === null){
-                $responseArray[] = array(
+            if ($guest === null) {
+                $responseArray = array(
+                    'result_message' => "Guest not found",
                     'result_code' => 1
                 );
-            }else{
-                $responseArray[] = array(
+            } else {
+                if ($this->defectApi->isDefectEnabled("create_reservation_6")) {
+                    $guests = $this->em->getRepository(Guest::class)->findAll();
+                    $guest = $guests[0];
+                }
+
+                $responseArray = array(
                     'id' => $guest->getId(),
                     'name' => $guest->getName(),
                     'image_id' => $guest->getIdImage(),
@@ -341,11 +431,13 @@ class GuestApi
                     'state' => $guest->getState(),
                     'comments' => $guest->getComments(),
                     'id_number' => $guest->getIdNumber(),
+                    'stays_count' => $this->getGuestStaysCount($guest->getId()),
+                    'nights_count' => $this->getGuestNightsCount($guest->getId()),
                     'result_code' => 0
                 );
             }
         } catch (Exception $exception) {
-            $responseArray[] = array(
+            $responseArray = array(
                 'result_message' => $exception->getMessage(),
                 'result_code' => 1
             );
@@ -363,10 +455,10 @@ class GuestApi
         $responseArray = array();
         try {
             $propertyApi = new PropertyApi($this->em, $this->logger);
-            if($propertyId === null){
+            if ($propertyId === null) {
                 $propertyId = $propertyApi->getPropertyIdByHost($request);
             }
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => str_replace("+27", "0", trim($phoneNumber)), 'property' => $propertyId));
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('phoneNumber' => $phoneNumber, 'state' => 'Active'));
         } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),
@@ -385,8 +477,8 @@ class GuestApi
         $guest = null;
         $responseArray = array();
         try {
-            $propertyId =   $_SESSION['PROPERTY_ID'];
-            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('name' => $name, 'property' => $propertyId));
+            $propertyId = $_SESSION['PROPERTY_ID'];
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('name' => $name, 'property' => $propertyId, 'state' => 'Active'));
         } catch (Exception $exception) {
             $responseArray[] = array(
                 'result_message' => $exception->getMessage(),
@@ -406,12 +498,18 @@ class GuestApi
         $responseArray = array();
         try {
             $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId));
+            if($guest == null){
+                return array(
+                    'result_message' => "Guest not found",
+                    'result_code' => 1
+                );
+            }
         } catch (Exception $exception) {
-            $responseArray[] = array(
+            $this->logger->error(print_r($responseArray, true));
+            return array(
                 'result_message' => $exception->getMessage(),
                 'result_code' => 1
             );
-            $this->logger->error(print_r($responseArray, true));
         }
 
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
@@ -436,11 +534,35 @@ class GuestApi
             $numberOfStays = 0;
             $now = new DateTime('tomorrow midnight');
             foreach ($stays as $stay) {
-                if($stay->getCheckIn() < $now){
+                if ($stay->getCheckIn() < $now) {
                     $numberOfStays++;
                 }
             }
             return $numberOfStays;
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage());
+            return 0;
+        }
+    }
+
+    public function getGuestNightsCount($guestId): int
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        try {
+            $confirmStatus = $this->em->getRepository(ReservationStatus::class)->findOneBy(array('name' => 'confirmed'));
+
+            $stays = $this->em->getRepository(Reservations::class)->findBy(array('guest' => $guestId,
+                'status' => $confirmStatus));
+
+            $numberOfTotalNights = 0;
+            $now = new DateTime('tomorrow midnight');
+            foreach ($stays as $stay) {
+                if ($stay->getCheckIn() < $now) {
+                    $numberOfNights = intval($stay->getCheckIn()->diff($stay->getCheckOut())->format('%a'));
+                    $numberOfTotalNights += $numberOfNights;
+                }
+            }
+            return $numberOfTotalNights;
         } catch (Exception $exception) {
             $this->logger->error($exception->getMessage());
             return 0;
@@ -535,20 +657,20 @@ class GuestApi
         $responseArray = array();
         try {
 
-            if(strcmp($nameFilter, "*") === 0){
+            if (strcmp($nameFilter, "*") === 0) {
                 $nameFilter = "";
             }
 
             return $this->em
                 ->createQuery("SELECT g FROM App\Entity\Guest g 
-            WHERE g.property = " . $_SESSION['PROPERTY_ID'] . "
-            and g.comments = 'website'
-            and g.name like '%".$nameFilter."%'
+            WHERE g.comments = 'website'
+            and g.name like '%" . $nameFilter . "%'
+            and g.state = 'Active'
             order by g.name asc")
                 ->getResult();
         } catch (Exception $ex) {
             $responseArray[] = array(
-                'result_message' => $ex->getMessage() .' - '. __METHOD__ . ':' . $ex->getLine() . ' ' .  $ex->getTraceAsString(),
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
                 'result_code' => 1
             );
             $this->logger->error(print_r($responseArray, true));
@@ -556,5 +678,38 @@ class GuestApi
         $this->logger->debug("Ending Method before the return: " . __METHOD__);
         return $responseArray;
     }
+
+    public function removeGuest($guestId): array
+    {
+        $this->logger->debug("Starting Method: " . __METHOD__);
+        try {
+            $guest = $this->em->getRepository(Guest::class)->findOneBy(array('id' => $guestId, 'state' => 'Active'));
+            if ($guest === null) {
+                $responseArray = array(
+                    'result_code' => 1,
+                    'result_message' => 'Guest not found for id ' . $guestId
+                );
+            } else {
+                $guest->setState("removed");
+                $this->em->persist($guest);
+                $this->em->flush($guest);
+                $responseArray = array(
+                    'result_code' => 0,
+                    'result_message' => 'Successfully removed guest'
+                );
+            }
+
+        } catch (Exception $ex) {
+            $responseArray = array(
+                'result_code' => 1,
+                'result_message' => $ex->getMessage() . ' - ' . __METHOD__ . ':' . $ex->getLine() . ' ' . $ex->getTraceAsString(),
+            );
+            $this->logger->error(print_r($responseArray, true));
+        }
+
+        $this->logger->debug("Ending Method before the return: " . __METHOD__);
+        return $responseArray;
+    }
+
 
 }

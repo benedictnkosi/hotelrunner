@@ -2,13 +2,17 @@
 
 namespace App\Controller;
 
+use App\Service\DefectApi;
 use App\Service\FileUploaderApi;
 use App\Service\RoomApi;
+use http\Exception;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,11 +26,19 @@ class ImageController extends AbstractController
     public function removeImage($imageName, LoggerInterface $logger,Request $request, EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
-        $response = $roomApi->removeImage($imageName);
-        $callback = $request->get('callback');
-        $response = new JsonResponse($response , 200, array());
-        $response->setCallback($callback);
-        return $response;
+        if (!$request->isMethod('delete')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $result = $roomApi->removeImage($imageName);
+        if ($result[0]['result_code'] === 0) {
+            return new JsonResponse($result , 204, array());
+        }else{
+            $responseArray[] = array(
+                'result_message' => $result[0]['result_message'],
+                'result_code' => 1
+            );
+            return new JsonResponse($responseArray , 200, array());
+        }
     }
 
     /**
@@ -35,6 +47,9 @@ class ImageController extends AbstractController
     public function markDefault($imageName, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('put') && $request->get("soap_call") == null) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $response = $roomApi->markDefault($imageName);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -48,6 +63,9 @@ class ImageController extends AbstractController
     public function getRoomImagesJson($roomId, LoggerInterface $logger, Request $request,EntityManagerInterface $entityManager, RoomApi $roomApi): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $response = $roomApi->getRoomImagesJson($roomId);
         $callback = $request->get('callback');
         $response = new JsonResponse($response , 200, array());
@@ -56,20 +74,61 @@ class ImageController extends AbstractController
     }
 
     /**
-     * @Route("no_auth/room/image/{fileName}", name="signup")
+     * @Route("no_auth/room/image/{fileName}", name="getFile")
      */
-    public function getFile($fileName): Response
+    public function getFile($fileName, Request $request,LoggerInterface $logger): Response
     {
-        $uploadDir = __DIR__ . '/../..no_auth/room/image/';
-        return new BinaryFileResponse($uploadDir . $fileName);
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $filePath = __DIR__ . '/../../public/room/image/'. $fileName;
+        if(file_exists($filePath)){
+            try{
+                return new BinaryFileResponse($filePath,200, array());
+            }catch(InvalidArgumentException $exception){
+                return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
+            }
+        }else{
+            return new JsonResponse("file does not exist or is not readable" , 404, array());
+        }
+    }
+
+    /**
+     * @Route("no_auth/dat_file/{fileName}", name="getDatFile")
+     */
+    public function getDatFile($fileName, Request $request,LoggerInterface $logger): Response
+    {
+        $logger->info("Starting Method: " . __METHOD__);
+
+        if (!$request->isMethod('get')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
+        $filePath = __DIR__ . '/../../files/'. $fileName;
+        if(file_exists($filePath)){
+            try{
+                $logger->info("returning with 200: ");
+                $response =  new BinaryFileResponse($filePath,200);
+                $response->headers->set('Content-Type', 'text/plain');
+                $response->setStatusCode(200);
+                return $response;
+            }catch(InvalidArgumentException $exception){
+                return new JsonResponse($exception->getMessage() . "- file does not exist or is not readable" , 404, array());
+            }
+        }else{
+            return new JsonResponse("file does not exist or is not readable" , 404, array());
+        }
     }
 
     /**
      * @Route("api/configuration/image/upload")
      */
-    public function uploadImage(LoggerInterface $logger, Request $request, RoomApi $roomApi): Response
+    public function uploadImage(LoggerInterface $logger, Request $request, FileUploaderApi $uploader,EntityManagerInterface $entityManager): Response
     {
         $logger->info("Starting Method: " . __METHOD__);
+        $defectApi = new DefectApi($entityManager, $logger);
+        if (!$request->isMethod('post')) {
+            return new JsonResponse("Method Not Allowed" , 405, array());
+        }
         $file = $request->files->get('file');
         if (empty($file))
         {
@@ -78,29 +137,21 @@ class ImageController extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY, ['content-type' => 'text/plain']);
         }
 
-        $uploadDir = __DIR__ . '/../..no_auth/room/image/';
-        $uploader   =   new FileUploaderApi($logger);
+        $uploadDir = __DIR__ . '/../../public/room/image/';
         $uploader->setDir($uploadDir);
-        $uploader->setExtensions(array('jpg','jpeg','png','gif'));  //allowed extensions list//
+        if(!$defectApi->isDefectEnabled("images_1")){
+            $uploader->setExtensions(array('jpeg','png'));  //allowed extensions list//
+        }
+
         $uploader->setMaxSize(1);                          //set max file size to be allowed in MB//
 
-        if($uploader->uploadFile('file')){   //txtFile is the filebrowse element name //
-            $imageName  =   $uploader->getUploadName(); //get uploaded file name, renames on upload//
-            //update database
-            if(isset($_SESSION['ROOM_ID'])){
-                $roomApi->addImageToRoom($imageName, $_SESSION['ROOM_ID']);
-            }else{
-                $logger->info("Room id not set, refresh page");
-                return new Response("Room id not set, refresh page",
-                    Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'text/plain']);
-            }
-        }else{//upload failed
+        if(!$uploader->uploadFile()){
+            //upload failed
             header("HTTP/1.1 500 Internal Server Error");
-            print_r($uploader->getMessage()); //get upload error message
-            return new Response("500 Internal Server Error",
-                Response::HTTP_INTERNAL_SERVER_ERROR, ['content-type' => 'text/plain']);
+            return new Response($uploader->getMessage(),
+                Response::HTTP_NOT_ACCEPTABLE, ['content-type' => 'text/plain']);
         }
-        return new Response("File uploaded",  Response::HTTP_OK,
+        return new Response("File uploaded",  201,
             ['content-type' => 'text/plain']);
     }
 

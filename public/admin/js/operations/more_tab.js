@@ -324,12 +324,12 @@ function blockRoom() {
         success: function(response)
         {
             $("body").removeClass("loading");
-            if (response[0].result_code === 0) {
-                showResSuccessMessage("block", response[0].result_message)
+            if (response.result_code === 0) {
+                showResSuccessMessage("block", response.result_message)
                 getCalendar("future");
                 getBlockedRooms();
             } else {
-                showResErrorMessage("block", response[0].result_message);
+                showResErrorMessage("block", response.result_message);
             }
         },
         error: function (jqXHR, textStatus, errorThrown)

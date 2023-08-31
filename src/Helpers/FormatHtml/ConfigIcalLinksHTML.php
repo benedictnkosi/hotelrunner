@@ -24,7 +24,7 @@ class ConfigIcalLinksHTML
             foreach ($icalLinks as $icalLink) {
                 $html .= '<div class="addon_row">
                         <label>Channel Link</label>
-                            <input type="text" class="addon_field" data-link-id="'.$icalLink->getId().'" data-link-field="link" value="'.$icalLink->getLink().'"
+                            <input type="text" maxlength="50" class="addon_field" data-link-id="'.$icalLink->getId().'" data-link-field="link" value="'.$icalLink->getLink().'"
                                    required/>
                                    <div class="ClickableButton remove_link_button" data-link-id="'.$icalLink->getId().'" >Remove</div>
                     </div>';

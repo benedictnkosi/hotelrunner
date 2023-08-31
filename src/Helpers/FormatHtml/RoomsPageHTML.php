@@ -44,8 +44,8 @@ class RoomsPageHTML
 
             $html.='<div class="maghny-gd-1 col-lg-4 col-md-6">
                 <div class="maghny-grid">
-                    <a href="/room.html?id='.$roomId.'"><figure class="effect-lily">
-                        <img class="img-fluid" src="'.PROTOCOL.'://'.SERVER_NAME.'/public/room/image/thumb'.$roomDefaultImage. '" alt="">
+                    
+                        <img class="img-fluid" src="/room/image/thumb'.$roomDefaultImage. '" alt="">
                         <figcaption>
                             <div>
                                 <h4 class="top-text">
@@ -61,7 +61,7 @@ class RoomsPageHTML
                             </div>
                         </figcaption>
                     </figure>
-                    </a>
+                    
                     <div class="room-info">
                         <h3 class="room-title"><a href="/room.html?id='.$roomId.'">'.$roomName.'</a></h3>
                         <ul class="mb-3">
