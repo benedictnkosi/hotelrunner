@@ -629,6 +629,14 @@ class PaymentApi
 
             //validate dates
 
+            if (strlen($startDate)  == 0 || strlen($endDate) == 0) {
+                $responseArray[] = array(
+                    'result_message' => "Dates are required",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
             if (!DateTime::createFromFormat('Y-m-d', $startDate)) {
                 return array(
                     'result_message' => "From date invalid",
@@ -711,67 +719,77 @@ order by date desc";
         $this->logger->debug("Starting Method: " . __METHOD__);
         $responseArray = array();
 
-        if (strlen($channel) > 50 || strlen($channel) == 0) {
-            $responseArray[] = array(
-                'result_message' => "Channel length should be between 1 and 50",
-                'result_code' => 1
-            );
-            return $responseArray;
-        }
-
-        //validate dates
-
-        if (!DateTime::createFromFormat('Y-m-d', $startDate)) {
-            return array(
-                'result_message' => "From date invalid",
-                'result_code' => 1
-            );
-        }
-
-        if (!DateTime::createFromFormat('Y-m-d', $endDate)) {
-            return array(
-                'result_message' => "To date invalid",
-                'result_code' => 1
-            );
-        }
-
-        $checkInDateDateObject = new DateTime($startDate);
-        $checkOutDateDateObject = new DateTime($endDate);
-
-        //validate checkin dates
-        if (strlen($startDate) < 1 || strlen($endDate) < 1) {
-            return array(
-                'result_message' => "From and to date is mandatory",
-                'result_code' => 1
-            );
-        }
-
-        if (strcmp($startDate, $endDate) == 0) {
-            return array(
-                'result_message' => "From and to date can not be the same",
-                'result_code' => 1
-            );
-        }
-
-
-        //validate checkin dates
-        if ($checkInDateDateObject > $checkOutDateDateObject) {
-            return array(
-                'result_message' => "From date can not be after to date",
-                'result_code' => 1
-            );
-        }
-
-        $now = new DateTime('tomorrow midnight');
-
-        if ($checkInDateDateObject > $now) {
-            return array(
-                'result_message' => "From date can not be in the future",
-                'result_code' => 1
-            );
-        }
 
         try {
+
+            if (strlen($channel) > 50 || strlen($channel) == 0) {
+                $responseArray[] = array(
+                    'result_message' => "Channel length should be between 1 and 50",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            //validate dates
+
+            if (strlen($startDate)  < 1 || strlen($endDate) < 1) {
+                $responseArray[] = array(
+                    'result_message' => "Dates are required",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $startDate)) {
+                return array(
+                    'result_message' => "From date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $endDate)) {
+                return array(
+                    'result_message' => "To date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            $checkInDateDateObject = new DateTime($startDate);
+            $checkOutDateDateObject = new DateTime($endDate);
+
+            //validate checkin dates
+            if (strlen($startDate) < 1 || strlen($endDate) < 1) {
+                return array(
+                    'result_message' => "From and to date is mandatory",
+                    'result_code' => 1
+                );
+            }
+
+            if (strcmp($startDate, $endDate) == 0) {
+                return array(
+                    'result_message' => "From and to date can not be the same",
+                    'result_code' => 1
+                );
+            }
+
+
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                return array(
+                    'result_message' => "From date can not be after to date",
+                    'result_code' => 1
+                );
+            }
+
+            $now = new DateTime('tomorrow midnight');
+
+            if ($checkInDateDateObject > $now) {
+                return array(
+                    'result_message' => "From date can not be in the future",
+                    'result_code' => 1
+                );
+            }
+
 
             $sql = "SELECT SUM(amount) as totalCash, LEFT( date, 10 ) as day FROM `payments`
             WHERE channel = '".$channel."'
@@ -845,6 +863,74 @@ order by date desc";
         $responseArray = array();
 
         try {
+
+            if (strlen($channel) > 50 || strlen($channel) == 0) {
+                $responseArray[] = array(
+                    'result_message' => "Channel length should be between 1 and 50",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            //validate dates
+
+            if (strlen($startDate)  < 1 || strlen($endDate) < 1) {
+                $responseArray[] = array(
+                    'result_message' => "Dates are required",
+                    'result_code' => 1
+                );
+                return $responseArray;
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $startDate)) {
+                return array(
+                    'result_message' => "From date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            if (!DateTime::createFromFormat('Y-m-d', $endDate)) {
+                return array(
+                    'result_message' => "To date invalid",
+                    'result_code' => 1
+                );
+            }
+
+            $checkInDateDateObject = new DateTime($startDate);
+            $checkOutDateDateObject = new DateTime($endDate);
+
+            //validate checkin dates
+            if (strlen($startDate) < 1 || strlen($endDate) < 1) {
+                return array(
+                    'result_message' => "From and to date is mandatory",
+                    'result_code' => 1
+                );
+            }
+
+            if (strcmp($startDate, $endDate) == 0) {
+                return array(
+                    'result_message' => "From and to date can not be the same",
+                    'result_code' => 1
+                );
+            }
+
+
+            //validate checkin dates
+            if ($checkInDateDateObject > $checkOutDateDateObject) {
+                return array(
+                    'result_message' => "From date can not be after to date",
+                    'result_code' => 1
+                );
+            }
+
+            $now = new DateTime('tomorrow midnight');
+
+            if ($checkInDateDateObject > $now) {
+                return array(
+                    'result_message' => "From date can not be in the future",
+                    'result_code' => 1
+                );
+            }
 
             $sql = "SELECT id, amount, date, reservation_id, reference, channel, discount FROM `payments`
             WHERE channel = '".$channel."'
